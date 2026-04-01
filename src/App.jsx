@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
+const API_KEY = import.meta.env.VITE_ANTHROPIC_KEY || "";
+
 const SDG_COLORS = {
   1: "#E5243B", 2: "#DDA63A", 3: "#4C9F38", 4: "#C5192D",
   5: "#FF3A21", 6: "#26BDE2", 7: "#FCC30B", 8: "#A21942",
@@ -15,84 +17,11 @@ const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Satur
 function formatDate(d) {
   return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 }
-
 function todayKey() {
   const d = new Date();
   return `un-briefing-${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 }
 
-// ── API Key Screen ──────────────────────────────────────────────────────────
-function ApiKeyScreen({ onSave }) {
-  const [key, setKey] = useState("");
-  const [showKey, setShowKey] = useState(false);
-  const [err, setErr] = useState("");
-
-  function handleSave() {
-    const trimmed = key.trim();
-    if (!trimmed.startsWith("sk-ant-")) {
-      setErr("Key should start with sk-ant- — check you copied it fully.");
-      return;
-    }
-    localStorage.setItem("un-anthropic-key", trimmed);
-    onSave(trimmed);
-  }
-
-  return (
-    <div style={{ textAlign: "center", padding: "48px 28px", animation: "fadeSlideIn 0.5s ease" }}>
-      <div style={{ fontSize: "48px", marginBottom: "18px" }}>🔑</div>
-      <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "21px", margin: "0 0 10px" }}>
-        One-time setup
-      </h2>
-      <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "13.5px", lineHeight: "1.7", marginBottom: "28px" }}>
-        This app uses the Anthropic API to generate your briefing. Add your API key once — it stays on your device only.
-      </p>
-      <div style={{ background: "rgba(255,255,255,0.05)", borderRadius: "12px", padding: "20px", marginBottom: "16px", textAlign: "left" }}>
-        <p style={{ margin: "0 0 12px", fontSize: "12px", color: "rgba(255,255,255,0.4)", fontWeight: "600", textTransform: "uppercase", letterSpacing: "1px" }}>
-          How to get your key
-        </p>
-        <ol style={{ margin: 0, paddingLeft: "18px", color: "rgba(255,255,255,0.7)", fontSize: "13px", lineHeight: "2" }}>
-          <li>Go to <strong>console.anthropic.com</strong></li>
-          <li>Sign in → <strong>API Keys</strong></li>
-          <li>Click <strong>Create Key</strong></li>
-          <li>Copy and paste below</li>
-        </ol>
-      </div>
-      <div style={{ position: "relative", marginBottom: "10px" }}>
-        <input
-          type={showKey ? "text" : "password"}
-          value={key}
-          onChange={e => { setKey(e.target.value); setErr(""); }}
-          placeholder="sk-ant-api03-..."
-          style={{
-            width: "100%", background: "rgba(255,255,255,0.07)",
-            border: "1px solid rgba(255,255,255,0.2)", borderRadius: "10px",
-            padding: "13px 44px 13px 14px", color: "#fff", fontSize: "13px",
-            fontFamily: "monospace", outline: "none", boxSizing: "border-box",
-          }}
-        />
-        <button onClick={() => setShowKey(s => !s)} style={{
-          position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)",
-          background: "transparent", border: "none", color: "rgba(255,255,255,0.4)",
-          cursor: "pointer", fontSize: "16px", padding: 0,
-        }}>{showKey ? "🙈" : "👁️"}</button>
-      </div>
-      {err && <p style={{ color: "#ff6b6b", fontSize: "12px", margin: "0 0 12px", textAlign: "left" }}>{err}</p>}
-      <button onClick={handleSave} disabled={!key.trim()} style={{
-        width: "100%",
-        background: key.trim() ? "linear-gradient(135deg, #0096D6, #0050A0)" : "rgba(255,255,255,0.1)",
-        color: key.trim() ? "#fff" : "rgba(255,255,255,0.3)",
-        border: "none", borderRadius: "50px", padding: "14px", fontSize: "15px",
-        fontWeight: "700", cursor: key.trim() ? "pointer" : "default",
-        fontFamily: "'DM Sans', sans-serif", transition: "background 0.2s",
-      }}>Save & Continue</button>
-      <p style={{ marginTop: "20px", fontSize: "11px", color: "rgba(255,255,255,0.25)", lineHeight: "1.6" }}>
-        Stored only on this device. Sent only to Anthropic's servers.
-      </p>
-    </div>
-  );
-}
-
-// ── Topic Card ──────────────────────────────────────────────────────────────
 function TopicCard({ topic, index }) {
   const [expanded, setExpanded] = useState(false);
   const sdgNum = topic.sdg ? parseInt(topic.sdg.replace(/\D/g, "")) : null;
@@ -161,15 +90,13 @@ function TopicCard({ topic, index }) {
   );
 }
 
-// ── Main App ────────────────────────────────────────────────────────────────
 export default function App() {
-  const [apiKey, setApiKey] = useState(null);
   const [topics, setTopics] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [dateLabel, setDateLabel] = useState("");
   const [dots, setDots] = useState(".");
-  const [loadingMsg, setLoadingMsg] = useState("Consulting the UN Journal");
+  const [loadingMsg, setLoadingMsg] = useState("Consulting the UN agenda");
   const fetchedRef = useRef(false);
 
   const loadingMessages = [
@@ -181,8 +108,6 @@ export default function App() {
 
   useEffect(() => {
     setDateLabel(formatDate(new Date()));
-    const savedKey = localStorage.getItem("un-anthropic-key");
-    if (savedKey) setApiKey(savedKey);
     try {
       const cached = sessionStorage.getItem(todayKey());
       if (cached) setTopics(JSON.parse(cached));
@@ -204,46 +129,37 @@ export default function App() {
     setError(null);
 
     const today = new Date();
-    const month = MONTHS[today.getMonth()];
-    const day = today.getDate();
-    const year = today.getFullYear();
+    const dateStr = `${MONTHS[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`;
 
-    const prompt = `Today is ${month} ${day}, ${year}.
+    const prompt = `Today is ${dateStr}.
 
 You are a UN expert briefing a UN tour guide at the start of their day.
 
 Generate 5 world topics relevant to the United Nations for today. Consider:
 - What sessions or committees typically meet at this time of year at the UN
-- Any UN-designated international observance days for ${month} ${day}
+- Any UN-designated international observance days for ${MONTHS[today.getMonth()]} ${today.getDate()}
 - Major ongoing UN/SDG topics always relevant to tour guides (climate, peace, humanitarian, development)
 - Topics that connect what visitors see at the UN to real world issues
 
-For each topic return exactly this JSON structure (no other text, no markdown):
+Return ONLY this raw JSON — no markdown, no explanation:
 {
   "topics": [
     {
       "title": "Concise compelling title (max 8 words)",
       "sdg": "SDG X: Short Name",
       "tag": "one of: UN Meeting | International Day | Global Crisis | Diplomacy | Humanitarian",
-      "bullets": [
-        "Key fact or talking point",
-        "Key fact or talking point",
-        "Key fact or talking point",
-        "Key fact or talking point"
-      ],
-      "detail": "Two paragraphs of 80-120 words total giving richer context, historical background, and why this matters at the UN today. Written for a tour guide to read and internalize."
+      "bullets": ["Key fact", "Key fact", "Key fact", "Key fact"],
+      "detail": "80-120 words of richer context, history, and why this matters at the UN today."
     }
   ]
-}
-
-Return ONLY the raw JSON object. No preamble, no explanation, no markdown fences.`;
+}`;
 
     try {
       const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": apiKey,
+          "x-api-key": API_KEY,
           "anthropic-version": "2023-06-01",
           "anthropic-dangerous-direct-browser-access": "true",
         },
@@ -255,43 +171,21 @@ Return ONLY the raw JSON object. No preamble, no explanation, no markdown fences
       });
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data?.error?.message || `API error ${res.status}`);
 
-      if (res.status === 401 || data?.error?.type === "authentication_error") {
-        localStorage.removeItem("un-anthropic-key");
-        setApiKey(null);
-        fetchedRef.current = false;
-        setLoading(false);
-        return;
-      }
-
-      if (!res.ok) {
-        throw new Error(data?.error?.message || `API error ${res.status}`);
-      }
-
-      // Extract text blocks
-      let raw = (data.content || [])
-        .filter(b => b.type === "text")
-        .map(b => b.text)
-        .join("");
-
-      // Strip any accidental markdown fences
+      let raw = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("");
       raw = raw.replace(/```json|```/g, "").trim();
-
-      // Find the JSON object
       const start = raw.indexOf("{");
       const end = raw.lastIndexOf("}");
-      if (start === -1 || end === -1) throw new Error("Response was not valid JSON");
-      raw = raw.slice(start, end + 1);
-
-      const parsed = JSON.parse(raw);
+      if (start === -1 || end === -1) throw new Error("Invalid response format");
+      const parsed = JSON.parse(raw.slice(start, end + 1));
       const result = parsed.topics || [];
-      if (result.length === 0) throw new Error("No topics returned");
+      if (!result.length) throw new Error("No topics returned");
 
       setTopics(result);
       try { sessionStorage.setItem(todayKey(), JSON.stringify(result)); } catch (_) {}
 
     } catch (err) {
-      console.error("Fetch error:", err);
       setError(`Error: ${err.message}`);
       fetchedRef.current = false;
     } finally {
@@ -309,21 +203,19 @@ Return ONLY the raw JSON object. No preamble, no explanation, no markdown fences
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
-        @keyframes fadeSlideIn { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+        @keyframes fadeSlideIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
         @keyframes pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
         * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body { margin:0; overscroll-behavior-y:none; }
-        input::placeholder { color:rgba(255,255,255,0.25); }
       `}</style>
 
-      {/* Header */}
       <div style={{
         background: "linear-gradient(180deg, rgba(0,80,160,0.4) 0%, transparent 100%)",
         padding: "calc(env(safe-area-inset-top, 0px) + 28px) 24px 24px",
         borderBottom: "1px solid rgba(255,255,255,0.08)",
       }}>
-        <div style={{ maxWidth: "520px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ maxWidth: "520px", margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div style={{
               width: "38px", height: "38px", borderRadius: "50%",
@@ -335,27 +227,23 @@ Return ONLY the raw JSON object. No preamble, no explanation, no markdown fences
               <div style={{ fontSize: "20px", fontWeight: "800", fontFamily: "'Playfair Display', serif", lineHeight: 1 }}>Daily Briefing</div>
             </div>
           </div>
-          {apiKey && (
-            <button onClick={() => { localStorage.removeItem("un-anthropic-key"); setApiKey(null); setTopics(null); fetchedRef.current = false; }} style={{
-              background: "transparent", border: "1px solid rgba(255,255,255,0.15)",
-              color: "rgba(255,255,255,0.4)", borderRadius: "20px", padding: "4px 10px",
-              fontSize: "11px", cursor: "pointer",
-            }}>⚙️ Key</button>
+          {dateLabel && (
+            <p style={{ margin: "10px 0 0", fontSize: "12px", color: "rgba(255,255,255,0.4)", fontWeight: "500" }}>📅 {dateLabel}</p>
           )}
         </div>
-        {dateLabel && apiKey && (
-          <div style={{ maxWidth: "520px", margin: "10px auto 0" }}>
-            <p style={{ margin: 0, fontSize: "12px", color: "rgba(255,255,255,0.4)", fontWeight: "500" }}>📅 {dateLabel}</p>
-          </div>
-        )}
       </div>
 
-      {/* Content */}
       <div style={{ maxWidth: "520px", margin: "0 auto", padding: "24px 18px 0" }}>
 
-        {!apiKey && <ApiKeyScreen onSave={setApiKey} />}
+        {!API_KEY && (
+          <div style={{ background: "rgba(255,180,0,0.1)", border: "1px solid rgba(255,180,0,0.3)", borderRadius: "12px", padding: "20px", textAlign: "center" }}>
+            <p style={{ color: "#ffcc44", margin: 0, fontSize: "14px" }}>
+              ⚠️ No API key configured. Add VITE_ANTHROPIC_KEY as a GitHub Secret and redeploy.
+            </p>
+          </div>
+        )}
 
-        {apiKey && !topics && !loading && !error && (
+        {API_KEY && !topics && !loading && !error && (
           <div style={{ textAlign: "center", padding: "48px 24px", animation: "fadeSlideIn 0.5s ease" }}>
             <div style={{ fontSize: "52px", marginBottom: "20px" }}>🇺🇳</div>
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "22px", fontWeight: "700", margin: "0 0 10px" }}>
@@ -389,18 +277,11 @@ Return ONLY the raw JSON object. No preamble, no explanation, no markdown fences
         {error && !loading && (
           <div style={{ background: "rgba(220,50,50,0.1)", border: "1px solid rgba(220,50,50,0.3)", borderRadius: "12px", padding: "20px", textAlign: "center" }}>
             <p style={{ color: "#ff6b6b", margin: "0 0 16px", fontSize: "13px", fontFamily: "monospace", wordBreak: "break-all" }}>{error}</p>
-            <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
-              <button onClick={() => { fetchedRef.current = false; fetchBriefing(); }} style={{
-                background: "rgba(255,107,107,0.2)", color: "#ff6b6b",
-                border: "1px solid rgba(255,107,107,0.4)", borderRadius: "8px",
-                padding: "8px 20px", cursor: "pointer", fontSize: "13px", fontWeight: "600",
-              }}>Try Again</button>
-              <button onClick={() => { localStorage.removeItem("un-anthropic-key"); setApiKey(null); setError(null); fetchedRef.current = false; }} style={{
-                background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.5)",
-                border: "1px solid rgba(255,255,255,0.15)", borderRadius: "8px",
-                padding: "8px 20px", cursor: "pointer", fontSize: "13px", fontWeight: "600",
-              }}>Reset Key</button>
-            </div>
+            <button onClick={() => { fetchedRef.current = false; fetchBriefing(); }} style={{
+              background: "rgba(255,107,107,0.2)", color: "#ff6b6b",
+              border: "1px solid rgba(255,107,107,0.4)", borderRadius: "8px",
+              padding: "8px 20px", cursor: "pointer", fontSize: "13px", fontWeight: "600",
+            }}>Try Again</button>
           </div>
         )}
 
