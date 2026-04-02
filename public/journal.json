@@ -1,9 +1,9 @@
 {
   "date": "2026-04-02",
-  "fetched_at": "2026-04-02T12:58:56.715Z",
+  "fetched_at": "2026-04-02T13:23:26.363Z",
   "ny_date": "2026-04-02",
   "source": "journal-api.un.org",
-  "note": "Error: No allnew data captured via Puppeteer",
+  "note": "Error: raw.toLowerCase is not a function",
   "chambers": [
     {
       "room": "General Assembly Hall",
