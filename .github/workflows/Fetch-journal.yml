@@ -8,6 +8,9 @@ on:
 permissions:
   contents: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   fetch:
     runs-on: ubuntu-latest
@@ -18,14 +21,10 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
-      - name: Install dependencies
-        run: |
-          mkdir -p scripts
-          cd scripts
-          npm init -y
-          npm install jsdom node-fetch
+      - name: Install jsdom
+        run: npm install jsdom --no-save
 
       - name: Fetch UN Journal
         run: node scripts/fetch-journal.js
@@ -35,4 +34,4 @@ jobs:
           git config user.name "UN Journal Bot"
           git config user.email "bot@un-briefing"
           git add public/journal.json
-          git diff --staged --quiet && echo "No changes" || git commit -m "📋 Update UN Journal: $(date +'%Y-%m-%d')" && git push
+          git diff --staged --quiet && echo "No changes to commit" || (git commit -m "📋 Update UN Journal: $(date +'%Y-%m-%d')" && git push)
