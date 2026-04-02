@@ -23,8 +23,10 @@ jobs:
         with:
           node-version: 24
 
-      - name: Fetch UN Journal
+      - name: Fetch UN Journal via Claude
         run: node scripts/fetch-journal.cjs
+        env:
+          VITE_ANTHROPIC_KEY: ${{ secrets.VITE_ANTHROPIC_KEY }}
 
       - name: Show result
         run: cat public/journal.json
