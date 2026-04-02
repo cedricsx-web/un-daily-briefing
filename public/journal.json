@@ -1,27 +1,17 @@
 {
-  "date": "2026-04-01",
-  "fetched_at": "2026-04-02T03:50:37.029Z",
-  "ny_date": "2026-04-01",
-  "source": "Claude AI",
-  "note": "AI-generated — 12 meetings for April 1, 2026",
+  "date": "2026-04-02",
+  "fetched_at": "2026-04-02T04:02:55.842Z",
+  "ny_date": "2026-04-02",
+  "source": "journal.un.org",
+  "note": "Live — 5 meetings from journal.un.org",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "General Assembly Plenary - Agenda Item 72: Report of the International Court of Justice"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Security Council",
-      "meetings": [
-        {
-          "time": "3:00 PM",
-          "title": "Security Council Formal Meeting - Situation in the Middle East"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Trusteeship Council",
@@ -29,26 +19,14 @@
     },
     {
       "room": "Economic and Social Council",
-      "meetings": [
-        {
-          "time": "9:00 AM",
-          "title": "ECOSOC Substantive Session 2026 - Opening Session"
-        }
-      ]
+      "meetings": []
     }
   ],
   "meetings": [
-    "General Assembly Plenary - Agenda Item 72: Report of the International Court of Justice",
-    "ECOSOC Substantive Session 2026 - Opening Session",
-    "Second Committee (Economic and Financial) - Session Continuation",
-    "Security Council Formal Meeting - Situation in the Middle East",
-    "Security Council Consultations - Peacekeeping Operations Update",
-    "Special Committee on the Charter of the United Nations and on the Strengthening of the Role of the Organization - Regular Meeting",
-    "Ad Hoc Committee on the Indian Ocean - Closed Meeting",
-    "UN Women - Gender Equality Commission Preparatory Meeting",
-    "Department of Global Communications - World Autism Awareness Day Observance Event",
-    "Committee on the Peaceful Uses of Outer Space - Subcommittee Meeting",
-    "UNHCR Coordination Meeting - Regional Refugee Situations",
-    "UN Environment Programme - Governing Council Task Force Session"
+    "Security Council",
+    "General Assembly",
+    "Preparatory Commission for the Entry into Force of the Agreement under the United Nations Convention on the Law of the Sea on the Conservation and Sustainable Use of Marine Biological Diversity of Areas beyond National Jurisdiction and the Convening of the First Meeting of the Conference of the Parties to the Agreement",
+    "International Civil Service Commission",
+    "Advisory Committee on Administrative and Budgetary Questions"
   ]
 }
