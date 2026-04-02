@@ -27,7 +27,7 @@ jobs:
         run: npm install jsdom --no-save
 
       - name: Fetch UN Journal
-        run: node scripts/fetch-journal.js
+        run: node scripts/fetch-journal.cjs
 
       - name: Commit journal.json if changed
         run: |
