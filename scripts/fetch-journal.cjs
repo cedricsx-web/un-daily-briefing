@@ -21,7 +21,7 @@ function chamberForRoom(raw) {
 
 function stripHtml(str) {
   if (!str || typeof str !== "string") return "";
-  return str.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&nbsp;/g, " ").trim();
+  return str.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function getText(field) {
@@ -43,7 +43,7 @@ function normalizeTime(raw) {
   const p = h >= 12 ? "PM" : "AM";
   if (h > 12) h -= 12;
   if (h === 0) h = 12;
-  return `${h}:${min} ${p}`;
+  return h + ":" + min + " " + p;
 }
 
 function todayInNewYork() {
@@ -51,8 +51,8 @@ function todayInNewYork() {
     timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit",
   }).formatToParts(new Date());
   const p = {};
-  parts.forEach(({ type, value }) => { p[type] = value; });
-  return `${p.year}-${p.month}-${p.day}`;
+  parts.forEach(function(x) { p[x.type] = x.value; });
+  return p.year + "-" + p.month + "-" + p.day;
 }
 
 function emptyChambers() {
@@ -69,20 +69,48 @@ function saveResult(dateStr, chambers, meetings, note) {
   writeFileSync("public/journal.json", JSON.stringify({
     date: dateStr, fetched_at: new Date().toISOString(),
     ny_date: todayInNewYork(), source: "journal-api.un.org",
-    note: note || null, chambers, meetings,
+    note: note || null, chambers: chambers, meetings: meetings,
   }, null, 2));
   console.log("Saved " + meetings.length + " meetings | " + (note || "ok"));
+}
+
+function findTime(obj) {
+  if (!obj || typeof obj !== "object") return "";
+  const known = ["startTime", "scheduledStartTime", "meetingTime", "time", "Time",
+                 "hour", "Hour", "startHour", "StartTime", "scheduledTime",
+                 "timeStart", "start", "Start", "beginTime", "openTime"];
+  for (const k of known) {
+    if (obj[k]) {
+      const t = obj[k].toString();
+      if (/\d{1,2}:\d{2}/.test(t)) return t;
+    }
+  }
+  for (const k of Object.keys(obj)) {
+    if (typeof obj[k] === "string" && /^\d{1,2}:\d{2}/.test(obj[k].trim())) {
+      console.log("Found time in field [" + k + "]: " + obj[k]);
+      return obj[k];
+    }
+  }
+  return "";
 }
 
 function parseJournalData(data) {
   const allMeetings = [];
   const chamberMap  = {};
+  let loggedFirst   = false;
 
   console.log("Top-level keys: " + Object.keys(data).join(", "));
 
-  function processMeeting(item, organLabel) {
+  function processMeeting(item, organLabel, inheritedTime) {
     if (!item || typeof item !== "object") return;
     if (item.cancelled || item.isCancelled) return;
+
+    if (!loggedFirst) {
+      loggedFirst = true;
+      console.log("=== FULL FIRST MEETING OBJECT ===");
+      console.log(JSON.stringify(item, null, 2).slice(0, 2000));
+      console.log("=================================");
+    }
 
     const meetingNum = getText(item.meetingNumber);
     const titleText  = getText(item.title) || getText(item.name) || getText(item.subject);
@@ -90,15 +118,11 @@ function parseJournalData(data) {
     if (!rawTitle) return;
 
     const fullTitle = organLabel ? organLabel + " -- " + rawTitle : rawTitle;
-
-    const rawTime = item.startTime || item.scheduledStartTime || item.meetingTime
-                 || item.time || item.Time || item.hour || item.Hour
-                 || item.startHour || item.StartTime || "";
-    const normTime = normalizeTime(rawTime.toString());
-
-    const rawRoom = getText(item.room) || getText(item.location) || getText(item.venue)
-                  || (typeof item.roomName === "string" ? item.roomName : "");
-
+    const itemTime  = findTime(item);
+    const rawTime   = itemTime || inheritedTime || "";
+    const normTime  = normalizeTime(rawTime);
+    const rawRoom   = getText(item.room) || getText(item.location) || getText(item.venue)
+                    || (typeof item.roomName === "string" ? item.roomName : "");
     const normChamber = chamberForRoom(rawRoom);
 
     allMeetings.push({ title: fullTitle, time: normTime, room: rawRoom || null });
@@ -114,29 +138,23 @@ function parseJournalData(data) {
     const groups = Array.isArray(section) ? section : (section.groups || []);
 
     groups.forEach(function(group) {
-      const organName = group.groupNameTitle || getText(group.name) || "";
-      const sessions  = group.sessions || group.items || [];
+      const organName  = stripHtml(group.groupNameTitle || getText(group.name) || "");
+      const groupTime  = findTime(group);
+      const sessions   = group.sessions || group.items || [];
 
       sessions.forEach(function(session) {
-        const sessionName = session.name || getText(session.title) || organName;
+        const sessionName = stripHtml(session.name || getText(session.title) || organName);
         const sessionNum  = stripHtml(session.session || session.sessionNumber || "");
         const bodyLabel   = sessionNum ? sessionName + ", " + sessionNum : sessionName;
-        const sessionTime = session.startTime || session.time || session.hour || "";
-        const meetings = session.meetings || session.items || session.events || [];
+        const sessionTime = findTime(session) || groupTime;
+        const meetings    = session.meetings || session.items || session.events || [];
 
         if (Array.isArray(meetings) && meetings.length > 0) {
-          if (allMeetings.length === 0) {
-            console.log("First meeting: " + JSON.stringify(meetings[0]).slice(0, 300));
-          }
           meetings.forEach(function(m) {
-            if (sessionTime && !m.startTime && !m.time && !m.hour) {
-              m = Object.assign({}, m, { startTime: sessionTime });
-            }
-            processMeeting(m, bodyLabel);
+            processMeeting(m, bodyLabel, sessionTime);
           });
         } else {
-          var sw = sessionTime ? Object.assign({}, session, { startTime: sessionTime }) : session;
-          processMeeting(sw, organName);
+          processMeeting(session, organName, groupTime);
         }
       });
     });
@@ -207,7 +225,11 @@ async function main() {
     console.log("Chambers:");
     ["General Assembly Hall", "Security Council", "Trusteeship Council", "Economic and Social Council"].forEach(function(c) {
       const ms = chamberMap[c] || [];
-      console.log("  " + c + ": " + (ms.length > 0 ? ms.map(function(m) { return m.time + " -- " + m.title; }).join(" | ") : "none"));
+      if (ms.length > 0) {
+        ms.forEach(function(m) { console.log("  " + c + ": " + m.time + " -- " + m.title); });
+      } else {
+        console.log("  " + c + ": none");
+      }
     });
 
     const seen = {};
@@ -219,19 +241,20 @@ async function main() {
       }
     });
     const finalTitles = titles.slice(0, 30);
-
     console.log("Total meetings: " + finalTitles.length);
-    finalTitles.forEach(function(t) { console.log("  - " + t); });
 
     const chambers = ["General Assembly Hall", "Security Council", "Trusteeship Council", "Economic and Social Council"]
       .map(function(name) {
-        return { room: name, meetings: (chamberMap[name] || []).map(function(m) { return { time: m.time, title: m.title }; }) };
+        return {
+          room: name,
+          meetings: (chamberMap[name] || []).map(function(m) { return { time: m.time, title: m.title }; })
+        };
       });
 
     saveResult(dateStr, chambers, finalTitles,
       finalTitles.length > 0
         ? "Live from journal-api.un.org -- " + finalTitles.length + " meetings"
-        : "Data received but 0 meetings parsed"
+        : "Data received but 0 meetings parsed -- check log"
     );
 
   } catch (err) {
