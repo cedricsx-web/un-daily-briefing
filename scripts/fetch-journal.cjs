@@ -1,6 +1,4 @@
-// fetch-journal.cjs — Puppeteer captures journal-api.un.org/api/allnew/ response
-// Parser updated based on actual API structure observed in logs.
-
+// fetch-journal.cjs
 const { writeFileSync, mkdirSync } = require(“fs”);
 const puppeteer = require(“puppeteer”);
 
@@ -21,13 +19,11 @@ if (lower.includes(key)) return val;
 return null;
 }
 
-// Strip HTML tags: “<p><span>10128th meeting</span></p>” → “10128th meeting”
 function stripHtml(str) {
 if (!str || typeof str !== “string”) return “”;
 return str.replace(/<[^>]+>/g, “”).replace(/&/g, “&”).replace(/ /g, “ “).trim();
 }
 
-// Get English text from multilingual field: { en: “…”, fr: “…” } or just a string
 function getText(field) {
 if (!field) return “”;
 if (typeof field === “string”) return stripHtml(field);
@@ -75,38 +71,32 @@ date: dateStr, fetched_at: new Date().toISOString(),
 ny_date: todayInNewYork(), source: “journal-api.un.org”,
 note: note || null, chambers, meetings,
 }, null, 2));
-console.log(`✅ Saved — ${meetings.length} meetings | ${note || "ok"}`);
+console.log(“Saved “ + meetings.length + “ meetings | “ + (note || “ok”));
 }
 
 function parseJournalData(data) {
 const allMeetings = [];
 const chamberMap  = {};
 
-console.log(”\n📊 Top-level keys:”, Object.keys(data).join(”, “));
+console.log(“Top-level keys: “ + Object.keys(data).join(”, “));
 
 function processMeeting(item, organLabel) {
 if (!item || typeof item !== “object”) return;
 if (item.cancelled || item.isCancelled) return;
 
 ```
-// --- TITLE ---
-// API uses: meetingNumber.en (HTML), title.en (HTML), name.en, subject.en
 const meetingNum = getText(item.meetingNumber);
 const titleText  = getText(item.title) || getText(item.name) || getText(item.subject);
 const rawTitle   = meetingNum || titleText || "";
 if (!rawTitle) return;
 
-const fullTitle = organLabel ? `${organLabel} — ${rawTitle}` : rawTitle;
+const fullTitle = organLabel ? organLabel + " -- " + rawTitle : rawTitle;
 
-// --- TIME ---
-// API uses: startTime, time, hour, startHour, meetingTime, scheduledStartTime
 const rawTime = item.startTime || item.scheduledStartTime || item.meetingTime
              || item.time || item.Time || item.hour || item.Hour
              || item.startHour || item.StartTime || "";
 const normTime = normalizeTime(rawTime.toString());
 
-// --- ROOM ---
-// API uses: room.en (HTML), location.en, venue.en, roomName
 const rawRoom = getText(item.room) || getText(item.location) || getText(item.venue)
               || (typeof item.roomName === "string" ? item.roomName : "");
 
@@ -127,38 +117,30 @@ if (!section) return;
 const groups = Array.isArray(section) ? section : (section.groups || []);
 
 ```
-groups.forEach(group => {
+groups.forEach(function(group) {
   const organName = group.groupNameTitle || getText(group.name) || "";
   const sessions  = group.sessions || group.items || [];
 
-  sessions.forEach(session => {
+  sessions.forEach(function(session) {
     const sessionName = session.name || getText(session.title) || organName;
-    // Strip HTML from session number: "<p>Eightieth session</p>" → "Eightieth session"
     const sessionNum  = stripHtml(session.session || session.sessionNumber || "");
-    const bodyLabel   = sessionNum ? `${sessionName}, ${sessionNum}` : sessionName;
-
-    // Time may be at session level
+    const bodyLabel   = sessionNum ? sessionName + ", " + sessionNum : sessionName;
     const sessionTime = session.startTime || session.time || session.hour || "";
-
     const meetings = session.meetings || session.items || session.events || [];
 
     if (Array.isArray(meetings) && meetings.length > 0) {
-      // Log first meeting structure once
       if (allMeetings.length === 0) {
-        console.log(`\nFirst meeting object (${bodyLabel}):`);
-        console.log(JSON.stringify(meetings[0]).slice(0, 500));
+        console.log("First meeting: " + JSON.stringify(meetings[0]).slice(0, 300));
       }
-      meetings.forEach(m => {
-        // Inject session-level time if meeting has none
+      meetings.forEach(function(m) {
         if (sessionTime && !m.startTime && !m.time && !m.hour) {
-          m = { ...m, startTime: sessionTime };
+          m = Object.assign({}, m, { startTime: sessionTime });
         }
         processMeeting(m, bodyLabel);
       });
     } else {
-      // Session itself is the meeting — use session time
-      const sessionWithTime = sessionTime ? { ...session, startTime: sessionTime } : session;
-      processMeeting(sessionWithTime, organName);
+      var sw = sessionTime ? Object.assign({}, session, { startTime: sessionTime }) : session;
+      processMeeting(sw, organName);
     }
   });
 });
@@ -167,11 +149,10 @@ groups.forEach(group => {
 }
 
 processSection(data.officialMeetings);
-// Note: key is “informalMeetings” not “informalConsultations” per the log
 processSection(data.informalMeetings || data.informalConsultations);
 processSection(data.otherMeetings);
 
-return { allMeetings, chamberMap };
+return { allMeetings: allMeetings, chamberMap: chamberMap };
 }
 
 async function main() {
@@ -179,22 +160,22 @@ const dateStr = todayInNewYork();
 const dow = new Date(dateStr + “T12:00:00”).toLocaleDateString(“en-US”,
 { timeZone: “America/New_York”, weekday: “long” });
 
-console.log(`\n📅 NY date: ${dateStr} (${dow}) | UTC: ${new Date().toISOString()}`);
+console.log(“NY date: “ + dateStr + “ (” + dow + “)”);
 
 if (dow === “Saturday” || dow === “Sunday”) {
-saveResult(dateStr, emptyChambers(), [], “Weekend — no meetings”);
+saveResult(dateStr, emptyChambers(), [], “Weekend – no meetings”);
 return;
 }
 
-const url = `https://journal.un.org/en/new-york/all/${dateStr}`;
-console.log(`\nOpening: ${url}`);
+const url = “https://journal.un.org/en/new-york/all/” + dateStr;
+console.log(“Opening: “ + url);
 
 let browser;
 try {
 browser = await puppeteer.launch({
 headless: “new”,
 executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-args: [”–no-sandbox”,”–disable-setuid-sandbox”,”–disable-dev-shm-usage”,”–disable-gpu”],
+args: [”–no-sandbox”, “–disable-setuid-sandbox”, “–disable-dev-shm-usage”, “–disable-gpu”],
 });
 
 ```
@@ -204,21 +185,21 @@ await page.setExtraHTTPHeaders({ "Accept-Language": "en-US,en;q=0.9" });
 
 let journalData = null;
 
-page.on("response", async response => {
+page.on("response", async function(response) {
   if (!response.url().includes("allnew")) return;
   try {
     const buf  = await response.buffer();
     const text = buf.toString("utf8");
-    console.log(`\n📡 Captured: ${response.url()} | ${buf.length}b`);
+    console.log("Captured: " + response.url() + " | " + buf.length + "b");
     journalData = JSON.parse(text);
-    console.log(`   ✅ JSON parsed OK`);
+    console.log("JSON parsed OK");
   } catch (e) {
-    console.log(`   ⚠️ ${e.message}`);
+    console.log("Parse error: " + e.message);
   }
 });
 
 await page.goto(url, { waitUntil: "networkidle2", timeout: 45000 });
-await new Promise(r => setTimeout(r, 5000));
+await new Promise(function(r) { setTimeout(r, 5000); });
 await browser.close();
 
 if (!journalData) {
@@ -226,32 +207,45 @@ if (!journalData) {
   return;
 }
 
-const { allMeetings, chamberMap } = parseJournalData(journalData);
+const result = parseJournalData(journalData);
+const allMeetings = result.allMeetings;
+const chamberMap  = result.chamberMap;
 
-console.log(`\n🏛️  Chambers:`);
-["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"].forEach(c => {
+console.log("Chambers:");
+["General Assembly Hall", "Security Council", "Trusteeship Council", "Economic and Social Council"].forEach(function(c) {
   const ms = chamberMap[c] || [];
-  console.log(`  ${c}: ${ms.length > 0 ? ms.map(m=>`${m.time} — ${m.title}`).join(" | ") : "none"}`);
+  console.log("  " + c + ": " + (ms.length > 0 ? ms.map(function(m) { return m.time + " -- " + m.title; }).join(" | ") : "none"));
 });
 
-const titles = [...new Set(allMeetings.map(m=>m.title).filter(t=>t&&t.length>3))].slice(0,30);
-console.log(`\n📋 ${titles.length} meetings:`);
-titles.forEach(t => console.log(`  - ${t}`));
+const seen = {};
+const titles = [];
+allMeetings.forEach(function(m) {
+  if (m.title && m.title.length > 3 && !seen[m.title]) {
+    seen[m.title] = true;
+    titles.push(m.title);
+  }
+});
+const finalTitles = titles.slice(0, 30);
 
-const chambers = ["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"]
-  .map(name => ({ room: name, meetings: (chamberMap[name]||[]).map(m=>({time:m.time,title:m.title})) }));
+console.log("Total meetings: " + finalTitles.length);
+finalTitles.forEach(function(t) { console.log("  - " + t); });
 
-saveResult(dateStr, chambers, titles,
-  titles.length > 0
-    ? `Live from journal-api.un.org — ${titles.length} meetings`
-    : `Data received but 0 meetings parsed — check structure log`
+const chambers = ["General Assembly Hall", "Security Council", "Trusteeship Council", "Economic and Social Council"]
+  .map(function(name) {
+    return { room: name, meetings: (chamberMap[name] || []).map(function(m) { return { time: m.time, title: m.title }; }) };
+  });
+
+saveResult(dateStr, chambers, finalTitles,
+  finalTitles.length > 0
+    ? "Live from journal-api.un.org -- " + finalTitles.length + " meetings"
+    : "Data received but 0 meetings parsed"
 );
 ```
 
 } catch (err) {
-if (browser) await browser.close().catch(()=>{});
-console.error(“Error:”, err.message);
-saveResult(todayInNewYork(), emptyChambers(), [], `Error: ${err.message}`);
+if (browser) { try { await browser.close(); } catch(e) {} }
+console.error(“Error: “ + err.message);
+saveResult(todayInNewYork(), emptyChambers(), [], “Error: “ + err.message);
 }
 }
 
