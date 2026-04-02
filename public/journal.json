@@ -1,6 +1,6 @@
 {
   "date": "2026-04-02",
-  "fetched_at": "2026-04-02T14:54:04.656Z",
+  "fetched_at": "2026-04-02T15:15:48.617Z",
   "ny_date": "2026-04-02",
   "source": "journal-api.un.org",
   "note": "Live from journal-api.un.org -- 8 meetings",
@@ -13,11 +13,11 @@
       "room": "Security Council",
       "meetings": [
         {
-          "time": "TBD",
+          "time": "10:00 AM",
           "title": "Security Council -- 10128th meeting"
         },
         {
-          "time": "TBD",
+          "time": "3:00 PM",
           "title": "Security Council -- 10129th meeting"
         }
       ]
@@ -30,7 +30,7 @@
       "room": "Economic and Social Council",
       "meetings": [
         {
-          "time": "TBD",
+          "time": "10:00 AM",
           "title": "General Assembly, Eightieth session -- Informal consultations on the modalities of the High-level meeting on HIV and AIDS"
         }
       ]
