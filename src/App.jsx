@@ -22,6 +22,124 @@ const MONTHS = ["January","February","March","April","May","June","July",
   "August","September","October","November","December"];
 const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
+
+// UN International Days & Weeks -- keyed as "MM-DD"
+const UN_OBSERVANCES = {
+  "01-04": "World Braille Day",
+  "01-24": "International Day of Education",
+  "01-26": "International Day of Clean Energy",
+  "01-27": "International Day of Commemoration in Memory of the Victims of the Holocaust",
+  "01-28": "International Day of Peaceful Coexistence",
+  "02-02": "World Wetlands Day",
+  "02-04": "International Day of Human Fraternity",
+  "02-06": "International Day of Zero Tolerance to Female Genital Mutilation",
+  "02-11": "International Day of Women and Girls in Science",
+  "02-13": "World Radio Day",
+  "02-20": "World Day of Social Justice",
+  "02-21": "International Mother Language Day",
+  "03-03": "World Wildlife Day",
+  "03-05": "International Day for Disarmament and Non-Proliferation Awareness",
+  "03-08": "International Women's Day",
+  "03-10": "International Day of Women Judges",
+  "03-15": "International Day to Combat Islamophobia",
+  "03-20": "International Day of Happiness",
+  "03-21": "International Day for the Elimination of Racial Discrimination",
+  "03-22": "World Water Day",
+  "03-23": "World Meteorological Day",
+  "03-24": "World Tuberculosis Day",
+  "03-25": "International Day of Remembrance of the Victims of Slavery",
+  "03-30": "International Day of Zero Waste",
+  "04-02": "World Autism Awareness Day",
+  "04-04": "International Day for Mine Awareness",
+  "04-05": "International Day of Conscience",
+  "04-06": "International Day of Sport for Development and Peace",
+  "04-07": "World Health Day",
+  "04-12": "International Day of Human Space Flight",
+  "04-21": "World Creativity and Innovation Day",
+  "04-22": "International Mother Earth Day",
+  "04-23": "World Book and Copyright Day",
+  "04-24": "International Day of Multilateralism and Diplomacy for Peace",
+  "04-25": "World Malaria Day",
+  "04-26": "International Chernobyl Disaster Remembrance Day",
+  "04-28": "World Day for Safety and Health at Work",
+  "04-29": "International Day in Memory of the Victims of Earthquakes",
+  "04-30": "International Jazz Day",
+  "05-03": "World Press Freedom Day",
+  "05-15": "International Day of Families",
+  "05-16": "International Day of Living Together in Peace",
+  "05-17": "World Telecommunication and Information Society Day",
+  "05-20": "World Bee Day",
+  "05-21": "World Day for Cultural Diversity for Dialogue and Development",
+  "05-22": "International Day for Biological Diversity",
+  "05-29": "International Day of UN Peacekeepers",
+  "05-31": "World No-Tobacco Day",
+  "06-01": "Global Day of Parents",
+  "06-03": "World Bicycle Day",
+  "06-04": "International Day of Innocent Children Victims of Aggression",
+  "06-05": "World Environment Day",
+  "06-08": "World Oceans Day",
+  "06-12": "World Day Against Child Labour",
+  "06-17": "World Day to Combat Desertification and Drought",
+  "06-18": "International Day for Countering Hate Speech",
+  "06-19": "International Day for the Elimination of Sexual Violence in Conflict",
+  "06-20": "World Refugee Day",
+  "06-21": "International Day of Yoga",
+  "06-23": "United Nations Public Service Day",
+  "06-26": "United Nations International Day in Support of Victims of Torture",
+  "07-11": "World Population Day",
+  "07-15": "World Youth Skills Day",
+  "07-18": "Nelson Mandela International Day",
+  "07-28": "World Hepatitis Day",
+  "07-30": "International Day of Friendship",
+  "08-09": "International Day of the World's Indigenous Peoples",
+  "08-12": "International Youth Day",
+  "08-19": "World Humanitarian Day",
+  "08-23": "International Day for the Remembrance of the Slave Trade and its Abolition",
+  "09-05": "International Day of Charity",
+  "09-08": "International Literacy Day",
+  "09-15": "International Day of Democracy",
+  "09-16": "International Day for the Preservation of the Ozone Layer",
+  "09-21": "International Day of Peace",
+  "09-26": "International Day for the Total Elimination of Nuclear Weapons",
+  "09-27": "World Tourism Day",
+  "10-01": "International Day of Older Persons",
+  "10-02": "International Day of Non-Violence",
+  "10-05": "World Teachers' Day",
+  "10-10": "World Mental Health Day",
+  "10-11": "International Day of the Girl Child",
+  "10-13": "International Day for Disaster Risk Reduction",
+  "10-16": "World Food Day",
+  "10-17": "International Day for the Eradication of Poverty",
+  "10-24": "United Nations Day",
+  "11-05": "World Tsunami Awareness Day",
+  "11-10": "World Science Day for Peace and Development",
+  "11-16": "International Day for Tolerance",
+  "11-19": "World Toilet Day",
+  "11-20": "World Children's Day",
+  "11-25": "International Day for the Elimination of Violence against Women",
+  "11-29": "International Day of Solidarity with the Palestinian People",
+  "12-01": "World AIDS Day",
+  "12-02": "International Day for the Abolition of Slavery",
+  "12-03": "International Day of Persons with Disabilities",
+  "12-05": "International Volunteer Day",
+  "12-09": "International Anti-Corruption Day",
+  "12-10": "Human Rights Day",
+  "12-11": "International Mountain Day",
+  "12-18": "International Migrants Day",
+  "12-20": "International Human Solidarity Day",
+};
+
+function getTodayObservance() {
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York", month: "2-digit", day: "2-digit",
+  }).formatToParts(now);
+  const p = {};
+  parts.forEach(({ type, value }) => { p[type] = value; });
+  const key = p.month + "-" + p.day;
+  return UN_OBSERVANCES[key] || null;
+}
+
 function formatDate(d) {
   return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 }
@@ -199,7 +317,8 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [dateLabel, setDateLabel] = useState("");
-  const [journalSource, setJournalSource] = useState("live"); // "live" | "ai"
+  const [journalSource, setJournalSource] = useState("live");
+  const [todayObservance] = useState(() => getTodayObservance()); // "live" | "ai"
   const [dots, setDots] = useState(".");
   const [loadingMsg, setLoadingMsg] = useState("Fetching UN Journal");
   const fetchedRef = useRef(false);
@@ -441,6 +560,24 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
           )}
         </div>
       </div>
+
+      {/* International Day Banner */}
+      {todayObservance && (
+        <div style={{
+          background: "linear-gradient(90deg, rgba(0,96,214,0.3), rgba(0,150,220,0.15))",
+          borderBottom: "1px solid rgba(0,160,220,0.2)",
+          padding: "10px 24px",
+          animation: "fadeSlideIn 0.5s ease",
+        }}>
+          <div style={{ maxWidth: "520px", margin: "0 auto", display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontSize: "16px", flexShrink: 0 }}>&#127981;</span>
+            <div>
+              <div style={{ fontSize: "9px", letterSpacing: "1.5px", color: "rgba(255,255,255,0.45)", fontWeight: "700", textTransform: "uppercase" }}>International Day</div>
+              <div style={{ fontSize: "13px", fontWeight: "600", color: "#fff", lineHeight: "1.3" }}>{todayObservance}</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <div style={{ maxWidth: "520px", margin: "0 auto", padding: "24px 18px 0" }}>
