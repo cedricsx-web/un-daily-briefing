@@ -1,7 +1,9 @@
-// fetch-journal.cjs — Puppeteer, captures ALL network traffic to find meeting data
+// fetch-journal.cjs
+// Calls journal-api.un.org directly — no browser needed.
 
 const { writeFileSync, mkdirSync } = require("fs");
-const puppeteer = require("puppeteer");
+
+const API_BASE = "https://journal-api.un.org/api";
 
 const CHAMBER_ROOM_MAP = {
   "general assembly hall": "General Assembly Hall",
@@ -58,7 +60,7 @@ function saveResult(dateStr, chambers, meetings, note) {
     date: dateStr,
     fetched_at: new Date().toISOString(),
     ny_date: todayInNewYork(),
-    source: "journal.un.org",
+    source: "journal-api.un.org",
     note: note || null,
     chambers,
     meetings,
@@ -66,15 +68,24 @@ function saveResult(dateStr, chambers, meetings, note) {
   console.log(`✅ Saved — ${meetings.length} meetings | ${note || "ok"}`);
 }
 
+const HEADERS = {
+  "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
+  "Accept": "application/json, */*",
+  "Accept-Language": "en-US,en;q=0.9",
+  "Origin": "https://journal.un.org",
+  "Referer": "https://journal.un.org/",
+};
+
 function extractMeetings(obj, meetings, chamberMap) {
   if (!obj || typeof obj !== "object") return;
   if (Array.isArray(obj)) {
     obj.forEach(item => extractMeetings(item, meetings, chamberMap));
     return;
   }
-  const title = obj.title || obj.meeting_title || obj.name || obj.subject || obj.meetingTitle || obj.MeetingTitle;
-  const time  = obj.time  || obj.startTime   || obj.start_time || obj.hour || obj.startHour || obj.Time;
-  const room  = obj.room  || obj.location    || obj.venue || obj.chamber || obj.roomName || obj.Room || obj.Location;
+
+  const title = obj.title || obj.Title || obj.meeting_title || obj.MeetingTitle || obj.name || obj.subject;
+  const time  = obj.time  || obj.Time  || obj.startTime || obj.StartTime || obj.start_time || obj.hour || obj.Hour;
+  const room  = obj.room  || obj.Room  || obj.location  || obj.Location  || obj.venue || obj.Venue || obj.chamber || obj.Chamber;
 
   if (title && typeof title === "string" && title.length > 8) {
     const normTime    = normalizeTime(time);
@@ -84,163 +95,93 @@ function extractMeetings(obj, meetings, chamberMap) {
       if (!chamberMap[normChamber]) chamberMap[normChamber] = [];
       chamberMap[normChamber].push({ time: normTime, title: title.trim() });
     }
+    return; // don't recurse into meeting objects
   }
+
   Object.values(obj).forEach(v => {
     if (v && typeof v === "object") extractMeetings(v, meetings, chamberMap);
   });
+}
+
+async function tryEndpoint(url) {
+  try {
+    console.log(`Trying: ${url}`);
+    const res = await fetch(url, { headers: HEADERS });
+    const ct = res.headers.get("content-type") || "";
+    console.log(`  → ${res.status} | ${ct}`);
+    if (!res.ok) return null;
+    const text = await res.text();
+    console.log(`  → ${text.length} bytes | preview: ${text.slice(0, 150).replace(/\s+/g, " ")}`);
+    try {
+      return JSON.parse(text);
+    } catch (_) {
+      return null;
+    }
+  } catch (e) {
+    console.log(`  → Error: ${e.message}`);
+    return null;
+  }
 }
 
 async function main() {
   const dateStr = todayInNewYork();
   console.log(`\n📅 NY date: ${dateStr} | UTC: ${new Date().toISOString()}\n`);
 
-  const url = `https://journal.un.org/en/new-york/all/${dateStr}`;
-  console.log(`Navigating to: ${url}\n`);
+  // Try every plausible endpoint at journal-api.un.org
+  const endpoints = [
+    `${API_BASE}/new-york/all/${dateStr}`,
+    `${API_BASE}/en/new-york/all/${dateStr}`,
+    `${API_BASE}/meetings?date=${dateStr}&location=new-york&lang=en`,
+    `${API_BASE}/meetings?date=${dateStr}&location=new-york`,
+    `${API_BASE}/meeting?date=${dateStr}&lang=en`,
+    `${API_BASE}/meeting/${dateStr}?lang=en`,
+    `${API_BASE}/new-york/meetings/${dateStr}`,
+    `${API_BASE}/en/meetings/${dateStr}`,
+    `${API_BASE}/${dateStr}/new-york`,
+    `${API_BASE}/journal/new-york/${dateStr}`,
+    `${API_BASE}/journal/${dateStr}`,
+  ];
 
-  let browser;
-  try {
-    browser = await puppeteer.launch({
-      headless: "new",
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-      args: ["--no-sandbox","--disable-setuid-sandbox","--disable-dev-shm-usage","--disable-gpu"],
-    });
+  const meetings   = [];
+  const chamberMap = {};
+  let   usedUrl    = null;
 
-    const page = await browser.newPage();
-    await page.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36");
+  for (const url of endpoints) {
+    const data = await tryEndpoint(url);
+    if (!data) continue;
 
-    // Capture ALL responses — log every single one
-    const captured = [];
-    page.on("response", async response => {
-      const respUrl  = response.url();
-      const ct       = response.headers()["content-type"] || "";
-      const status   = response.status();
+    const before = meetings.length;
+    extractMeetings(data, meetings, chamberMap);
 
-      // Log everything from journal.un.org
-      if (respUrl.includes("journal.un.org")) {
-        const shortUrl = respUrl.replace("https://journal.un.org", "");
-        try {
-          const buffer = await response.buffer();
-          console.log(`  [${status}] ${shortUrl} | ${ct} | ${buffer.length} bytes`);
-
-          // Try JSON parse on everything
-          try {
-            const data = JSON.parse(buffer.toString());
-            captured.push({ url: respUrl, data });
-          } catch (_) {
-            // Not JSON — log first 200 chars if it looks interesting
-            const text = buffer.toString().slice(0, 200);
-            if (!respUrl.includes(".js") && !respUrl.includes(".css")) {
-              console.log(`    → text: ${text.replace(/\s+/g, " ")}`);
-            }
-          }
-        } catch (_) {}
-      }
-    });
-
-    // Navigate and wait for load
-    await page.goto(url, { waitUntil: "load", timeout: 45000 });
-
-    // Wait extra time for lazy-loaded content
-    console.log("\nWaiting 8 seconds for lazy content...");
-    await new Promise(r => setTimeout(r, 8000));
-
-    // Scroll to trigger any scroll-based loading
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await new Promise(r => setTimeout(r, 3000));
-
-    console.log(`\nPage title: ${await page.title()}`);
-    console.log(`Total captured: ${captured.length} JSON responses`);
-
-    const meetings   = [];
-    const chamberMap = {};
-
-    // Check config.json for API base URL
-    const configResponse = captured.find(c => c.url.includes("config.json"));
-    if (configResponse) {
-      console.log("\n📋 config.json:", JSON.stringify(configResponse.data).slice(0, 500));
+    if (meetings.length > before) {
+      console.log(`\n✅ Found ${meetings.length - before} meetings from: ${url}`);
+      usedUrl = url;
+      break;
+    } else {
+      console.log(`  → Parsed OK but no meetings. Keys: ${Object.keys(data).join(", ")}`);
     }
-
-    // Try all captured JSON responses for meeting data
-    for (const { url: apiUrl, data } of captured) {
-      const before = meetings.length;
-      extractMeetings(data, meetings, chamberMap);
-      if (meetings.length > before) {
-        console.log(`✅ ${meetings.length - before} meetings from: ${apiUrl}`);
-      }
-    }
-
-    // If still nothing, try reading from page JS state
-    if (meetings.length === 0) {
-      console.log("\nChecking page JS state...");
-      const jsState = await page.evaluate(() => {
-        // Try common state containers
-        const candidates = [
-          window.__INITIAL_STATE__,
-          window.__STATE__,
-          window.__NUXT__,
-          window.__NEXT_DATA__,
-          window.store?.state,
-          window.app?.$store?.state,
-        ];
-        for (const c of candidates) {
-          if (c) return JSON.stringify(c).slice(0, 2000);
-        }
-
-        // Try reading all script tags for embedded data
-        const scripts = [...document.querySelectorAll("script:not([src])")];
-        for (const s of scripts) {
-          const t = s.textContent || "";
-          if (t.includes("meeting") || t.includes("Meeting")) {
-            return t.slice(0, 2000);
-          }
-        }
-        return null;
-      });
-
-      if (jsState) {
-        console.log("Found JS state:", jsState.slice(0, 500));
-        try {
-          extractMeetings(JSON.parse(jsState), meetings, chamberMap);
-        } catch (_) {}
-      }
-    }
-
-    // Final fallback: read all visible text and look for API base URL
-    if (meetings.length === 0) {
-      console.log("\nReading page source for API clues...");
-      const pageSource = await page.content();
-      // Look for API base URL patterns
-      const apiPatterns = pageSource.match(/["'](https?:\/\/[^"']*api[^"']*)['"]/g) || [];
-      apiPatterns.slice(0, 10).forEach(p => console.log("  API hint:", p));
-
-      // Also look for any URL with "meeting" in it
-      const meetingUrls = pageSource.match(/["'](https?:\/\/[^"']*meeting[^"']*)['"]/g) || [];
-      meetingUrls.slice(0, 10).forEach(p => console.log("  Meeting URL hint:", p));
-    }
-
-    await browser.close();
-
-    // Log chambers
-    console.log("\n🏛️  Chambers:");
-    ["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"].forEach(c => {
-      const ms = chamberMap[c] || [];
-      console.log(`  ${c}: ${ms.length > 0 ? ms.map(m => `${m.time} — ${m.title}`).join(" | ") : "none"}`);
-    });
-
-    const chambers = ["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"]
-      .map(name => ({ room: name, meetings: (chamberMap[name] || []).map(m => ({ time: m.time, title: m.title })) }));
-
-    const titles = [...new Set(meetings.map(m => m.title).filter(t => t && t.length > 4))].slice(0, 30);
-
-    saveResult(dateStr, chambers, titles,
-      titles.length > 0 ? `Live — ${titles.length} meetings` : "No meetings found — check Actions log for API hints"
-    );
-
-  } catch (err) {
-    if (browser) await browser.close().catch(() => {});
-    console.error("Error:", err.message);
-    saveResult(todayInNewYork(), emptyChambers(), [], `Error: ${err.message}`);
   }
+
+  // Log chamber summary
+  console.log("\n🏛️  Chambers:");
+  ["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"].forEach(c => {
+    const ms = chamberMap[c] || [];
+    console.log(`  ${c}: ${ms.length > 0 ? ms.map(m => `${m.time} — ${m.title}`).join(" | ") : "none"}`);
+  });
+
+  const chambers = ["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"]
+    .map(name => ({ room: name, meetings: (chamberMap[name] || []).map(m => ({ time: m.time, title: m.title })) }));
+
+  const titles = [...new Set(meetings.map(m => m.title).filter(t => t && t.length > 4))].slice(0, 30);
+
+  saveResult(dateStr, chambers, titles,
+    titles.length > 0
+      ? `Live from ${usedUrl} — ${titles.length} meetings`
+      : "No meetings found at journal-api.un.org — check log for response previews"
+  );
 }
 
-main();
+main().catch(err => {
+  console.error("Fatal:", err.message);
+  saveResult(todayInNewYork(), emptyChambers(), [], `Fatal: ${err.message}`);
+});
