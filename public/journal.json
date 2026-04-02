@@ -1,0 +1,25 @@
+{
+  "date": "2026-04-02",
+  "fetched_at": "2026-04-02T01:56:24.023Z",
+  "source": "journal.un.org",
+  "note": "No meetings parsed — journal.un.org structure may have changed",
+  "chambers": [
+    {
+      "room": "General Assembly Hall",
+      "meetings": []
+    },
+    {
+      "room": "Security Council",
+      "meetings": []
+    },
+    {
+      "room": "Trusteeship Council",
+      "meetings": []
+    },
+    {
+      "room": "Economic and Social Council",
+      "meetings": []
+    }
+  ],
+  "meetings": []
+}
