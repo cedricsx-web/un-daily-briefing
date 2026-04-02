@@ -1,8 +1,8 @@
 {
   "date": "2026-04-02",
-  "fetched_at": "2026-04-02T01:56:24.023Z",
+  "fetched_at": "2026-04-02T02:03:19.242Z",
   "source": "journal.un.org",
-  "note": "No meetings parsed — journal.un.org structure may have changed",
+  "note": "Parsed 0 meetings from https://journal.un.org/en/new-york/all/2026-04-02 — site may require JS rendering",
   "chambers": [
     {
       "room": "General Assembly Hall",
