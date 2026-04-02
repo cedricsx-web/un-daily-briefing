@@ -1,4 +1,4 @@
-// fetch-journal.cjs — Puppeteer-based, intercepts API calls from journal.un.org
+// fetch-journal.cjs — Puppeteer, captures ALL network traffic to find meeting data
 
 const { writeFileSync, mkdirSync } = require("fs");
 const puppeteer = require("puppeteer");
@@ -66,21 +66,18 @@ function saveResult(dateStr, chambers, meetings, note) {
   console.log(`✅ Saved — ${meetings.length} meetings | ${note || "ok"}`);
 }
 
-// Walk any JSON structure looking for meeting-like objects
 function extractMeetings(obj, meetings, chamberMap) {
   if (!obj || typeof obj !== "object") return;
   if (Array.isArray(obj)) {
     obj.forEach(item => extractMeetings(item, meetings, chamberMap));
     return;
   }
-
-  // Check if this object looks like a meeting
-  const title = obj.title || obj.meeting_title || obj.name || obj.subject || obj.meetingTitle;
-  const time  = obj.time  || obj.startTime || obj.start_time || obj.hour || obj.startHour;
-  const room  = obj.room  || obj.location  || obj.venue || obj.chamber || obj.roomName;
+  const title = obj.title || obj.meeting_title || obj.name || obj.subject || obj.meetingTitle || obj.MeetingTitle;
+  const time  = obj.time  || obj.startTime   || obj.start_time || obj.hour || obj.startHour || obj.Time;
+  const room  = obj.room  || obj.location    || obj.venue || obj.chamber || obj.roomName || obj.Room || obj.Location;
 
   if (title && typeof title === "string" && title.length > 8) {
-    const normTime   = normalizeTime(time);
+    const normTime    = normalizeTime(time);
     const normChamber = chamberForRoom(room);
     meetings.push({ title: title.trim(), time: normTime, room: room || null });
     if (normChamber) {
@@ -88,8 +85,6 @@ function extractMeetings(obj, meetings, chamberMap) {
       chamberMap[normChamber].push({ time: normTime, title: title.trim() });
     }
   }
-
-  // Recurse into all values
   Object.values(obj).forEach(v => {
     if (v && typeof v === "object") extractMeetings(v, meetings, chamberMap);
   });
@@ -107,101 +102,125 @@ async function main() {
     browser = await puppeteer.launch({
       headless: "new",
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
+      args: ["--no-sandbox","--disable-setuid-sandbox","--disable-dev-shm-usage","--disable-gpu"],
     });
 
     const page = await browser.newPage();
     await page.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36");
 
-    // Intercept all JSON responses from the journal domain
+    // Capture ALL responses — log every single one
     const captured = [];
     page.on("response", async response => {
-      const respUrl = response.url();
-      const ct = response.headers()["content-type"] || "";
-      if (!respUrl.includes("journal.un.org")) return;
-      if (!ct.includes("json")) return;
-      try {
-        const text = await response.text();
-        const data = JSON.parse(text);
-        console.log(`📡 API: ${respUrl.replace("https://journal.un.org", "")} (${text.length} chars)`);
-        captured.push({ url: respUrl, data });
-      } catch (_) {}
+      const respUrl  = response.url();
+      const ct       = response.headers()["content-type"] || "";
+      const status   = response.status();
+
+      // Log everything from journal.un.org
+      if (respUrl.includes("journal.un.org")) {
+        const shortUrl = respUrl.replace("https://journal.un.org", "");
+        try {
+          const buffer = await response.buffer();
+          console.log(`  [${status}] ${shortUrl} | ${ct} | ${buffer.length} bytes`);
+
+          // Try JSON parse on everything
+          try {
+            const data = JSON.parse(buffer.toString());
+            captured.push({ url: respUrl, data });
+          } catch (_) {
+            // Not JSON — log first 200 chars if it looks interesting
+            const text = buffer.toString().slice(0, 200);
+            if (!respUrl.includes(".js") && !respUrl.includes(".css")) {
+              console.log(`    → text: ${text.replace(/\s+/g, " ")}`);
+            }
+          }
+        } catch (_) {}
+      }
     });
 
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 45000 });
-    await new Promise(r => setTimeout(r, 4000)); // extra wait for lazy content
+    // Navigate and wait for load
+    await page.goto(url, { waitUntil: "load", timeout: 45000 });
+
+    // Wait extra time for lazy-loaded content
+    console.log("\nWaiting 8 seconds for lazy content...");
+    await new Promise(r => setTimeout(r, 8000));
+
+    // Scroll to trigger any scroll-based loading
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await new Promise(r => setTimeout(r, 3000));
 
     console.log(`\nPage title: ${await page.title()}`);
-    console.log(`Captured ${captured.length} API responses`);
+    console.log(`Total captured: ${captured.length} JSON responses`);
 
-    const meetings = [];
+    const meetings   = [];
     const chamberMap = {};
 
-    // Try API responses first
+    // Check config.json for API base URL
+    const configResponse = captured.find(c => c.url.includes("config.json"));
+    if (configResponse) {
+      console.log("\n📋 config.json:", JSON.stringify(configResponse.data).slice(0, 500));
+    }
+
+    // Try all captured JSON responses for meeting data
     for (const { url: apiUrl, data } of captured) {
       const before = meetings.length;
       extractMeetings(data, meetings, chamberMap);
       if (meetings.length > before) {
-        console.log(`  → ${meetings.length - before} meetings from ${apiUrl}`);
+        console.log(`✅ ${meetings.length - before} meetings from: ${apiUrl}`);
       }
     }
 
-    // Fallback: extract from rendered DOM text
+    // If still nothing, try reading from page JS state
     if (meetings.length === 0) {
-      console.log("\nNo meetings from API — trying DOM text extraction...");
-
-      const domMeetings = await page.evaluate(() => {
-        const ROOM_PATTERNS = [
-          "General Assembly Hall", "Security Council Chamber",
-          "Security Council Consultations Room", "Trusteeship Council Chamber",
-          "Economic and Social Council Chamber", "Conference Room",
+      console.log("\nChecking page JS state...");
+      const jsState = await page.evaluate(() => {
+        // Try common state containers
+        const candidates = [
+          window.__INITIAL_STATE__,
+          window.__STATE__,
+          window.__NUXT__,
+          window.__NEXT_DATA__,
+          window.store?.state,
+          window.app?.$store?.state,
         ];
-
-        const results = [];
-        const timeRe = /^(\d{1,2}:\d{2}(?:\s*-\s*\d{1,2}:\d{2})?)\s+(.+)/;
-
-        // Get all text nodes grouped by visual line
-        const lines = [];
-        document.querySelectorAll("p, td, li, div, span, h3, h4").forEach(el => {
-          const text = (el.textContent || "").replace(/\s+/g, " ").trim();
-          if (text.length > 10 && text.length < 400) lines.push(text);
-        });
-
-        lines.forEach(line => {
-          const m = line.match(timeRe);
-          if (!m) return;
-          if (/cancelled/i.test(line)) return;
-
-          let title = m[2];
-          let room = null;
-          for (const rp of ROOM_PATTERNS) {
-            const idx = title.indexOf(rp);
-            if (idx !== -1) {
-              room = title.slice(idx).trim();
-              title = title.slice(0, idx).trim();
-              break;
-            }
-          }
-          if (title.length > 4) results.push({ title, time: m[1], room });
-        });
-
-        return results;
-      });
-
-      domMeetings.forEach(m => {
-        meetings.push(m);
-        const chamber = chamberForRoom(m.room);
-        if (chamber) {
-          if (!chamberMap[chamber]) chamberMap[chamber] = [];
-          chamberMap[chamber].push({ time: normalizeTime(m.time), title: m.title });
+        for (const c of candidates) {
+          if (c) return JSON.stringify(c).slice(0, 2000);
         }
+
+        // Try reading all script tags for embedded data
+        const scripts = [...document.querySelectorAll("script:not([src])")];
+        for (const s of scripts) {
+          const t = s.textContent || "";
+          if (t.includes("meeting") || t.includes("Meeting")) {
+            return t.slice(0, 2000);
+          }
+        }
+        return null;
       });
-      console.log(`DOM extraction: ${domMeetings.length} meetings`);
+
+      if (jsState) {
+        console.log("Found JS state:", jsState.slice(0, 500));
+        try {
+          extractMeetings(JSON.parse(jsState), meetings, chamberMap);
+        } catch (_) {}
+      }
+    }
+
+    // Final fallback: read all visible text and look for API base URL
+    if (meetings.length === 0) {
+      console.log("\nReading page source for API clues...");
+      const pageSource = await page.content();
+      // Look for API base URL patterns
+      const apiPatterns = pageSource.match(/["'](https?:\/\/[^"']*api[^"']*)['"]/g) || [];
+      apiPatterns.slice(0, 10).forEach(p => console.log("  API hint:", p));
+
+      // Also look for any URL with "meeting" in it
+      const meetingUrls = pageSource.match(/["'](https?:\/\/[^"']*meeting[^"']*)['"]/g) || [];
+      meetingUrls.slice(0, 10).forEach(p => console.log("  Meeting URL hint:", p));
     }
 
     await browser.close();
 
-    // Log chamber summary
+    // Log chambers
     console.log("\n🏛️  Chambers:");
     ["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"].forEach(c => {
       const ms = chamberMap[c] || [];
@@ -214,9 +233,7 @@ async function main() {
     const titles = [...new Set(meetings.map(m => m.title).filter(t => t && t.length > 4))].slice(0, 30);
 
     saveResult(dateStr, chambers, titles,
-      titles.length > 0
-        ? `Live — ${titles.length} meetings from journal.un.org`
-        : "Page loaded but no meetings parsed — site structure may have changed"
+      titles.length > 0 ? `Live — ${titles.length} meetings` : "No meetings found — check Actions log for API hints"
     );
 
   } catch (err) {
