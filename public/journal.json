@@ -1,9 +1,9 @@
 {
   "date": "2026-04-01",
-  "fetched_at": "2026-04-02T02:41:10.121Z",
+  "fetched_at": "2026-04-02T02:56:15.494Z",
   "ny_date": "2026-04-01",
-  "source": "journal.un.org/pdf",
-  "note": "PDF not available — AI fallback active",
+  "source": "journal.un.org",
+  "note": "Page loaded but no meetings parsed — site structure may have changed",
   "chambers": [
     {
       "room": "General Assembly Hall",
