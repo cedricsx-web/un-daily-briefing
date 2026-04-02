@@ -1,39 +1,38 @@
 name: Fetch UN Journal
 
 on:
-schedule:
-# 7:00 AM New York time (12:00 UTC in EST, 11:00 UTC in EDT)
-# Runs Mon-Fri only (UN doesn’t meet on weekends)
-- cron: “0 11 * * 1-5”
-workflow_dispatch: # allow manual trigger from GitHub UI
+  schedule:
+    - cron: "0 11 * * 1-5"
+  workflow_dispatch:
 
 permissions:
-contents: write  # needed to commit journal.json back to repo
+  contents: write
 
 jobs:
-fetch:
-runs-on: ubuntu-latest
-steps:
-- name: Checkout
-uses: actions/checkout@v4
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-```
-  - name: Setup Node
-    uses: actions/setup-node@v4
-    with:
-      node-version: 20
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-  - name: Install jsdom
-    run: npm install jsdom
+      - name: Install dependencies
+        run: |
+          mkdir -p scripts
+          cd scripts
+          npm init -y
+          npm install jsdom node-fetch
 
-  - name: Fetch UN Journal
-    run: node scripts/fetch-journal.js
+      - name: Fetch UN Journal
+        run: node scripts/fetch-journal.js
 
-  - name: Commit journal.json
-    run: |
-      git config user.name "UN Journal Bot"
-      git config user.email "bot@un-briefing"
-      git add public/journal.json
-      git diff --staged --quiet || git commit -m "📋 Update UN Journal: $(date +'%Y-%m-%d')"
-      git push
-```
+      - name: Commit journal.json if changed
+        run: |
+          git config user.name "UN Journal Bot"
+          git config user.email "bot@un-briefing"
+          git add public/journal.json
+          git diff --staged --quiet && echo "No changes" || git commit -m "📋 Update UN Journal: $(date +'%Y-%m-%d')" && git push
