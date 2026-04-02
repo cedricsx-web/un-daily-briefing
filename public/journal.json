@@ -1,9 +1,9 @@
 {
   "date": "2026-04-01",
-  "fetched_at": "2026-04-02T02:56:15.494Z",
+  "fetched_at": "2026-04-02T03:05:32.067Z",
   "ny_date": "2026-04-01",
   "source": "journal.un.org",
-  "note": "Page loaded but no meetings parsed — site structure may have changed",
+  "note": "No meetings found — check Actions log for API hints",
   "chambers": [
     {
       "room": "General Assembly Hall",
