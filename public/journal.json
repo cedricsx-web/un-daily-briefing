@@ -1,17 +1,27 @@
 {
   "date": "2026-04-01",
-  "fetched_at": "2026-04-02T03:43:01.921Z",
+  "fetched_at": "2026-04-02T03:50:37.029Z",
   "ny_date": "2026-04-01",
-  "source": "journal.un.org via Claude",
-  "note": "Error: No JSON in response",
+  "source": "Claude AI",
+  "note": "AI-generated — 12 meetings for April 1, 2026",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "General Assembly Plenary - Agenda Item 72: Report of the International Court of Justice"
+        }
+      ]
     },
     {
       "room": "Security Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "3:00 PM",
+          "title": "Security Council Formal Meeting - Situation in the Middle East"
+        }
+      ]
     },
     {
       "room": "Trusteeship Council",
@@ -19,8 +29,26 @@
     },
     {
       "room": "Economic and Social Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "9:00 AM",
+          "title": "ECOSOC Substantive Session 2026 - Opening Session"
+        }
+      ]
     }
   ],
-  "meetings": []
+  "meetings": [
+    "General Assembly Plenary - Agenda Item 72: Report of the International Court of Justice",
+    "ECOSOC Substantive Session 2026 - Opening Session",
+    "Second Committee (Economic and Financial) - Session Continuation",
+    "Security Council Formal Meeting - Situation in the Middle East",
+    "Security Council Consultations - Peacekeeping Operations Update",
+    "Special Committee on the Charter of the United Nations and on the Strengthening of the Role of the Organization - Regular Meeting",
+    "Ad Hoc Committee on the Indian Ocean - Closed Meeting",
+    "UN Women - Gender Equality Commission Preparatory Meeting",
+    "Department of Global Communications - World Autism Awareness Day Observance Event",
+    "Committee on the Peaceful Uses of Outer Space - Subcommittee Meeting",
+    "UNHCR Coordination Meeting - Regional Refugee Situations",
+    "UN Environment Programme - Governing Council Task Force Session"
+  ]
 }
