@@ -1,26 +1,17 @@
 {
   "date": "2026-04-01",
-  "fetched_at": "2026-04-02T03:26:28.742Z",
+  "fetched_at": "2026-04-02T03:36:27.424Z",
   "ny_date": "2026-04-01",
   "source": "journal.un.org via Claude",
-  "note": "Live from journal.un.org — 2 meetings",
+  "note": "Error: No JSON in response",
   "chambers": [
     {
       "room": "General Assembly Hall",
       "meetings": []
     },
     {
-      "room": "Security Council Consultations Room",
-      "meetings": [
-        {
-          "time": "11:30 AM",
-          "title": "Consultations of the whole (closed)"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Consultations of the whole (closed)"
-        }
-      ]
+      "room": "Security Council",
+      "meetings": []
     },
     {
       "room": "Trusteeship Council",
@@ -31,8 +22,5 @@
       "meetings": []
     }
   ],
-  "meetings": [
-    "Consultations of the whole (closed)",
-    "Consultations of the whole (closed)"
-  ]
+  "meetings": []
 }
