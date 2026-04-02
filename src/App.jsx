@@ -254,14 +254,53 @@ export default function App() {
   async function fetchClaudeTopics(meetingsContext) {
     const today = new Date();
     const dateStr = `${MONTHS[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`;
+    const dow = today.toLocaleDateString("en-US", { weekday: "long" });
 
     const meetingsList = meetingsContext?.meetings?.length > 0
       ? `\n\nToday's actual UN meetings from the Journal:\n${meetingsContext.meetings.slice(0, 15).map(m => `- ${m}`).join("\n")}`
       : "";
 
-    const prompt = `Today is ${dateStr}.${meetingsList}
+    const chambersSection = !meetingsContext ? `
+  "chambers": [
+    {
+      "room": "General Assembly Hall",
+      "meetings": []
+    },
+    {
+      "room": "Security Council",
+      "meetings": [
+        {"time": "10:00 AM", "title": "Formal meeting title or Consultations of the whole"},
+        {"time": "3:00 PM", "title": "Formal meeting title or Consultations of the whole"}
+      ]
+    },
+    {
+      "room": "Trusteeship Council",
+      "meetings": []
+    },
+    {
+      "room": "Economic and Social Council",
+      "meetings": []
+    }
+  ],
+  "meetings": [
+    "Security Council — [meeting number or topic] (10:00 AM, Security Council Chamber)",
+    "General Assembly — [body name]: [meeting description] (10:00 AM, [room])",
+    "Advisory Committee on Administrative and Budgetary Questions — Meeting (10:00 AM, Conference Room 10)",
+    "International Civil Service Commission, [session] — Meeting (10:00 AM, Conference Room 1)",
+    "Preparatory Commission for BBNJ Agreement — [meeting description] (10:00 AM, Conference Room 4)"
+  ],` : "";
 
-You are a UN expert generating briefing topics for a UN tour guide.${meetingsList ? " Use the actual meetings listed above to make the topics more relevant." : ""}
+    const prompt = `Today is ${dow}, ${dateStr}.${meetingsList}
+
+You are a UN expert generating a daily briefing for UN tour guides at the United Nations in New York.
+${meetingsList ? "Use the actual meetings listed above." : `
+IMPORTANT — generate REALISTIC UN meetings for today based on the UN calendar:
+- Security Council typically meets formally (numbered meetings like "10128th meeting") and/or holds closed consultations
+- General Assembly bodies active in ${MONTHS[today.getMonth()]} include: ACABQ (Advisory Committee on Administrative and Budgetary Questions), ICSC (International Civil Service Commission), Sixth Committee, and the BBNJ PrepCom
+- Bodies meeting in the MAIN CHAMBERS (General Assembly Hall, Security Council Chamber, Trusteeship Council Chamber, Economic and Social Council Chamber) go in the chambers section
+- Bodies meeting in Conference Rooms (1, 2, 3, 4, 5, 8, 10, 12) go in the meetings list only
+- A General Assembly body using the Economic and Social Council Chamber still appears under "Economic and Social Council" chamber
+- Include 8-12 meetings in the meetings list covering all active bodies`}
 
 Return ONLY raw JSON — no markdown, no explanation:
 {
@@ -273,14 +312,7 @@ Return ONLY raw JSON — no markdown, no explanation:
       "bullets": ["Key fact", "Key fact", "Key fact", "Key fact"],
       "detail": "80-120 words of richer context and why this matters at the UN today."
     }
-  ]${!meetingsContext ? `,
-  "chambers": [
-    { "room": "General Assembly Hall", "meetings": [{"time": "10:00 AM", "title": "..."}] },
-    { "room": "Security Council", "meetings": [] },
-    { "room": "Trusteeship Council", "meetings": [] },
-    { "room": "Economic and Social Council", "meetings": [] }
-  ],
-  "meetings": ["Meeting title 1", "Meeting title 2"]` : ""}
+  ]${chambersSection}
 }
 
 Generate exactly 5 topics. Return ONLY the JSON.`;
