@@ -1,11 +1,8 @@
-// fetch-journal.cjs
-// Downloads the UN Journal PDF and parses it for today's meetings.
-// Chambers show what is physically happening in each room.
+// fetch-journal.cjs — Puppeteer-based, intercepts API calls from journal.un.org
 
 const { writeFileSync, mkdirSync } = require("fs");
-const pdfParse = require("pdf-parse");
+const puppeteer = require("puppeteer");
 
-// Map PDF room names → our 4 display chambers
 const CHAMBER_ROOM_MAP = {
   "general assembly hall": "General Assembly Hall",
   "security council chamber": "Security Council",
@@ -14,7 +11,6 @@ const CHAMBER_ROOM_MAP = {
   "economic and social council chamber": "Economic and Social Council",
 };
 
-// Returns the display chamber name if this room is one of the 4 main chambers
 function chamberForRoom(raw) {
   if (!raw) return null;
   const lower = raw.toLowerCase().trim();
@@ -26,10 +22,9 @@ function chamberForRoom(raw) {
 
 function normalizeTime(raw) {
   if (!raw) return "TBD";
-  // Strip end time from ranges like "10:00 - 13:00"
-  const clean = raw.trim().replace(/\s*-\s*\d{1,2}:\d{2}$/, "");
+  const clean = raw.toString().trim().replace(/\s*-\s*\d{1,2}:\d{2}$/, "");
   const m = clean.match(/(\d{1,2}):(\d{2})/);
-  if (!m) return raw.trim();
+  if (!m) return raw.toString().trim();
   let h = parseInt(m[1]);
   const min = m[2];
   const period = h >= 12 ? "PM" : "AM";
@@ -63,7 +58,7 @@ function saveResult(dateStr, chambers, meetings, note) {
     date: dateStr,
     fetched_at: new Date().toISOString(),
     ny_date: todayInNewYork(),
-    source: "journal.un.org/pdf",
+    source: "journal.un.org",
     note: note || null,
     chambers,
     meetings,
@@ -71,168 +66,164 @@ function saveResult(dateStr, chambers, meetings, note) {
   console.log(`✅ Saved — ${meetings.length} meetings | ${note || "ok"}`);
 }
 
-function pdfUrls(dateStr) {
-  return [
-    `https://journal.un.org/en/new-york/PDF/EN/${dateStr}`,
-    `https://journal.un.org/en/new-york/pdf/en/${dateStr}`,
-    `https://journal.un.org/resource/pdf/en/${dateStr}`,
-    `https://journal.un.org/en/new-york/PDF/${dateStr}`,
-  ];
-}
-
-async function downloadPDF(dateStr) {
-  const headers = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
-    "Accept": "application/pdf,*/*",
-  };
-  for (const url of pdfUrls(dateStr)) {
-    try {
-      console.log(`Trying: ${url}`);
-      const res = await fetch(url, { headers });
-      console.log(`  → ${res.status} ${res.headers.get("content-type") || ""}`);
-      if (!res.ok) continue;
-      const ct = res.headers.get("content-type") || "";
-      if (!ct.includes("pdf") && !ct.includes("octet-stream")) continue;
-      const buffer = Buffer.from(await res.arrayBuffer());
-      console.log(`  → ${buffer.byteLength} bytes`);
-      return { buffer, url };
-    } catch (e) {
-      console.log(`  → ${e.message}`);
-    }
+// Walk any JSON structure looking for meeting-like objects
+function extractMeetings(obj, meetings, chamberMap) {
+  if (!obj || typeof obj !== "object") return;
+  if (Array.isArray(obj)) {
+    obj.forEach(item => extractMeetings(item, meetings, chamberMap));
+    return;
   }
-  return null;
-}
 
-// All known room name fragments from the UN Journal PDF
-const ROOM_PATTERNS = [
-  "General Assembly Hall",
-  "Security Council Chamber",
-  "Security Council Consultations Room",
-  "Trusteeship Council Chamber",
-  "Economic and Social Council Chamber",
-  "Conference Room",
-  "Press Briefing Room",
-];
+  // Check if this object looks like a meeting
+  const title = obj.title || obj.meeting_title || obj.name || obj.subject || obj.meetingTitle;
+  const time  = obj.time  || obj.startTime || obj.start_time || obj.hour || obj.startHour;
+  const room  = obj.room  || obj.location  || obj.venue || obj.chamber || obj.roomName;
 
-function parsePDFText(text) {
-  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
-
-  const allMeetings = [];   // All meetings for the flat list
-  const chamberMap = {};    // Keyed by display chamber name
-
-  let inOfficialMeetings = false;
-  let inOtherMeetings = false;
-
-  // Time pattern at start of line
-  const timePattern = /^(\d{1,2}:\d{2}(?:\s*-\s*\d{1,2}:\d{2})?)\s+(.+)/;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
-    // Section tracking
-    if (line === "Official Meetings") { inOfficialMeetings = true; inOtherMeetings = false; continue; }
-    if (line === "Other Meetings") { inOtherMeetings = true; inOfficialMeetings = false; continue; }
-    if (line === "Informal Consultations" || line === "Forthcoming Official Meetings" || line === "Forthcoming Informal Consultations" || line === "Forthcoming Other Meetings") {
-      inOfficialMeetings = false; inOtherMeetings = false; continue;
-    }
-
-    // Only parse Official Meetings and Other Meetings sections
-    if (!inOfficialMeetings && !inOtherMeetings) continue;
-
-    const timeMatch = line.match(timePattern);
-    if (!timeMatch) continue;
-
-    const time = normalizeTime(timeMatch[1]);
-    const rest = timeMatch[2].trim();
-
-    // Skip cancelled meetings
-    if (/^cancelled/i.test(rest)) continue;
-
-    // Find room name at the end of the line
-    let title = rest;
-    let rawRoom = null;
-
-    for (const rp of ROOM_PATTERNS) {
-      const idx = rest.indexOf(rp);
-      if (idx !== -1) {
-        // Extract room: from pattern start to end of line
-        rawRoom = rest.slice(idx).trim();
-        title = rest.slice(0, idx).trim();
-        break;
-      }
-    }
-
-    // Clean up title
-    title = title.replace(/\s+/g, " ").trim();
-    if (title.length < 4) continue;
-
-    // Determine which display chamber this meeting is in (based on physical room)
-    const chamber = chamberForRoom(rawRoom);
-
-    allMeetings.push({ title, time, room: rawRoom });
-
-    // Add to chamber map if it's one of the 4 main rooms
-    if (chamber) {
-      if (!chamberMap[chamber]) chamberMap[chamber] = [];
-      chamberMap[chamber].push({ time, title, rawRoom });
+  if (title && typeof title === "string" && title.length > 8) {
+    const normTime   = normalizeTime(time);
+    const normChamber = chamberForRoom(room);
+    meetings.push({ title: title.trim(), time: normTime, room: room || null });
+    if (normChamber) {
+      if (!chamberMap[normChamber]) chamberMap[normChamber] = [];
+      chamberMap[normChamber].push({ time: normTime, title: title.trim() });
     }
   }
 
-  return { allMeetings, chamberMap };
+  // Recurse into all values
+  Object.values(obj).forEach(v => {
+    if (v && typeof v === "object") extractMeetings(v, meetings, chamberMap);
+  });
 }
 
 async function main() {
   const dateStr = todayInNewYork();
   console.log(`\n📅 NY date: ${dateStr} | UTC: ${new Date().toISOString()}\n`);
 
-  const downloaded = await downloadPDF(dateStr);
-  if (!downloaded) {
-    console.log("❌ Could not download PDF");
-    saveResult(dateStr, emptyChambers(), [], "PDF not available — AI fallback active");
-    return;
-  }
+  const url = `https://journal.un.org/en/new-york/all/${dateStr}`;
+  console.log(`Navigating to: ${url}\n`);
 
-  let text;
+  let browser;
   try {
-    const data = await pdfParse(downloaded.buffer);
-    text = data.text;
-    console.log(`📄 Extracted ${text.length} chars`);
-  } catch (e) {
-    saveResult(dateStr, emptyChambers(), [], `PDF parse error: ${e.message}`);
-    return;
+    browser = await puppeteer.launch({
+      headless: "new",
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
+    });
+
+    const page = await browser.newPage();
+    await page.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36");
+
+    // Intercept all JSON responses from the journal domain
+    const captured = [];
+    page.on("response", async response => {
+      const respUrl = response.url();
+      const ct = response.headers()["content-type"] || "";
+      if (!respUrl.includes("journal.un.org")) return;
+      if (!ct.includes("json")) return;
+      try {
+        const text = await response.text();
+        const data = JSON.parse(text);
+        console.log(`📡 API: ${respUrl.replace("https://journal.un.org", "")} (${text.length} chars)`);
+        captured.push({ url: respUrl, data });
+      } catch (_) {}
+    });
+
+    await page.goto(url, { waitUntil: "networkidle2", timeout: 45000 });
+    await new Promise(r => setTimeout(r, 4000)); // extra wait for lazy content
+
+    console.log(`\nPage title: ${await page.title()}`);
+    console.log(`Captured ${captured.length} API responses`);
+
+    const meetings = [];
+    const chamberMap = {};
+
+    // Try API responses first
+    for (const { url: apiUrl, data } of captured) {
+      const before = meetings.length;
+      extractMeetings(data, meetings, chamberMap);
+      if (meetings.length > before) {
+        console.log(`  → ${meetings.length - before} meetings from ${apiUrl}`);
+      }
+    }
+
+    // Fallback: extract from rendered DOM text
+    if (meetings.length === 0) {
+      console.log("\nNo meetings from API — trying DOM text extraction...");
+
+      const domMeetings = await page.evaluate(() => {
+        const ROOM_PATTERNS = [
+          "General Assembly Hall", "Security Council Chamber",
+          "Security Council Consultations Room", "Trusteeship Council Chamber",
+          "Economic and Social Council Chamber", "Conference Room",
+        ];
+
+        const results = [];
+        const timeRe = /^(\d{1,2}:\d{2}(?:\s*-\s*\d{1,2}:\d{2})?)\s+(.+)/;
+
+        // Get all text nodes grouped by visual line
+        const lines = [];
+        document.querySelectorAll("p, td, li, div, span, h3, h4").forEach(el => {
+          const text = (el.textContent || "").replace(/\s+/g, " ").trim();
+          if (text.length > 10 && text.length < 400) lines.push(text);
+        });
+
+        lines.forEach(line => {
+          const m = line.match(timeRe);
+          if (!m) return;
+          if (/cancelled/i.test(line)) return;
+
+          let title = m[2];
+          let room = null;
+          for (const rp of ROOM_PATTERNS) {
+            const idx = title.indexOf(rp);
+            if (idx !== -1) {
+              room = title.slice(idx).trim();
+              title = title.slice(0, idx).trim();
+              break;
+            }
+          }
+          if (title.length > 4) results.push({ title, time: m[1], room });
+        });
+
+        return results;
+      });
+
+      domMeetings.forEach(m => {
+        meetings.push(m);
+        const chamber = chamberForRoom(m.room);
+        if (chamber) {
+          if (!chamberMap[chamber]) chamberMap[chamber] = [];
+          chamberMap[chamber].push({ time: normalizeTime(m.time), title: m.title });
+        }
+      });
+      console.log(`DOM extraction: ${domMeetings.length} meetings`);
+    }
+
+    await browser.close();
+
+    // Log chamber summary
+    console.log("\n🏛️  Chambers:");
+    ["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"].forEach(c => {
+      const ms = chamberMap[c] || [];
+      console.log(`  ${c}: ${ms.length > 0 ? ms.map(m => `${m.time} — ${m.title}`).join(" | ") : "none"}`);
+    });
+
+    const chambers = ["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"]
+      .map(name => ({ room: name, meetings: (chamberMap[name] || []).map(m => ({ time: m.time, title: m.title })) }));
+
+    const titles = [...new Set(meetings.map(m => m.title).filter(t => t && t.length > 4))].slice(0, 30);
+
+    saveResult(dateStr, chambers, titles,
+      titles.length > 0
+        ? `Live — ${titles.length} meetings from journal.un.org`
+        : "Page loaded but no meetings parsed — site structure may have changed"
+    );
+
+  } catch (err) {
+    if (browser) await browser.close().catch(() => {});
+    console.error("Error:", err.message);
+    saveResult(todayInNewYork(), emptyChambers(), [], `Error: ${err.message}`);
   }
-
-  const { allMeetings, chamberMap } = parsePDFText(text);
-
-  // Log parsed results clearly
-  console.log(`\n📋 ${allMeetings.length} total meetings\n`);
-  console.log("🏛️  Chamber assignments:");
-  ["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"].forEach(c => {
-    const ms = chamberMap[c] || [];
-    console.log(`  ${c}: ${ms.length > 0 ? ms.map(m => `${m.time} ${m.title}`).join(", ") : "none"}`);
-  });
-
-  const chambers = [
-    "General Assembly Hall",
-    "Security Council",
-    "Trusteeship Council",
-    "Economic and Social Council",
-  ].map(name => ({
-    room: name,
-    meetings: (chamberMap[name] || []).map(m => ({ time: m.time, title: m.title })),
-  }));
-
-  const titles = [...new Set(allMeetings.map(m => m.title).filter(t => t.length > 4))].slice(0, 30);
-
-  saveResult(
-    dateStr, chambers, titles,
-    titles.length > 0
-      ? `PDF parsed — ${titles.length} meetings from ${downloaded.url}`
-      : `PDF downloaded but 0 meetings parsed — check log`
-  );
 }
 
-main().catch(err => {
-  console.error("Fatal:", err.message);
-  saveResult(todayInNewYork(), emptyChambers(), [], `Fatal: ${err.message}`);
-});
+main();
