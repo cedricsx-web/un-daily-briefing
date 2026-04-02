@@ -2,7 +2,6 @@ name: Fetch UN Journal
 
 on:
   schedule:
-    # 8:00 AM New York time = 12:00 UTC (covers both EST and EDT)
     - cron: "0 12 * * 1-5"
   workflow_dispatch:
 
@@ -11,7 +10,6 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  TZ: America/New_York
 
 jobs:
   fetch:
@@ -25,8 +23,15 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install jsdom
-        run: npm install jsdom --no-save
+      - name: Install Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
+          echo "PUPPETEER_EXECUTABLE_PATH=$(which chromium-browser)" >> $GITHUB_ENV
+          echo "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: npm install puppeteer --no-save
 
       - name: Fetch UN Journal
         run: node scripts/fetch-journal.cjs
@@ -34,9 +39,9 @@ jobs:
       - name: Show result
         run: cat public/journal.json
 
-      - name: Commit journal.json if changed
+      - name: Commit changes
         run: |
           git config user.name "UN Journal Bot"
           git config user.email "bot@un-briefing"
-          git add public/journal.json
+          git add public/journal.json public/journal-debug.png 2>/dev/null || true
           git diff --staged --quiet && echo "No changes" || (git commit -m "📋 Update UN Journal: $(TZ=America/New_York date +'%Y-%m-%d')" && git push)
