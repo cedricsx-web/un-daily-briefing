@@ -23,10 +23,18 @@ jobs:
         with:
           node-version: 24
 
-      - name: Fetch UN Journal via Claude
+      - name: Install Chromium
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y chromium-browser
+          echo "PUPPETEER_EXECUTABLE_PATH=$(which chromium-browser)" >> $GITHUB_ENV
+          echo "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true" >> $GITHUB_ENV
+
+      - name: Install Puppeteer
+        run: npm install puppeteer --no-save
+
+      - name: Fetch UN Journal
         run: node scripts/fetch-journal.cjs
-        env:
-          VITE_ANTHROPIC_KEY: ${{ secrets.VITE_ANTHROPIC_KEY }}
 
       - name: Show result
         run: cat public/journal.json
