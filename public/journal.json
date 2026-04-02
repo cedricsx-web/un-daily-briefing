@@ -1,9 +1,9 @@
 {
   "date": "2026-04-02",
-  "fetched_at": "2026-04-02T04:33:15.397Z",
+  "fetched_at": "2026-04-02T04:44:47.537Z",
   "ny_date": "2026-04-02",
-  "source": "journal.un.org via Claude",
-  "note": "No meetings found",
+  "source": "journal.un.org",
+  "note": "Live from journal.un.org — 5 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -22,5 +22,11 @@
       "meetings": []
     }
   ],
-  "meetings": []
+  "meetings": [
+    "Security Council",
+    "General Assembly",
+    "Preparatory Commission for the Entry into Force of the Agreement under the United Nations Convention on the Law of the Sea on the Conservation and Sustainable Use of Marine Biological Diversity of Areas beyond National Jurisdiction and the Convening of the First Meeting of the Conference of the Parties to the Agreement",
+    "International Civil Service Commission",
+    "Advisory Committee on Administrative and Budgetary Questions"
+  ]
 }
