@@ -1,38 +1,13 @@
 // fetch-journal.cjs
-// Calls journal-api.un.org directly — no browser needed.
+// Uses Claude API with web search to read journal.un.org and extract today's meetings.
 
 const { writeFileSync, mkdirSync } = require("fs");
 
-const API_BASE = "https://journal-api.un.org/api";
+const API_KEY = process.env.VITE_ANTHROPIC_KEY;
 
-const CHAMBER_ROOM_MAP = {
-  "general assembly hall": "General Assembly Hall",
-  "security council chamber": "Security Council",
-  "security council consultations room": "Security Council",
-  "trusteeship council chamber": "Trusteeship Council",
-  "economic and social council chamber": "Economic and Social Council",
-};
-
-function chamberForRoom(raw) {
-  if (!raw) return null;
-  const lower = raw.toLowerCase().trim();
-  for (const [key, val] of Object.entries(CHAMBER_ROOM_MAP)) {
-    if (lower.includes(key)) return val;
-  }
-  return null;
-}
-
-function normalizeTime(raw) {
-  if (!raw) return "TBD";
-  const clean = raw.toString().trim().replace(/\s*-\s*\d{1,2}:\d{2}$/, "");
-  const m = clean.match(/(\d{1,2}):(\d{2})/);
-  if (!m) return raw.toString().trim();
-  let h = parseInt(m[1]);
-  const min = m[2];
-  const period = h >= 12 ? "PM" : "AM";
-  if (h > 12) h -= 12;
-  if (h === 0) h = 12;
-  return `${h}:${min} ${period}`;
+if (!API_KEY) {
+  console.error("❌ VITE_ANTHROPIC_KEY not set");
+  process.exit(1);
 }
 
 function todayInNewYork() {
@@ -60,7 +35,7 @@ function saveResult(dateStr, chambers, meetings, note) {
     date: dateStr,
     fetched_at: new Date().toISOString(),
     ny_date: todayInNewYork(),
-    source: "journal-api.un.org",
+    source: "journal.un.org via Claude",
     note: note || null,
     chambers,
     meetings,
@@ -68,120 +43,117 @@ function saveResult(dateStr, chambers, meetings, note) {
   console.log(`✅ Saved — ${meetings.length} meetings | ${note || "ok"}`);
 }
 
-const HEADERS = {
-  "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
-  "Accept": "application/json, */*",
-  "Accept-Language": "en-US,en;q=0.9",
-  "Origin": "https://journal.un.org",
-  "Referer": "https://journal.un.org/",
-};
-
-function extractMeetings(obj, meetings, chamberMap) {
-  if (!obj || typeof obj !== "object") return;
-  if (Array.isArray(obj)) {
-    obj.forEach(item => extractMeetings(item, meetings, chamberMap));
-    return;
-  }
-
-  const title = obj.title || obj.Title || obj.meeting_title || obj.MeetingTitle || obj.name || obj.subject;
-  const time  = obj.time  || obj.Time  || obj.startTime || obj.StartTime || obj.start_time || obj.hour || obj.Hour;
-  const room  = obj.room  || obj.Room  || obj.location  || obj.Location  || obj.venue || obj.Venue || obj.chamber || obj.Chamber;
-
-  if (title && typeof title === "string" && title.length > 8) {
-    const normTime    = normalizeTime(time);
-    const normChamber = chamberForRoom(room);
-    meetings.push({ title: title.trim(), time: normTime, room: room || null });
-    if (normChamber) {
-      if (!chamberMap[normChamber]) chamberMap[normChamber] = [];
-      chamberMap[normChamber].push({ time: normTime, title: title.trim() });
-    }
-    return; // don't recurse into meeting objects
-  }
-
-  Object.values(obj).forEach(v => {
-    if (v && typeof v === "object") extractMeetings(v, meetings, chamberMap);
-  });
-}
-
-async function tryEndpoint(url) {
-  try {
-    console.log(`Trying: ${url}`);
-    const res = await fetch(url, { headers: HEADERS });
-    const ct = res.headers.get("content-type") || "";
-    console.log(`  → ${res.status} | ${ct}`);
-    if (!res.ok) return null;
-    const text = await res.text();
-    console.log(`  → ${text.length} bytes | preview: ${text.slice(0, 150).replace(/\s+/g, " ")}`);
-    try {
-      return JSON.parse(text);
-    } catch (_) {
-      return null;
-    }
-  } catch (e) {
-    console.log(`  → Error: ${e.message}`);
-    return null;
-  }
-}
-
 async function main() {
   const dateStr = todayInNewYork();
   console.log(`\n📅 NY date: ${dateStr} | UTC: ${new Date().toISOString()}\n`);
 
-  // Try every plausible endpoint at journal-api.un.org
-  const endpoints = [
-    `${API_BASE}/new-york/all/${dateStr}`,
-    `${API_BASE}/en/new-york/all/${dateStr}`,
-    `${API_BASE}/meetings?date=${dateStr}&location=new-york&lang=en`,
-    `${API_BASE}/meetings?date=${dateStr}&location=new-york`,
-    `${API_BASE}/meeting?date=${dateStr}&lang=en`,
-    `${API_BASE}/meeting/${dateStr}?lang=en`,
-    `${API_BASE}/new-york/meetings/${dateStr}`,
-    `${API_BASE}/en/meetings/${dateStr}`,
-    `${API_BASE}/${dateStr}/new-york`,
-    `${API_BASE}/journal/new-york/${dateStr}`,
-    `${API_BASE}/journal/${dateStr}`,
-  ];
+  const prompt = `Today is ${dateStr}. 
 
-  const meetings   = [];
-  const chamberMap = {};
-  let   usedUrl    = null;
+Please search the web and read the UN Journal page at:
+https://journal.un.org/en/new-york/all/${dateStr}
 
-  for (const url of endpoints) {
-    const data = await tryEndpoint(url);
-    if (!data) continue;
+Extract ALL meetings listed for today. The page has sections:
+- Official Meetings (with sub-sections: Security Council, General Assembly, Economic and Social Council, etc.)
+- Other Meetings
 
-    const before = meetings.length;
-    extractMeetings(data, meetings, chamberMap);
+For each meeting, extract:
+1. The meeting title
+2. The start time (like "10:00 AM", "11:30 AM", "3:00 PM")
+3. The room/location (e.g. "Security Council Consultations Room", "Economic and Social Council Chamber", "General Assembly Hall", "Conference Room 1", etc.)
 
-    if (meetings.length > before) {
-      console.log(`\n✅ Found ${meetings.length - before} meetings from: ${url}`);
-      usedUrl = url;
-      break;
-    } else {
-      console.log(`  → Parsed OK but no meetings. Keys: ${Object.keys(data).join(", ")}`);
+Then return ONLY this JSON structure, no markdown, no explanation:
+{
+  "chambers": [
+    {
+      "room": "General Assembly Hall",
+      "meetings": [{"time": "10:00 AM", "title": "Meeting title here"}]
+    },
+    {
+      "room": "Security Council",
+      "meetings": [{"time": "11:30 AM", "title": "Closed - Consultations of the whole"}]
+    },
+    {
+      "room": "Trusteeship Council",
+      "meetings": []
+    },
+    {
+      "room": "Economic and Social Council",
+      "meetings": [{"time": "4:30 PM", "title": "Briefing to Member States"}]
     }
-  }
-
-  // Log chamber summary
-  console.log("\n🏛️  Chambers:");
-  ["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"].forEach(c => {
-    const ms = chamberMap[c] || [];
-    console.log(`  ${c}: ${ms.length > 0 ? ms.map(m => `${m.time} — ${m.title}`).join(" | ") : "none"}`);
-  });
-
-  const chambers = ["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"]
-    .map(name => ({ room: name, meetings: (chamberMap[name] || []).map(m => ({ time: m.time, title: m.title })) }));
-
-  const titles = [...new Set(meetings.map(m => m.title).filter(t => t && t.length > 4))].slice(0, 30);
-
-  saveResult(dateStr, chambers, titles,
-    titles.length > 0
-      ? `Live from ${usedUrl} — ${titles.length} meetings`
-      : "No meetings found at journal-api.un.org — check log for response previews"
-  );
+  ],
+  "meetings": [
+    "Full title of every meeting today (all sections combined)"
+  ]
 }
 
-main().catch(err => {
-  console.error("Fatal:", err.message);
-  saveResult(todayInNewYork(), emptyChambers(), [], `Fatal: ${err.message}`);
-});
+Rules:
+- chambers: only list meetings physically held IN that specific room. A Security Council meeting held in the ECOSOC Chamber goes under "Economic and Social Council", not "Security Council".
+- meetings: flat list of ALL meeting titles from the page (Official + Other Meetings)
+- If the page shows no meetings or says "No meetings scheduled", return empty arrays
+- Return ONLY the raw JSON object`;
+
+  console.log("Calling Claude API with web search...");
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 4000,
+        tools: [{ type: "web_search_20250305", name: "web_search" }],
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data?.error?.message || `API error ${res.status}`);
+    }
+
+    // Extract text from response
+    let raw = "";
+    for (const block of data.content || []) {
+      if (block.type === "text") raw += block.text;
+    }
+
+    console.log(`\nRaw response (first 500 chars):\n${raw.slice(0, 500)}\n`);
+
+    // Clean and parse JSON
+    raw = raw.replace(/```json|```/g, "").trim();
+    const start = raw.indexOf("{");
+    const end   = raw.lastIndexOf("}");
+    if (start === -1 || end === -1) throw new Error("No JSON found in response");
+
+    const parsed = JSON.parse(raw.slice(start, end + 1));
+
+    const chambers = parsed.chambers || emptyChambers();
+    const meetings = parsed.meetings || [];
+
+    // Log chamber summary
+    console.log("🏛️  Chambers:");
+    chambers.forEach(c => {
+      const ms = c.meetings || [];
+      console.log(`  ${c.room}: ${ms.length > 0 ? ms.map(m => `${m.time} — ${m.title}`).join(" | ") : "none"}`);
+    });
+    console.log(`\n📋 Total meetings: ${meetings.length}`);
+    meetings.forEach(m => console.log(`  - ${m}`));
+
+    saveResult(dateStr, chambers, meetings,
+      meetings.length > 0
+        ? `Live from journal.un.org — ${meetings.length} meetings`
+        : "journal.un.org returned no meetings for today"
+    );
+
+  } catch (err) {
+    console.error("Error:", err.message);
+    saveResult(todayInNewYork(), emptyChambers(), [], `Error: ${err.message}`);
+  }
+}
+
+main();
