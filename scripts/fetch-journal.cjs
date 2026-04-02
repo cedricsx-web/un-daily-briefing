@@ -1,6 +1,5 @@
-// fetch-journal.cjs
-// Uses Puppeteer page.on('response') to capture journal-api.un.org/api/allnew/
-// This method was confirmed working in a previous run (25287 bytes captured).
+// fetch-journal.cjs — Puppeteer captures journal-api.un.org/api/allnew/ response
+// Parser updated based on actual API structure observed in logs.
 
 const { writeFileSync, mkdirSync } = require("fs");
 const puppeteer = require("puppeteer");
@@ -15,18 +14,35 @@ const CHAMBER_MAP = {
 
 function chamberForRoom(raw) {
   if (!raw) return null;
-  const lower = raw.toLowerCase().trim();
+  const lower = (raw || "").toString().toLowerCase().trim();
   for (const [key, val] of Object.entries(CHAMBER_MAP)) {
     if (lower.includes(key)) return val;
   }
   return null;
 }
 
+// Strip HTML tags: "<p><span>10128th meeting</span></p>" → "10128th meeting"
+function stripHtml(str) {
+  if (!str || typeof str !== "string") return "";
+  return str.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&nbsp;/g, " ").trim();
+}
+
+// Get English text from multilingual field: { en: "...", fr: "..." } or just a string
+function getText(field) {
+  if (!field) return "";
+  if (typeof field === "string") return stripHtml(field);
+  if (typeof field === "object") {
+    const val = field.en || field.En || field.english || Object.values(field)[0] || "";
+    return stripHtml(val.toString());
+  }
+  return "";
+}
+
 function normalizeTime(raw) {
   if (!raw) return "TBD";
-  const clean = raw.toString().trim().replace(/\s*-\s*\d{1,2}:\d{2}$/, "");
-  const m = clean.match(/(\d{1,2}):(\d{2})/);
-  if (!m) return raw.toString().trim();
+  const str = raw.toString().trim().replace(/\s*-\s*\d{1,2}:\d{2}$/, "");
+  const m = str.match(/(\d{1,2}):(\d{2})/);
+  if (!m) return str;
   let h = parseInt(m[1]), min = m[2];
   const p = h >= 12 ? "PM" : "AM";
   if (h > 12) h -= 12;
@@ -62,39 +78,35 @@ function saveResult(dateStr, chambers, meetings, note) {
   console.log(`✅ Saved — ${meetings.length} meetings | ${note || "ok"}`);
 }
 
-// Parse the allnew API response
-// Structure: { officialMeetings: { groups: [{ groupNameTitle, sessions: [{ name, session, meetings: [{ title, time, room, cancelled }] }] }] } }
 function parseJournalData(data) {
   const allMeetings = [];
   const chamberMap  = {};
 
-  // Log raw top-level keys
   console.log("\n📊 Top-level keys:", Object.keys(data).join(", "));
 
-  function processMeetingItem(item, bodyLabel) {
+  function processMeeting(item, organLabel) {
     if (!item || typeof item !== "object") return;
     if (item.cancelled || item.isCancelled) return;
 
-    // Try every possible field name for the meeting title
-    const rawTitle = item.title || item.Title || item.name || item.Name
-                   || item.subject || item.Subject || item.description || "";
-    // Time
-    const rawTime  = item.time  || item.Time  || item.startTime || item.start_time
-                   || item.hour || item.Hour  || item.startHour || "";
-    // Room
-    const rawRoom  = item.room  || item.Room  || item.location  || item.Location
-                   || item.venue || item.Venue || item.roomName  || item.RoomName
-                   || item.place || item.chamber || "";
+    // --- TITLE ---
+    // API uses: meetingNumber.en (HTML), title.en (HTML), name.en, subject.en
+    const meetingNum = getText(item.meetingNumber);
+    const titleText  = getText(item.title) || getText(item.name) || getText(item.subject);
+    const rawTitle   = meetingNum || titleText || "";
+    if (!rawTitle) return;
 
-    // Build display title
-    const meetingTitle = rawTitle.trim();
-    const fullTitle = bodyLabel && meetingTitle
-      ? `${bodyLabel} — ${meetingTitle}`
-      : meetingTitle || bodyLabel || "";
+    const fullTitle = organLabel ? `${organLabel} — ${rawTitle}` : rawTitle;
 
-    if (!fullTitle || fullTitle.length < 3) return;
+    // --- TIME ---
+    // API uses: startTime, time, hour — could be "10:00" or "10:00 - 13:00"
+    const rawTime = item.startTime || item.time || item.Time || item.hour || item.Hour || "";
+    const normTime = normalizeTime(rawTime.toString());
 
-    const normTime    = normalizeTime(rawTime);
+    // --- ROOM ---
+    // API uses: room.en (HTML), location.en, venue.en, roomName
+    const rawRoom = getText(item.room) || getText(item.location) || getText(item.venue)
+                  || (typeof item.roomName === "string" ? item.roomName : "");
+
     const normChamber = chamberForRoom(rawRoom);
 
     allMeetings.push({ title: fullTitle, time: normTime, room: rawRoom || null });
@@ -105,42 +117,40 @@ function parseJournalData(data) {
     }
   }
 
-  function processSection(section, sectionLabel) {
+  function processSection(section) {
     if (!section) return;
-    const groups = section.groups || section.items || (Array.isArray(section) ? section : []);
+    const groups = Array.isArray(section) ? section : (section.groups || []);
 
     groups.forEach(group => {
-      const organName = group.groupNameTitle || group.name || group.title || sectionLabel;
-      const sessions  = group.sessions || group.items || group.bodies || [];
+      const organName = group.groupNameTitle || getText(group.name) || "";
+      const sessions  = group.sessions || group.items || [];
 
       sessions.forEach(session => {
-        const sessionName = session.name || session.title || organName;
+        const sessionName = session.name || getText(session.title) || organName;
         const sessionNum  = session.session || session.sessionNumber || "";
-        const bodyLabel   = sessionNum ? `${sessionName}, ${sessionNum}` : sessionName;
+        const bodyLabel   = sessionNum ? `${sessionName}, ${sessionNum} session` : sessionName;
 
         const meetings = session.meetings || session.items || session.events || [];
 
         if (Array.isArray(meetings) && meetings.length > 0) {
-          // Log first session structure for debugging
+          // Log first meeting structure once
           if (allMeetings.length === 0) {
-            console.log(`\nFirst session "${bodyLabel}" meetings[0]:`, JSON.stringify(meetings[0]).slice(0, 300));
+            console.log(`\nFirst meeting object (${bodyLabel}):`);
+            console.log(JSON.stringify(meetings[0]).slice(0, 500));
           }
-          meetings.forEach(m => processMeetingItem(m, bodyLabel));
+          meetings.forEach(m => processMeeting(m, bodyLabel));
         } else {
-          // Session itself is the meeting entry
-          processMeetingItem(session, organName);
+          // Session itself is the meeting
+          processMeeting(session, organName);
         }
       });
-
-      // Groups sometimes have meetings directly
-      const directMeetings = group.meetings || [];
-      directMeetings.forEach(m => processMeetingItem(m, organName));
     });
   }
 
-  processSection(data.officialMeetings, "Official Meetings");
-  processSection(data.informalConsultations, "Informal Consultations");
-  processSection(data.otherMeetings, "Other Meetings");
+  processSection(data.officialMeetings);
+  // Note: key is "informalMeetings" not "informalConsultations" per the log
+  processSection(data.informalMeetings || data.informalConsultations);
+  processSection(data.otherMeetings);
 
   return { allMeetings, chamberMap };
 }
@@ -172,37 +182,27 @@ async function main() {
     await page.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36");
     await page.setExtraHTTPHeaders({ "Accept-Language": "en-US,en;q=0.9" });
 
-    // Capture the allnew response via network interception
     let journalData = null;
 
     page.on("response", async response => {
-      const respUrl = response.url();
-      if (!respUrl.includes("allnew")) return;
-
+      if (!response.url().includes("allnew")) return;
       try {
         const buf  = await response.buffer();
         const text = buf.toString("utf8");
-        console.log(`\n📡 Captured: ${respUrl} | ${buf.length}b`);
-        console.log(`   Preview: ${text.slice(0, 200)}`);
+        console.log(`\n📡 Captured: ${response.url()} | ${buf.length}b`);
         journalData = JSON.parse(text);
-        console.log(`   ✅ Parsed JSON successfully`);
+        console.log(`   ✅ JSON parsed OK`);
       } catch (e) {
-        console.log(`   ⚠️ Parse error: ${e.message}`);
+        console.log(`   ⚠️ ${e.message}`);
       }
     });
 
     await page.goto(url, { waitUntil: "networkidle2", timeout: 45000 });
-    console.log(`\nPage: ${await page.title()}`);
-
-    // Wait for any lazy-loaded data
     await new Promise(r => setTimeout(r, 5000));
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await new Promise(r => setTimeout(r, 2000));
-
     await browser.close();
 
     if (!journalData) {
-      saveResult(dateStr, emptyChambers(), [], "No allnew data captured — page may not have loaded meeting data");
+      saveResult(dateStr, emptyChambers(), [], "No allnew data captured");
       return;
     }
 
@@ -224,7 +224,7 @@ async function main() {
     saveResult(dateStr, chambers, titles,
       titles.length > 0
         ? `Live from journal-api.un.org — ${titles.length} meetings`
-        : `API data received but 0 meetings parsed — check structure log`
+        : `Data received but 0 meetings parsed — check structure log`
     );
 
   } catch (err) {
