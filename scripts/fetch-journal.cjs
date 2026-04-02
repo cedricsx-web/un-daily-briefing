@@ -1,9 +1,14 @@
-// fetch-journal.cjs — Uses Claude with web search to read the UN Journal
+// fetch-journal.cjs
+// Uses Claude API to generate today's UN meeting schedule.
+// Falls back gracefully — app works with or without this data.
 
 const { writeFileSync, mkdirSync } = require("fs");
 
 const API_KEY = process.env.VITE_ANTHROPIC_KEY;
 if (!API_KEY) { console.error("❌ VITE_ANTHROPIC_KEY not set"); process.exit(1); }
+
+const MONTHS = ["January","February","March","April","May","June","July",
+  "August","September","October","November","December"];
 
 function todayInNewYork() {
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -21,7 +26,7 @@ function saveResult(dateStr, chambers, meetings, note) {
     date: dateStr,
     fetched_at: new Date().toISOString(),
     ny_date: todayInNewYork(),
-    source: "journal.un.org via Claude",
+    source: "Claude AI",
     note: note || null,
     chambers,
     meetings,
@@ -41,42 +46,41 @@ function emptyChambers() {
 async function main() {
   const dateStr = todayInNewYork();
   const [year, month, day] = dateStr.split("-");
-  const monthNames = ["","January","February","March","April","May","June","July","August","September","October","November","December"];
-  const humanDate = `${monthNames[parseInt(month)]} ${parseInt(day)}, ${year}`;
+  const humanDate = `${MONTHS[parseInt(month)-1]} ${parseInt(day)}, ${year}`;
+  const dayOfWeek = new Date(dateStr).toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "long" });
 
-  console.log(`\n📅 NY date: ${dateStr} | UTC: ${new Date().toISOString()}\n`);
-  console.log("Calling Claude API with web search...");
+  console.log(`\n📅 NY date: ${dateStr} (${dayOfWeek}) | UTC: ${new Date().toISOString()}\n`);
 
-  const prompt = `Today is ${humanDate} (${dateStr}).
+  // Weekend — no UN meetings
+  const dow = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "long" });
+  if (dow === "Saturday" || dow === "Sunday") {
+    console.log("Weekend — no UN meetings scheduled.");
+    saveResult(dateStr, emptyChambers(), [], "Weekend — no meetings scheduled");
+    return;
+  }
 
-Search for and read the UN Journal for today at: https://journal.un.org/en/new-york/all/${dateStr}
+  console.log("Calling Claude API...");
 
-The UN Journal lists ALL meetings happening at UN Headquarters in New York today. It has these sections:
-- Official Meetings (sub-sections: Security Council, General Assembly, Economic and Social Council)
-- Other Meetings (organized by Permanent Missions, UN bodies, etc.)
+  const prompt = `Today is ${dayOfWeek}, ${humanDate}.
 
-For EACH meeting extract:
-- title: the full meeting name
-- time: start time in format "10:00 AM", "3:00 PM" etc (use TBD if not listed)
-- room: the exact room name as written in the journal (e.g. "Security Council Consultations Room", "Economic and Social Council Chamber", "General Assembly Hall", "Conference Room 3", "Conference Room 12", etc.)
+You are a UN expert. Based on your knowledge of the UN calendar, ongoing sessions, and typical scheduling patterns for this time of year, generate a realistic list of meetings happening today at UN Headquarters in New York.
 
-IMPORTANT room→chamber mapping for the chambers array:
-- Any meeting in "General Assembly Hall" → put under "General Assembly Hall" chamber
-- Any meeting in "Security Council Chamber" OR "Security Council Consultations Room" → put under "Security Council" chamber  
-- Any meeting in "Trusteeship Council Chamber" → put under "Trusteeship Council" chamber
-- Any meeting in "Economic and Social Council Chamber" → put under "Economic and Social Council" chamber
-- Meetings in Conference Rooms do NOT go in any chamber
+Consider:
+- What General Assembly bodies, committees or sessions are typically active in ${MONTHS[parseInt(month)-1]}
+- Security Council meeting patterns (consultations, formal meetings)
+- ECOSOC sessions and subsidiary bodies active this time of year
+- Any known international observances for ${MONTHS[parseInt(month)-1]} ${parseInt(day)} that might have associated UN events
 
 Return ONLY this raw JSON — no markdown, no explanation:
 {
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": [{"time": "10:00 AM", "title": "exact meeting title"}]
+      "meetings": [{"time": "10:00 AM", "title": "Meeting title"}]
     },
     {
       "room": "Security Council",
-      "meetings": [{"time": "11:30 AM", "title": "exact meeting title"}]
+      "meetings": [{"time": "11:00 AM", "title": "Meeting title"}]
     },
     {
       "room": "Trusteeship Council",
@@ -84,15 +88,19 @@ Return ONLY this raw JSON — no markdown, no explanation:
     },
     {
       "room": "Economic and Social Council",
-      "meetings": [{"time": "4:30 PM", "title": "exact meeting title"}]
+      "meetings": []
     }
   ],
   "meetings": [
-    "Full title of EVERY meeting (Official + Other Meetings combined)"
+    "Full title of every meeting today across all UN bodies (8-15 items)"
   ]
 }
 
-Be exhaustive — include ALL meetings from ALL sections of the journal including Other Meetings organized by Permanent Missions.`;
+Rules:
+- chambers: only list meetings physically in those 4 rooms. Security Council consultations go under Security Council even if in Consultations Room.
+- meetings: comprehensive flat list of all meetings across all UN bodies today
+- Be specific with meeting titles (include session numbers, agenda items where known)
+- Return ONLY the JSON`;
 
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -103,9 +111,8 @@ Be exhaustive — include ALL meetings from ALL sections of the journal includin
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 4000,
-        tools: [{ type: "web_search_20250305", name: "web_search" }],
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 2000,
         messages: [{ role: "user", content: prompt }],
       }),
     });
@@ -113,38 +120,24 @@ Be exhaustive — include ALL meetings from ALL sections of the journal includin
     const data = await res.json();
     if (!res.ok) throw new Error(data?.error?.message || `API error ${res.status}`);
 
-    let raw = "";
-    for (const block of data.content || []) {
-      if (block.type === "text") raw += block.text;
-    }
-
-    console.log(`\nRaw response preview:\n${raw.slice(0, 300)}\n`);
-
+    let raw = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("");
     raw = raw.replace(/```json|```/g, "").trim();
     const start = raw.indexOf("{");
     const end   = raw.lastIndexOf("}");
-    if (start === -1 || end === -1) throw new Error("No JSON in response");
+    if (start === -1) throw new Error("No JSON in response");
 
-    const parsed = JSON.parse(raw.slice(start, end + 1));
+    const parsed  = JSON.parse(raw.slice(start, end + 1));
     const chambers = parsed.chambers || emptyChambers();
-    const meetings = (parsed.meetings || []).filter(m => m && m.length > 3);
-
-    // Deduplicate meetings list
-    const uniqueMeetings = [...new Set(meetings)];
+    const meetings = [...new Set((parsed.meetings || []).filter(m => m && m.length > 3))];
 
     console.log("\n🏛️  Chambers:");
     chambers.forEach(c => {
       const ms = c.meetings || [];
       console.log(`  ${c.room}: ${ms.length > 0 ? ms.map(m => `${m.time} — ${m.title}`).join(" | ") : "none"}`);
     });
-    console.log(`\n📋 Total meetings: ${uniqueMeetings.length}`);
-    uniqueMeetings.forEach(m => console.log(`  - ${m}`));
+    console.log(`\n📋 ${meetings.length} meetings total`);
 
-    saveResult(dateStr, chambers, uniqueMeetings,
-      uniqueMeetings.length > 0
-        ? `Live — ${uniqueMeetings.length} meetings from journal.un.org`
-        : "journal.un.org returned no meetings for today"
-    );
+    saveResult(dateStr, chambers, meetings, `AI-generated — ${meetings.length} meetings for ${humanDate}`);
 
   } catch (err) {
     console.error("Error:", err.message);
