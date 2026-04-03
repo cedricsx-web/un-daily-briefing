@@ -1,9 +1,9 @@
 {
-  "date": "2026-04-02",
-  "fetched_at": "2026-04-02T19:05:51.415Z",
-  "ny_date": "2026-04-02",
+  "date": "2026-04-03",
+  "fetched_at": "2026-04-03T12:48:08.886Z",
+  "ny_date": "2026-04-03",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 8 meetings",
+  "note": "Data received but 0 meetings parsed",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -11,16 +11,7 @@
     },
     {
       "room": "Security Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Security Council -- 10128th meeting"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Security Council -- 10129th meeting"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Trusteeship Council",
@@ -28,22 +19,8 @@
     },
     {
       "room": "Economic and Social Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the modalities of the High-level meeting on HIV and AIDS"
-        }
-      ]
+      "meetings": []
     }
   ],
-  "meetings": [
-    "Security Council -- 10128th meeting",
-    "Security Council -- 10129th meeting",
-    "General Assembly, Eightieth session -- Informal consultations on the modalities of the High-level meeting on HIV and AIDS",
-    "Preparatory Commission for the Entry into Force of the Agreement under the United Nations Convention on the Law of the Sea on the Conservation and Sustainable Use of Marine Biological Diversity of Areas beyond National Jurisdiction and the Convening of the First Meeting of the Conference of the Parties to the Agreement, Third session -- 29th plenary meeting, followed by informal working group meeting",
-    "Preparatory Commission for the Entry into Force of the Agreement under the United Nations Convention on the Law of the Sea on the Conservation and Sustainable Use of Marine Biological Diversity of Areas beyond National Jurisdiction and the Convening of the First Meeting of the Conference of the Parties to the Agreement, Third session -- Informal working group meeting",
-    "Preparatory Commission for the Entry into Force of the Agreement under the United Nations Convention on the Law of the Sea on the Conservation and Sustainable Use of Marine Biological Diversity of Areas beyond National Jurisdiction and the Convening of the First Meeting of the Conference of the Parties to the Agreement, Third session -- 30th plenary meeting",
-    "International Civil Service Commission, One hundred and first session -- Meeting",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)"
-  ]
+  "meetings": []
 }
