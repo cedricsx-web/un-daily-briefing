@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 
 const API_KEY = import.meta.env.VITE_ANTHROPIC_KEY || "";
 const BASE = import.meta.env.BASE_URL || "/";
+const SB_URL = import.meta.env.VITE_SUPABASE_URL || "";
+const SB_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
 const SDG_COLORS = {
   1: "#E5243B", 2: "#DDA63A", 3: "#4C9F38", 4: "#C5192D",
@@ -24,109 +26,110 @@ const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Satur
 
 
 // UN International Days & Weeks -- keyed as "MM-DD"
+// Each entry: { name, url }
 const UN_OBSERVANCES = {
-  "01-04": "World Braille Day",
-  "01-24": "International Day of Education",
-  "01-26": "International Day of Clean Energy",
-  "01-27": "International Day of Commemoration in Memory of the Victims of the Holocaust",
-  "01-28": "International Day of Peaceful Coexistence",
-  "02-02": "World Wetlands Day",
-  "02-04": "International Day of Human Fraternity",
-  "02-06": "International Day of Zero Tolerance to Female Genital Mutilation",
-  "02-11": "International Day of Women and Girls in Science",
-  "02-13": "World Radio Day",
-  "02-20": "World Day of Social Justice",
-  "02-21": "International Mother Language Day",
-  "03-03": "World Wildlife Day",
-  "03-05": "International Day for Disarmament and Non-Proliferation Awareness",
-  "03-08": "International Women's Day",
-  "03-10": "International Day of Women Judges",
-  "03-15": "International Day to Combat Islamophobia",
-  "03-20": "International Day of Happiness",
-  "03-21": "International Day for the Elimination of Racial Discrimination",
-  "03-22": "World Water Day",
-  "03-23": "World Meteorological Day",
-  "03-24": "World Tuberculosis Day",
-  "03-25": "International Day of Remembrance of the Victims of Slavery",
-  "03-30": "International Day of Zero Waste",
-  "04-02": "World Autism Awareness Day",
-  "04-04": "International Day for Mine Awareness",
-  "04-05": "International Day of Conscience",
-  "04-06": "International Day of Sport for Development and Peace",
-  "04-07": "World Health Day",
-  "04-12": "International Day of Human Space Flight",
-  "04-21": "World Creativity and Innovation Day",
-  "04-22": "International Mother Earth Day",
-  "04-23": "World Book and Copyright Day",
-  "04-24": "International Day of Multilateralism and Diplomacy for Peace",
-  "04-25": "World Malaria Day",
-  "04-26": "International Chernobyl Disaster Remembrance Day",
-  "04-28": "World Day for Safety and Health at Work",
-  "04-29": "International Day in Memory of the Victims of Earthquakes",
-  "04-30": "International Jazz Day",
-  "05-03": "World Press Freedom Day",
-  "05-15": "International Day of Families",
-  "05-16": "International Day of Living Together in Peace",
-  "05-17": "World Telecommunication and Information Society Day",
-  "05-20": "World Bee Day",
-  "05-21": "World Day for Cultural Diversity for Dialogue and Development",
-  "05-22": "International Day for Biological Diversity",
-  "05-29": "International Day of UN Peacekeepers",
-  "05-31": "World No-Tobacco Day",
-  "06-01": "Global Day of Parents",
-  "06-03": "World Bicycle Day",
-  "06-04": "International Day of Innocent Children Victims of Aggression",
-  "06-05": "World Environment Day",
-  "06-08": "World Oceans Day",
-  "06-12": "World Day Against Child Labour",
-  "06-17": "World Day to Combat Desertification and Drought",
-  "06-18": "International Day for Countering Hate Speech",
-  "06-19": "International Day for the Elimination of Sexual Violence in Conflict",
-  "06-20": "World Refugee Day",
-  "06-21": "International Day of Yoga",
-  "06-23": "United Nations Public Service Day",
-  "06-26": "United Nations International Day in Support of Victims of Torture",
-  "07-11": "World Population Day",
-  "07-15": "World Youth Skills Day",
-  "07-18": "Nelson Mandela International Day",
-  "07-28": "World Hepatitis Day",
-  "07-30": "International Day of Friendship",
-  "08-09": "International Day of the World's Indigenous Peoples",
-  "08-12": "International Youth Day",
-  "08-19": "World Humanitarian Day",
-  "08-23": "International Day for the Remembrance of the Slave Trade and its Abolition",
-  "09-05": "International Day of Charity",
-  "09-08": "International Literacy Day",
-  "09-15": "International Day of Democracy",
-  "09-16": "International Day for the Preservation of the Ozone Layer",
-  "09-21": "International Day of Peace",
-  "09-26": "International Day for the Total Elimination of Nuclear Weapons",
-  "09-27": "World Tourism Day",
-  "10-01": "International Day of Older Persons",
-  "10-02": "International Day of Non-Violence",
-  "10-05": "World Teachers' Day",
-  "10-10": "World Mental Health Day",
-  "10-11": "International Day of the Girl Child",
-  "10-13": "International Day for Disaster Risk Reduction",
-  "10-16": "World Food Day",
-  "10-17": "International Day for the Eradication of Poverty",
-  "10-24": "United Nations Day",
-  "11-05": "World Tsunami Awareness Day",
-  "11-10": "World Science Day for Peace and Development",
-  "11-16": "International Day for Tolerance",
-  "11-19": "World Toilet Day",
-  "11-20": "World Children's Day",
-  "11-25": "International Day for the Elimination of Violence against Women",
-  "11-29": "International Day of Solidarity with the Palestinian People",
-  "12-01": "World AIDS Day",
-  "12-02": "International Day for the Abolition of Slavery",
-  "12-03": "International Day of Persons with Disabilities",
-  "12-05": "International Volunteer Day",
-  "12-09": "International Anti-Corruption Day",
-  "12-10": "Human Rights Day",
-  "12-11": "International Mountain Day",
-  "12-18": "International Migrants Day",
-  "12-20": "International Human Solidarity Day",
+  "01-04": { name: "World Braille Day", url: "https://www.un.org/en/observances/braille-day" },
+  "01-24": { name: "International Day of Education", url: "https://www.un.org/en/observances/education-day" },
+  "01-26": { name: "International Day of Clean Energy", url: "https://www.un.org/en/observances/clean-energy-day" },
+  "01-27": { name: "International Day of Commemoration in Memory of the Victims of the Holocaust", url: "https://www.un.org/en/observances/commemoration-holocaust-victims-day" },
+  "01-28": { name: "International Day of Peaceful Coexistence", url: "https://www.un.org/en/observances/peaceful-coexistence-day" },
+  "02-02": { name: "World Wetlands Day", url: "https://www.un.org/en/observances/world-wetlands-day" },
+  "02-04": { name: "International Day of Human Fraternity", url: "https://www.un.org/en/observances/human-fraternity" },
+  "02-06": { name: "International Day of Zero Tolerance to Female Genital Mutilation", url: "https://www.un.org/en/observances/female-genital-mutilation-day" },
+  "02-11": { name: "International Day of Women and Girls in Science", url: "https://www.un.org/en/observances/women-and-girls-in-science-day/" },
+  "02-13": { name: "World Radio Day", url: "https://www.un.org/en/observances/radio-day" },
+  "02-20": { name: "World Day of Social Justice", url: "https://www.un.org/en/observances/social-justice-day" },
+  "02-21": { name: "International Mother Language Day", url: "https://www.un.org/en/observances/mother-language-day" },
+  "03-03": { name: "World Wildlife Day", url: "https://www.un.org/en/observances/world-wildlife-day" },
+  "03-05": { name: "International Day for Disarmament and Non-Proliferation Awareness", url: "https://www.un.org/en/observances/disarmament-non-proliferation-awareness-day" },
+  "03-08": { name: "International Women's Day", url: "https://www.un.org/en/observances/womens-day" },
+  "03-10": { name: "International Day of Women Judges", url: "https://www.un.org/en/observances/women-judges-day" },
+  "03-15": { name: "International Day to Combat Islamophobia", url: "https://www.un.org/en/observances/anti-islamophobia-day" },
+  "03-20": { name: "International Day of Happiness", url: "https://www.un.org/en/observances/happiness-day" },
+  "03-21": { name: "International Day for the Elimination of Racial Discrimination", url: "https://www.un.org/en/observances/end-racism-day" },
+  "03-22": { name: "World Water Day", url: "https://www.un.org/en/observances/water-day" },
+  "03-23": { name: "World Meteorological Day", url: "https://wmo.int/about-wmo/world-meteorological-day" },
+  "03-24": { name: "World Tuberculosis Day", url: "https://www.who.int/campaigns/world-tb-day/" },
+  "03-25": { name: "International Day of Remembrance of the Victims of Slavery and the Transatlantic Slave Trade", url: "https://www.un.org/en/observances/transatlantic-slave-trade" },
+  "03-30": { name: "International Day of Zero Waste", url: "https://www.un.org/en/observances/zero-waste-day" },
+  "04-02": { name: "World Autism Awareness Day", url: "https://www.un.org/en/observances/autism-day" },
+  "04-04": { name: "International Day for Mine Awareness and Assistance in Mine Action", url: "https://www.un.org/en/observances/mine-awareness-day" },
+  "04-05": { name: "International Day of Conscience", url: "https://www.un.org/en/observances/conscience-day" },
+  "04-06": { name: "International Day of Sport for Development and Peace", url: "https://www.un.org/en/observances/sport-day" },
+  "04-07": { name: "World Health Day", url: "https://www.who.int/campaigns/world-health-day" },
+  "04-12": { name: "International Day of Human Space Flight", url: "https://www.un.org/en/observances/human-spaceflight-day" },
+  "04-21": { name: "World Creativity and Innovation Day", url: "https://www.un.org/en/observances/creativity-and-innovation-day" },
+  "04-22": { name: "International Mother Earth Day", url: "https://www.un.org/en/observances/earth-day" },
+  "04-23": { name: "World Book and Copyright Day", url: "https://www.unesco.org/en/days/world-book-and-copyright" },
+  "04-24": { name: "International Day of Multilateralism and Diplomacy for Peace", url: "https://www.un.org/en/observances/Multilateralism-for-Peace-day" },
+  "04-25": { name: "World Malaria Day", url: "https://www.who.int/campaigns/world-malaria-day/world-malaria-day-2021" },
+  "04-26": { name: "International Chernobyl Disaster Remembrance Day", url: "https://www.un.org/en/observances/chernobyl-remembrance-day" },
+  "04-28": { name: "World Day for Safety and Health at Work", url: "https://www.un.org/en/observances/work-safety-day" },
+  "04-29": { name: "International Day in Memory of the Victims of Earthquakes", url: "https://www.un.org/en/observances/earthquake-victims-day" },
+  "04-30": { name: "International Jazz Day", url: "https://www.un.org/en/observances/jazz-day" },
+  "05-03": { name: "World Press Freedom Day", url: "https://www.un.org/en/observances/press-freedom-day" },
+  "05-15": { name: "International Day of Families", url: "https://www.un.org/en/observances/international-day-of-families" },
+  "05-16": { name: "International Day of Living Together in Peace", url: "https://www.un.org/en/observances/living-in-peace-day" },
+  "05-17": { name: "World Telecommunication and Information Society Day", url: "https://www.un.org/en/observances/telecommunication-day" },
+  "05-20": { name: "World Bee Day", url: "https://www.fao.org/world-bee-day/en" },
+  "05-21": { name: "World Day for Cultural Diversity for Dialogue and Development", url: "https://www.un.org/en/observances/cultural-diversity-day" },
+  "05-22": { name: "International Day for Biological Diversity", url: "https://www.un.org/en/observances/biological-diversity-day" },
+  "05-29": { name: "International Day of UN Peacekeepers", url: "https://www.un.org/en/observances/peacekeepers-day" },
+  "05-31": { name: "World No-Tobacco Day", url: "https://www.who.int/campaigns/world-no-tobacco-day" },
+  "06-01": { name: "Global Day of Parents", url: "https://www.un.org/en/observances/parents-day" },
+  "06-03": { name: "World Bicycle Day", url: "https://www.un.org/en/observances/bicycle-day" },
+  "06-04": { name: "International Day of Innocent Children Victims of Aggression", url: "https://www.un.org/en/observances/child-victim-day" },
+  "06-05": { name: "World Environment Day", url: "https://www.un.org/en/observances/environment-day" },
+  "06-08": { name: "World Oceans Day", url: "https://www.un.org/en/observances/oceans-day" },
+  "06-12": { name: "World Day Against Child Labour", url: "https://www.un.org/en/observances/world-day-against-child-labour" },
+  "06-17": { name: "World Day to Combat Desertification and Drought", url: "https://www.un.org/en/observances/desertification-day" },
+  "06-18": { name: "International Day for Countering Hate Speech", url: "https://www.un.org/en/observances/countering-hate-speech" },
+  "06-19": { name: "International Day for the Elimination of Sexual Violence in Conflict", url: "https://www.un.org/en/observances/end-sexual-violence-in-conflict-day" },
+  "06-20": { name: "World Refugee Day", url: "https://www.un.org/en/observances/refugee-day" },
+  "06-21": { name: "International Day of Yoga", url: "https://www.un.org/en/observances/yoga-day" },
+  "06-23": { name: "United Nations Public Service Day", url: "https://www.un.org/en/observances/public-service-day" },
+  "06-26": { name: "United Nations International Day in Support of Victims of Torture", url: "https://www.un.org/en/observances/torture-victims-day" },
+  "07-11": { name: "World Population Day", url: "https://www.un.org/en/observances/world-population-day" },
+  "07-15": { name: "World Youth Skills Day", url: "https://www.un.org/en/observances/youth-skills-day" },
+  "07-18": { name: "Nelson Mandela International Day", url: "https://www.un.org/en/observances/mandela-day" },
+  "07-28": { name: "World Hepatitis Day", url: "https://www.who.int/campaigns/world-hepatitis-day" },
+  "07-30": { name: "International Day of Friendship", url: "https://www.un.org/en/observances/friendship-day" },
+  "08-09": { name: "International Day of the World's Indigenous Peoples", url: "https://www.un.org/en/observances/indigenous-day" },
+  "08-12": { name: "International Youth Day", url: "https://www.un.org/en/observances/youth-day" },
+  "08-19": { name: "World Humanitarian Day", url: "https://www.un.org/en/observances/humanitarian-day" },
+  "08-23": { name: "International Day for the Remembrance of the Slave Trade and its Abolition", url: "https://www.un.org/en/observances/slave-trade-abolition" },
+  "09-05": { name: "International Day of Charity", url: "https://www.un.org/en/observances/charity-day" },
+  "09-08": { name: "International Literacy Day", url: "https://www.un.org/en/observances/literacy-day" },
+  "09-15": { name: "International Day of Democracy", url: "https://www.un.org/en/observances/democracy-day" },
+  "09-16": { name: "International Day for the Preservation of the Ozone Layer", url: "https://www.un.org/en/observances/ozone-day" },
+  "09-21": { name: "International Day of Peace", url: "https://www.un.org/en/observances/international-day-peace" },
+  "09-26": { name: "International Day for the Total Elimination of Nuclear Weapons", url: "https://www.un.org/en/observances/nuclear-weapons-elimination-day" },
+  "09-27": { name: "World Tourism Day", url: "https://www.un.org/en/observances/tourism-day" },
+  "10-01": { name: "International Day of Older Persons", url: "https://www.un.org/en/observances/older-persons-day" },
+  "10-02": { name: "International Day of Non-Violence", url: "https://www.un.org/en/observances/non-violence-day" },
+  "10-05": { name: "World Teachers' Day", url: "https://www.un.org/en/observances/teachers-day" },
+  "10-10": { name: "World Mental Health Day", url: "https://www.un.org/en/observances/world-mental-health-day" },
+  "10-11": { name: "International Day of the Girl Child", url: "https://www.un.org/en/observances/girl-child-day" },
+  "10-13": { name: "International Day for Disaster Risk Reduction", url: "https://www.un.org/en/observances/disaster-reduction-day" },
+  "10-16": { name: "World Food Day", url: "https://www.fao.org/world-food-day/en" },
+  "10-17": { name: "International Day for the Eradication of Poverty", url: "https://www.un.org/en/observances/day-for-eradicating-poverty" },
+  "10-24": { name: "United Nations Day", url: "https://www.un.org/en/observances/un-day" },
+  "11-05": { name: "World Tsunami Awareness Day", url: "https://www.un.org/en/observances/tsunami-awareness-day" },
+  "11-10": { name: "World Science Day for Peace and Development", url: "https://www.un.org/en/observances/science-day" },
+  "11-16": { name: "International Day for Tolerance", url: "https://www.un.org/en/observances/tolerance-day" },
+  "11-19": { name: "World Toilet Day", url: "https://www.un.org/en/observances/toilet-day" },
+  "11-20": { name: "World Children's Day", url: "https://www.un.org/en/observances/world-childrens-day" },
+  "11-25": { name: "International Day for the Elimination of Violence against Women", url: "https://www.un.org/en/observances/ending-violence-against-women-day" },
+  "11-29": { name: "International Day of Solidarity with the Palestinian People", url: "https://www.un.org/en/observances/international-day-solidarity-palestinian-people" },
+  "12-01": { name: "World AIDS Day", url: "https://www.un.org/en/observances/world-aids-day" },
+  "12-02": { name: "International Day for the Abolition of Slavery", url: "https://www.un.org/en/observances/slavery-abolition-day" },
+  "12-03": { name: "International Day of Persons with Disabilities", url: "https://www.un.org/en/observances/day-of-persons-with-disabilities" },
+  "12-05": { name: "International Volunteer Day", url: "https://www.un.org/en/observances/volunteer-day" },
+  "12-09": { name: "International Anti-Corruption Day", url: "https://www.un.org/en/observances/anti-corruption-day" },
+  "12-10": { name: "Human Rights Day", url: "https://www.un.org/en/observances/human-rights-day" },
+  "12-11": { name: "International Mountain Day", url: "https://www.un.org/en/observances/mountain-day" },
+  "12-18": { name: "International Migrants Day", url: "https://www.un.org/en/observances/migrants-day" },
+  "12-20": { name: "International Human Solidarity Day", url: "https://www.un.org/en/observances/human-solidarity-day" },
 };
 
 function getTodayObservance() {
@@ -311,6 +314,262 @@ function SectionHeader({ icon, title, subtitle, badge }) {
   );
 }
 
+
+// ── Add Meeting Modal ─────────────────────────────────────────────────────────
+const UN_BODIES = [
+  "General Assembly", "Security Council", "Economic and Social Council",
+  "Trusteeship Council", "Secretariat", "OHCHR", "UNDP", "UNICEF",
+  "UNFPA", "UN Women", "WFP", "UNHCR", "OCHA", "UNEP", "UNESCO",
+  "WHO", "ILO", "FAO", "Other UN Body",
+];
+
+const ROOMS = [
+  "General Assembly Hall", "Security Council Chamber",
+  "Trusteeship Council Chamber", "Economic and Social Council Chamber",
+  "Conference Room 1", "Conference Room 2", "Conference Room 3",
+  "Conference Room 4", "Conference Room 5", "Conference Room 6",
+  "Conference Room 7", "Conference Room 8", "Conference Room 9",
+  "Conference Room 10", "Conference Room 11", "Conference Room 12",
+  "Other",
+];
+
+const CHAMBER_ROOMS = [
+  "General Assembly Hall", "Security Council Chamber",
+  "Trusteeship Council Chamber", "Economic and Social Council Chamber",
+];
+
+function AddMeetingModal({ onClose, onSaved, todayStr }) {
+  const [organizerType, setOrganizerType] = useState("mission");
+  const [organizerName, setOrganizerName] = useState("");
+  const [title, setTitle] = useState("");
+  const [room, setRoom] = useState("Trusteeship Council Chamber");
+  const [timeStart, setTimeStart] = useState("15:00");
+  const [timeEnd, setTimeEnd] = useState("");
+  const [isClosed, setIsClosed] = useState(false);
+  const [note, setNote] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+
+  async function handleSave() {
+    if (!organizerName.trim()) { setErr("Please enter the organizer name."); return; }
+    if (!title.trim()) { setErr("Please enter a meeting title."); return; }
+    if (!timeStart) { setErr("Please enter a start time."); return; }
+    if (!SB_URL || !SB_KEY) { setErr("Supabase not configured."); return; }
+
+    setSaving(true);
+    setErr("");
+
+    try {
+      const res = await fetch(SB_URL + "/rest/v1/extra_meetings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SB_KEY,
+          "Authorization": "Bearer " + SB_KEY,
+          "Prefer": "return=minimal",
+        },
+        body: JSON.stringify({
+          date: todayStr,
+          organizer_type: organizerType,
+          organizer_name: organizerName.trim(),
+          title: title.trim(),
+          room: room,
+          time_start: timeStart,
+          time_end: timeEnd || null,
+          is_closed: isClosed,
+          note: note.trim() || null,
+        }),
+      });
+
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error("Save failed: " + txt);
+      }
+
+      onSaved();
+      onClose();
+    } catch (e) {
+      setErr(e.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const labelStyle = { fontSize: "11px", fontWeight: "700", color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "6px", display: "block" };
+  const inputStyle = { width: "100%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "8px", padding: "10px 12px", color: "#fff", fontSize: "14px", fontFamily: "inherit", boxSizing: "border-box" };
+  const selectStyle = { ...inputStyle, appearance: "none", WebkitAppearance: "none", cursor: "pointer" };
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 1000,
+      display: "flex", alignItems: "flex-end", justifyContent: "center",
+      animation: "fadeSlideIn 0.2s ease",
+    }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div style={{
+        background: "linear-gradient(180deg, #0d2044 0%, #0a1628 100%)",
+        border: "1px solid rgba(255,255,255,0.1)",
+        borderRadius: "20px 20px 0 0",
+        width: "100%", maxWidth: "520px",
+        maxHeight: "90dvh", overflowY: "auto",
+        padding: "24px 20px calc(env(safe-area-inset-bottom, 0px) + 24px)",
+      }}>
+        {/* Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+          <div>
+            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", letterSpacing: "1.5px", textTransform: "uppercase" }}>UN Briefing App</div>
+            <div style={{ fontSize: "18px", fontWeight: "800", fontFamily: "'Playfair Display', serif" }}>Add a Meeting</div>
+          </div>
+          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.08)", border: "none", color: "#fff", borderRadius: "50%", width: "32px", height: "32px", fontSize: "18px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            &#x2715;
+          </button>
+        </div>
+
+        {/* Organizer Type */}
+        <div style={{ marginBottom: "16px" }}>
+          <label style={labelStyle}>Who is organizing?</label>
+          <div style={{ display: "flex", gap: "8px" }}>
+            {[
+              { val: "un_body", icon: "🏛️", label: "UN Body" },
+              { val: "mission", icon: "🌍", label: "Mission" },
+              { val: "joint", icon: "🤝", label: "Joint" },
+            ].map(opt => (
+              <button key={opt.val} onClick={() => setOrganizerType(opt.val)} style={{
+                flex: 1, padding: "10px 6px", borderRadius: "10px", cursor: "pointer",
+                border: organizerType === opt.val ? "2px solid #0096D6" : "1px solid rgba(255,255,255,0.15)",
+                background: organizerType === opt.val ? "rgba(0,150,214,0.15)" : "rgba(255,255,255,0.04)",
+                color: "#fff", fontSize: "12px", fontWeight: "600", fontFamily: "inherit",
+                display: "flex", flexDirection: "column", alignItems: "center", gap: "4px",
+              }}>
+                <span style={{ fontSize: "18px" }}>{opt.icon}</span>
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Organizer Name */}
+        <div style={{ marginBottom: "16px" }}>
+          <label style={labelStyle}>{organizerType === "un_body" ? "UN Body" : organizerType === "mission" ? "Permanent Mission / Group" : "Organizers"}</label>
+          {organizerType === "un_body" ? (
+            <select value={organizerName} onChange={e => setOrganizerName(e.target.value)} style={selectStyle}>
+              <option value="">Select UN Body...</option>
+              {UN_BODIES.map(b => <option key={b} value={b}>{b}</option>)}
+            </select>
+          ) : (
+            <input
+              type="text"
+              value={organizerName}
+              onChange={e => setOrganizerName(e.target.value)}
+              placeholder={organizerType === "mission" ? "e.g. Permanent Mission of Monaco" : "e.g. Monaco + France + OHCHR"}
+              style={inputStyle}
+            />
+          )}
+        </div>
+
+        {/* Meeting Title */}
+        <div style={{ marginBottom: "16px" }}>
+          <label style={labelStyle}>Meeting Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            placeholder="e.g. High-level discussion on prevention of sexual abuse"
+            style={inputStyle}
+          />
+        </div>
+
+        {/* Room */}
+        <div style={{ marginBottom: "16px" }}>
+          <label style={labelStyle}>Room / Location</label>
+          <select value={room} onChange={e => setRoom(e.target.value)} style={selectStyle}>
+            {ROOMS.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+        </div>
+
+        {/* Time */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+          <div>
+            <label style={labelStyle}>Start Time</label>
+            <input type="time" value={timeStart} onChange={e => setTimeStart(e.target.value)} style={inputStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>End Time (opt.)</label>
+            <input type="time" value={timeEnd} onChange={e => setTimeEnd(e.target.value)} style={inputStyle} />
+          </div>
+        </div>
+
+        {/* Open / Closed */}
+        <div style={{ marginBottom: "16px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px 14px" }}>
+          <div>
+            <div style={{ fontSize: "14px", fontWeight: "600" }}>Closed Meeting</div>
+            <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)" }}>Toggle if not open to public</div>
+          </div>
+          <div onClick={() => setIsClosed(c => !c)} style={{
+            width: "44px", height: "24px", borderRadius: "12px",
+            background: isClosed ? "#0096D6" : "rgba(255,255,255,0.15)",
+            cursor: "pointer", position: "relative", transition: "background 0.2s",
+          }}>
+            <div style={{
+              position: "absolute", top: "2px",
+              left: isClosed ? "22px" : "2px",
+              width: "20px", height: "20px", borderRadius: "50%",
+              background: "#fff", transition: "left 0.2s",
+            }} />
+          </div>
+        </div>
+
+        {/* Note */}
+        <div style={{ marginBottom: "20px" }}>
+          <label style={labelStyle}>Note (optional)</label>
+          <input
+            type="text"
+            value={note}
+            onChange={e => setNote(e.target.value)}
+            placeholder="e.g. Co-organized with France, part of GA 80th session"
+            style={inputStyle}
+          />
+        </div>
+
+        {err && <p style={{ color: "#ff6b6b", fontSize: "13px", margin: "0 0 12px" }}>{err}</p>}
+
+        <button onClick={handleSave} disabled={saving} style={{
+          width: "100%", padding: "14px",
+          background: saving ? "rgba(255,255,255,0.1)" : "linear-gradient(135deg, #0096D6, #0050A0)",
+          color: saving ? "rgba(255,255,255,0.3)" : "#fff",
+          border: "none", borderRadius: "50px", fontSize: "15px", fontWeight: "700",
+          cursor: saving ? "default" : "pointer", fontFamily: "inherit",
+        }}>
+          {saving ? "Saving..." : "Add to Today's Briefing"}
+        </button>
+      </div>
+
+      {/* Floating Add Button - visible when data loaded but no modal */}
+      {data && !loading && !showAddModal && (
+        <button onClick={() => setShowAddModal(true)} style={{
+          position: "fixed", bottom: "calc(env(safe-area-inset-bottom, 0px) + 24px)", right: "24px",
+          width: "52px", height: "52px", borderRadius: "50%",
+          background: "linear-gradient(135deg, #0096D6, #0050A0)",
+          border: "none", color: "#fff", fontSize: "26px", cursor: "pointer",
+          boxShadow: "0 4px 20px rgba(0,100,200,0.5)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 100,
+        }}>
+          +
+        </button>
+      )}
+
+      {/* Add Meeting Modal */}
+      {showAddModal && (
+        <AddMeetingModal
+          onClose={() => setShowAddModal(false)}
+          onSaved={() => { fetchExtraMeetings(); }}
+          todayStr={todayStr()}
+        />
+      )}
+    </div>
+  );
+}
+
 // ── Main App ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [data, setData] = useState(null);
@@ -322,6 +581,9 @@ export default function App() {
   const [dots, setDots] = useState(".");
   const [loadingMsg, setLoadingMsg] = useState("Fetching UN Journal");
   const fetchedRef = useRef(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [extraMeetings, setExtraMeetings] = useState([]);
+  const [extraLoading, setExtraLoading] = useState(false);
 
   const loadingMessages = [
     "Fetching UN Journal",
@@ -341,6 +603,7 @@ export default function App() {
         setJournalSource(parsed.source || "ai");
       }
     } catch (_) {}
+    fetchExtraMeetings();
   }, []);
 
   useEffect(() => {
@@ -350,6 +613,28 @@ export default function App() {
     const dotI = setInterval(() => setDots(d => d.length >= 3 ? "." : d + "."), 500);
     return () => { clearInterval(msgI); clearInterval(dotI); };
   }, [loading]);
+
+
+  async function fetchExtraMeetings() {
+    if (!SB_URL || !SB_KEY) return;
+    setExtraLoading(true);
+    try {
+      const res = await fetch(
+        SB_URL + "/rest/v1/extra_meetings?date=eq." + todayStr() + "&order=time_start.asc",
+        {
+          headers: {
+            "apikey": SB_KEY,
+            "Authorization": "Bearer " + SB_KEY,
+          },
+        }
+      );
+      if (res.ok) {
+        const rows = await res.json();
+        setExtraMeetings(rows || []);
+      }
+    } catch (_) {}
+    setExtraLoading(false);
+  }
 
   // Step 1: Try to load live journal.json (fetched this morning by GitHub Action)
   async function fetchLiveJournal() {
@@ -563,20 +848,29 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
 
       {/* International Day Banner */}
       {todayObservance && (
-        <div style={{
-          background: "linear-gradient(90deg, rgba(0,96,214,0.3), rgba(0,150,220,0.15))",
-          borderBottom: "1px solid rgba(0,160,220,0.2)",
-          padding: "10px 24px",
-          animation: "fadeSlideIn 0.5s ease",
-        }}>
+        <a
+          href={todayObservance.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "block",
+            background: "linear-gradient(90deg, rgba(0,96,214,0.3), rgba(0,150,220,0.15))",
+            borderBottom: "1px solid rgba(0,160,220,0.2)",
+            padding: "10px 24px",
+            animation: "fadeSlideIn 0.5s ease",
+            textDecoration: "none",
+            cursor: "pointer",
+          }}
+        >
           <div style={{ maxWidth: "520px", margin: "0 auto", display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{ fontSize: "16px", flexShrink: 0 }}>&#127981;</span>
-            <div>
+            <div style={{ flex: 1 }}>
               <div style={{ fontSize: "9px", letterSpacing: "1.5px", color: "rgba(255,255,255,0.45)", fontWeight: "700", textTransform: "uppercase" }}>International Day</div>
-              <div style={{ fontSize: "13px", fontWeight: "600", color: "#fff", lineHeight: "1.3" }}>{todayObservance}</div>
+              <div style={{ fontSize: "13px", fontWeight: "600", color: "#fff", lineHeight: "1.3" }}>{todayObservance.name}</div>
             </div>
+            <span style={{ fontSize: "11px", color: "rgba(0,160,220,0.7)", flexShrink: 0 }}>&#8599;</span>
           </div>
-        </div>
+        </a>
       )}
 
       {/* Content */}
@@ -654,6 +948,30 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
           </div>
         )}
       </div>
+
+      {/* Floating Add Button - visible when data loaded but no modal */}
+      {data && !loading && !showAddModal && (
+        <button onClick={() => setShowAddModal(true)} style={{
+          position: "fixed", bottom: "calc(env(safe-area-inset-bottom, 0px) + 24px)", right: "24px",
+          width: "52px", height: "52px", borderRadius: "50%",
+          background: "linear-gradient(135deg, #0096D6, #0050A0)",
+          border: "none", color: "#fff", fontSize: "26px", cursor: "pointer",
+          boxShadow: "0 4px 20px rgba(0,100,200,0.5)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 100,
+        }}>
+          +
+        </button>
+      )}
+
+      {/* Add Meeting Modal */}
+      {showAddModal && (
+        <AddMeetingModal
+          onClose={() => setShowAddModal(false)}
+          onSaved={() => { fetchExtraMeetings(); }}
+          todayStr={todayStr()}
+        />
+      )}
     </div>
   );
 }
