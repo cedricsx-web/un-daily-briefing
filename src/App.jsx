@@ -675,33 +675,94 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
           </div>
         )}
 
-        {data && !loading && (
-          <div>
-            <SectionHeader icon="🏛️" title="Council Chambers" subtitle="Today's session schedule" badge={journalSource === "live" ? "LIVE" : null} />
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "28px" }}>
-              {(data.chambers || []).map((c, i) => <ChamberCard key={i} chamber={c} index={i} />)}
-            </div>
+        {data && !loading && (() => {
+          // Convert extra meeting time to display format
+          function fmtTime(t) {
+            if (!t) return "TBD";
+            const [hStr, mStr] = t.split(":");
+            let h = parseInt(hStr);
+            const p = h >= 12 ? "PM" : "AM";
+            if (h > 12) h -= 12;
+            if (h === 0) h = 12;
+            return h + ":" + mStr + " " + p;
+          }
 
-            <SectionHeader icon="📋" title="All Meetings Today" subtitle={`${(data.meetings || []).length} meetings across the UN`} badge={journalSource === "live" ? "LIVE" : null} />
-            <div style={{ marginBottom: "28px" }}>
-              <MeetingsList meetings={data.meetings || []} />
-            </div>
+          // Map room name to chamber display name
+          const ROOM_TO_CHAMBER = {
+            "General Assembly Hall": "General Assembly Hall",
+            "Security Council Chamber": "Security Council",
+            "Security Council Consultations Room": "Security Council",
+            "Trusteeship Council Chamber": "Trusteeship Council",
+            "Economic and Social Council Chamber": "Economic and Social Council",
+          };
 
-            <SectionHeader icon="💡" title="Briefing Topics" subtitle="Tap any topic to expand" />
-            {(data.topics || []).map((topic, i) => <TopicCard key={i} topic={topic} index={i} />)}
+          // Build extra meeting display strings
+          const extraForList = extraMeetings.map(e => {
+            const org = e.organizer_type === "un_body" ? e.organizer_name
+              : e.organizer_type === "mission" ? "Mission of " + e.organizer_name
+              : e.organizer_name;
+            const t = fmtTime(e.time_start);
+            return org + " -- " + e.title + " (" + t + ", " + e.room + ")" + (e.is_closed ? " [Closed]" : "");
+          });
 
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "24px", paddingTop: "16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              <p style={{ margin: 0, fontSize: "11px", color: "rgba(255,255,255,0.2)" }}>
-                {journalSource === "live" ? "📡 journal.un.org · Claude · SDGs" : "Powered by Claude · UN Journal · SDGs"}
-              </p>
-              <button onClick={() => { setData(null); fetchedRef.current = false; sessionStorage.removeItem(todayKey()); }} style={{
-                background: "transparent", border: "1px solid rgba(255,255,255,0.15)",
-                color: "rgba(255,255,255,0.4)", borderRadius: "20px", padding: "4px 12px",
-                fontSize: "11px", cursor: "pointer", fontWeight: "600",
-              }}>↺ Refresh</button>
+          // Merge extras into chambers
+          const mergedChambers = (data.chambers || []).map(chamber => {
+            const extras = extraMeetings
+              .filter(e => (ROOM_TO_CHAMBER[e.room] || e.room) === chamber.room)
+              .map(e => {
+                const org = e.organizer_type === "un_body" ? e.organizer_name
+                  : e.organizer_type === "mission" ? "Mission of " + e.organizer_name
+                  : e.organizer_name;
+                return { time: fmtTime(e.time_start), title: org + " -- " + e.title + (e.is_closed ? " [Closed]" : "") };
+              });
+            return { ...chamber, meetings: [...(chamber.meetings || []), ...extras] };
+          });
+
+          const allMeetings = [...(data.meetings || []), ...extraForList];
+
+          return (
+            <div>
+              <SectionHeader icon="🏛️" title="Council Chambers" subtitle="Today's session schedule" badge={journalSource === "live" ? "LIVE" : null} />
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "28px" }}>
+                {mergedChambers.map((c, i) => <ChamberCard key={i} chamber={c} index={i} />)}
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ fontSize: "14px" }}>📋</span>
+                    <span style={{ fontSize: "11px", fontWeight: "700", color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "1.5px" }}>All Meetings Today</span>
+                    {journalSource === "live" && <span style={{ background: "rgba(0,160,220,0.15)", color: "#00A0DC", fontSize: "9px", fontWeight: "700", padding: "2px 6px", borderRadius: "10px" }}>LIVE</span>}
+                    {extraMeetings.length > 0 && <span style={{ background: "rgba(252,195,11,0.15)", color: "#FCC30B", fontSize: "9px", fontWeight: "700", padding: "2px 6px", borderRadius: "10px" }}>+{extraMeetings.length} added</span>}
+                  </div>
+                  <p style={{ margin: "4px 0 0 22px", fontSize: "11px", color: "rgba(255,255,255,0.25)" }}>{allMeetings.length} meetings across the UN</p>
+                </div>
+                <button onClick={() => setShowAddForm(true)} style={{
+                  background: "linear-gradient(135deg, #0096D6, #0050A0)",
+                  color: "#fff", border: "none", borderRadius: "20px",
+                  padding: "6px 14px", fontSize: "12px", fontWeight: "700", cursor: "pointer",
+                }}>+ Add</button>
+              </div>
+              <div style={{ marginBottom: "28px" }}>
+                <MeetingsList meetings={allMeetings} />
+              </div>
+
+              <SectionHeader icon="💡" title="Briefing Topics" subtitle="Tap any topic to expand" />
+              {(data.topics || []).map((topic, i) => <TopicCard key={i} topic={topic} index={i} />)}
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "24px", paddingTop: "16px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                <p style={{ margin: 0, fontSize: "11px", color: "rgba(255,255,255,0.2)" }}>
+                  {journalSource === "live" ? "📡 journal.un.org · Claude · SDGs" : "Powered by Claude · UN Journal · SDGs"}
+                </p>
+                <button onClick={() => { setData(null); fetchedRef.current = false; sessionStorage.removeItem(todayKey()); }} style={{
+                  background: "transparent", border: "1px solid rgba(255,255,255,0.15)",
+                  color: "rgba(255,255,255,0.4)", borderRadius: "20px", padding: "4px 12px",
+                  fontSize: "11px", cursor: "pointer", fontWeight: "600",
+                }}>↺ Refresh</button>
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
 
       {/* Floating Add Button */}
