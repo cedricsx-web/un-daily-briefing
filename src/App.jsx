@@ -315,261 +315,6 @@ function SectionHeader({ icon, title, subtitle, badge }) {
 }
 
 
-// ── Add Meeting Modal ─────────────────────────────────────────────────────────
-const UN_BODIES = [
-  "General Assembly", "Security Council", "Economic and Social Council",
-  "Trusteeship Council", "Secretariat", "OHCHR", "UNDP", "UNICEF",
-  "UNFPA", "UN Women", "WFP", "UNHCR", "OCHA", "UNEP", "UNESCO",
-  "WHO", "ILO", "FAO", "Other UN Body",
-];
-
-const ROOMS = [
-  "General Assembly Hall", "Security Council Chamber",
-  "Trusteeship Council Chamber", "Economic and Social Council Chamber",
-  "Conference Room 1", "Conference Room 2", "Conference Room 3",
-  "Conference Room 4", "Conference Room 5", "Conference Room 6",
-  "Conference Room 7", "Conference Room 8", "Conference Room 9",
-  "Conference Room 10", "Conference Room 11", "Conference Room 12",
-  "Other",
-];
-
-const CHAMBER_ROOMS = [
-  "General Assembly Hall", "Security Council Chamber",
-  "Trusteeship Council Chamber", "Economic and Social Council Chamber",
-];
-
-function AddMeetingModal({ onClose, onSaved, todayStr }) {
-  const [organizerType, setOrganizerType] = useState("mission");
-  const [organizerName, setOrganizerName] = useState("");
-  const [title, setTitle] = useState("");
-  const [room, setRoom] = useState("Trusteeship Council Chamber");
-  const [timeStart, setTimeStart] = useState("15:00");
-  const [timeEnd, setTimeEnd] = useState("");
-  const [isClosed, setIsClosed] = useState(false);
-  const [note, setNote] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [err, setErr] = useState("");
-
-  async function handleSave() {
-    if (!organizerName.trim()) { setErr("Please enter the organizer name."); return; }
-    if (!title.trim()) { setErr("Please enter a meeting title."); return; }
-    if (!timeStart) { setErr("Please enter a start time."); return; }
-    if (!SB_URL || !SB_KEY) { setErr("Supabase not configured."); return; }
-
-    setSaving(true);
-    setErr("");
-
-    try {
-      const res = await fetch(SB_URL + "/rest/v1/extra_meetings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": SB_KEY,
-          "Authorization": "Bearer " + SB_KEY,
-          "Prefer": "return=minimal",
-        },
-        body: JSON.stringify({
-          date: todayStr,
-          organizer_type: organizerType,
-          organizer_name: organizerName.trim(),
-          title: title.trim(),
-          room: room,
-          time_start: timeStart,
-          time_end: timeEnd || null,
-          is_closed: isClosed,
-          note: note.trim() || null,
-        }),
-      });
-
-      if (!res.ok) {
-        const txt = await res.text();
-        throw new Error("Save failed: " + txt);
-      }
-
-      onSaved();
-      onClose();
-    } catch (e) {
-      setErr(e.message);
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  const labelStyle = { fontSize: "11px", fontWeight: "700", color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "6px", display: "block" };
-  const inputStyle = { width: "100%", background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "8px", padding: "10px 12px", color: "#fff", fontSize: "14px", fontFamily: "inherit", boxSizing: "border-box" };
-  const selectStyle = { ...inputStyle, appearance: "none", WebkitAppearance: "none", cursor: "pointer" };
-
-  return (
-    <div style={{
-      position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 1000,
-      display: "flex", alignItems: "flex-end", justifyContent: "center",
-      animation: "fadeSlideIn 0.2s ease",
-    }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div style={{
-        background: "linear-gradient(180deg, #0d2044 0%, #0a1628 100%)",
-        border: "1px solid rgba(255,255,255,0.1)",
-        borderRadius: "20px 20px 0 0",
-        width: "100%", maxWidth: "520px",
-        maxHeight: "90dvh", overflowY: "auto",
-        padding: "24px 20px calc(env(safe-area-inset-bottom, 0px) + 24px)",
-      }}>
-        {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-          <div>
-            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", letterSpacing: "1.5px", textTransform: "uppercase" }}>UN Briefing App</div>
-            <div style={{ fontSize: "18px", fontWeight: "800", fontFamily: "'Playfair Display', serif" }}>Add a Meeting</div>
-          </div>
-          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.08)", border: "none", color: "#fff", borderRadius: "50%", width: "32px", height: "32px", fontSize: "18px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            &#x2715;
-          </button>
-        </div>
-
-        {/* Organizer Type */}
-        <div style={{ marginBottom: "16px" }}>
-          <label style={labelStyle}>Who is organizing?</label>
-          <div style={{ display: "flex", gap: "8px" }}>
-            {[
-              { val: "un_body", icon: "🏛️", label: "UN Body" },
-              { val: "mission", icon: "🌍", label: "Mission" },
-              { val: "joint", icon: "🤝", label: "Joint" },
-            ].map(opt => (
-              <button key={opt.val} onClick={() => setOrganizerType(opt.val)} style={{
-                flex: 1, padding: "10px 6px", borderRadius: "10px", cursor: "pointer",
-                border: organizerType === opt.val ? "2px solid #0096D6" : "1px solid rgba(255,255,255,0.15)",
-                background: organizerType === opt.val ? "rgba(0,150,214,0.15)" : "rgba(255,255,255,0.04)",
-                color: "#fff", fontSize: "12px", fontWeight: "600", fontFamily: "inherit",
-                display: "flex", flexDirection: "column", alignItems: "center", gap: "4px",
-              }}>
-                <span style={{ fontSize: "18px" }}>{opt.icon}</span>
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Organizer Name */}
-        <div style={{ marginBottom: "16px" }}>
-          <label style={labelStyle}>{organizerType === "un_body" ? "UN Body" : organizerType === "mission" ? "Permanent Mission / Group" : "Organizers"}</label>
-          {organizerType === "un_body" ? (
-            <select value={organizerName} onChange={e => setOrganizerName(e.target.value)} style={selectStyle}>
-              <option value="">Select UN Body...</option>
-              {UN_BODIES.map(b => <option key={b} value={b}>{b}</option>)}
-            </select>
-          ) : (
-            <input
-              type="text"
-              value={organizerName}
-              onChange={e => setOrganizerName(e.target.value)}
-              placeholder={organizerType === "mission" ? "e.g. Permanent Mission of Monaco" : "e.g. Monaco + France + OHCHR"}
-              style={inputStyle}
-            />
-          )}
-        </div>
-
-        {/* Meeting Title */}
-        <div style={{ marginBottom: "16px" }}>
-          <label style={labelStyle}>Meeting Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            placeholder="e.g. High-level discussion on prevention of sexual abuse"
-            style={inputStyle}
-          />
-        </div>
-
-        {/* Room */}
-        <div style={{ marginBottom: "16px" }}>
-          <label style={labelStyle}>Room / Location</label>
-          <select value={room} onChange={e => setRoom(e.target.value)} style={selectStyle}>
-            {ROOMS.map(r => <option key={r} value={r}>{r}</option>)}
-          </select>
-        </div>
-
-        {/* Time */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
-          <div>
-            <label style={labelStyle}>Start Time</label>
-            <input type="time" value={timeStart} onChange={e => setTimeStart(e.target.value)} style={inputStyle} />
-          </div>
-          <div>
-            <label style={labelStyle}>End Time (opt.)</label>
-            <input type="time" value={timeEnd} onChange={e => setTimeEnd(e.target.value)} style={inputStyle} />
-          </div>
-        </div>
-
-        {/* Open / Closed */}
-        <div style={{ marginBottom: "16px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px 14px" }}>
-          <div>
-            <div style={{ fontSize: "14px", fontWeight: "600" }}>Closed Meeting</div>
-            <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)" }}>Toggle if not open to public</div>
-          </div>
-          <div onClick={() => setIsClosed(c => !c)} style={{
-            width: "44px", height: "24px", borderRadius: "12px",
-            background: isClosed ? "#0096D6" : "rgba(255,255,255,0.15)",
-            cursor: "pointer", position: "relative", transition: "background 0.2s",
-          }}>
-            <div style={{
-              position: "absolute", top: "2px",
-              left: isClosed ? "22px" : "2px",
-              width: "20px", height: "20px", borderRadius: "50%",
-              background: "#fff", transition: "left 0.2s",
-            }} />
-          </div>
-        </div>
-
-        {/* Note */}
-        <div style={{ marginBottom: "20px" }}>
-          <label style={labelStyle}>Note (optional)</label>
-          <input
-            type="text"
-            value={note}
-            onChange={e => setNote(e.target.value)}
-            placeholder="e.g. Co-organized with France, part of GA 80th session"
-            style={inputStyle}
-          />
-        </div>
-
-        {err && <p style={{ color: "#ff6b6b", fontSize: "13px", margin: "0 0 12px" }}>{err}</p>}
-
-        <button onClick={handleSave} disabled={saving} style={{
-          width: "100%", padding: "14px",
-          background: saving ? "rgba(255,255,255,0.1)" : "linear-gradient(135deg, #0096D6, #0050A0)",
-          color: saving ? "rgba(255,255,255,0.3)" : "#fff",
-          border: "none", borderRadius: "50px", fontSize: "15px", fontWeight: "700",
-          cursor: saving ? "default" : "pointer", fontFamily: "inherit",
-        }}>
-          {saving ? "Saving..." : "Add to Today's Briefing"}
-        </button>
-      </div>
-
-      {/* Floating Add Button - visible when data loaded but no modal */}
-      {data && !loading && !showAddModal && (
-        <button onClick={() => setShowAddModal(true)} style={{
-          position: "fixed", bottom: "calc(env(safe-area-inset-bottom, 0px) + 24px)", right: "24px",
-          width: "52px", height: "52px", borderRadius: "50%",
-          background: "linear-gradient(135deg, #0096D6, #0050A0)",
-          border: "none", color: "#fff", fontSize: "26px", cursor: "pointer",
-          boxShadow: "0 4px 20px rgba(0,100,200,0.5)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          zIndex: 100,
-        }}>
-          +
-        </button>
-      )}
-
-      {/* Add Meeting Modal */}
-      {showAddModal && (
-        <AddMeetingModal
-          onClose={() => setShowAddModal(false)}
-          onSaved={() => { fetchExtraMeetings(); }}
-          todayStr={todayStr()}
-        />
-      )}
-    </div>
-  );
-}
-
 // ── Main App ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [data, setData] = useState(null);
@@ -581,9 +326,19 @@ export default function App() {
   const [dots, setDots] = useState(".");
   const [loadingMsg, setLoadingMsg] = useState("Fetching UN Journal");
   const fetchedRef = useRef(false);
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
   const [extraMeetings, setExtraMeetings] = useState([]);
-  const [extraLoading, setExtraLoading] = useState(false);
+  // Add meeting form fields
+  const [formOrgType, setFormOrgType] = useState("mission");
+  const [formOrgName, setFormOrgName] = useState("");
+  const [formTitle, setFormTitle] = useState("");
+  const [formRoom, setFormRoom] = useState("Trusteeship Council Chamber");
+  const [formTimeStart, setFormTimeStart] = useState("15:00");
+  const [formTimeEnd, setFormTimeEnd] = useState("");
+  const [formClosed, setFormClosed] = useState(false);
+  const [formNote, setFormNote] = useState("");
+  const [formSaving, setFormSaving] = useState(false);
+  const [formErr, setFormErr] = useState("");
 
   const loadingMessages = [
     "Fetching UN Journal",
@@ -949,29 +704,167 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
         )}
       </div>
 
-      {/* Floating Add Button - visible when data loaded but no modal */}
-      {data && !loading && !showAddModal && (
-        <button onClick={() => setShowAddModal(true)} style={{
-          position: "fixed", bottom: "calc(env(safe-area-inset-bottom, 0px) + 24px)", right: "24px",
+      {/* Floating Add Button */}
+      {data && !loading && !showAddForm && (
+        <button onClick={() => setShowAddForm(true)} style={{
+          position: "fixed", bottom: "32px", right: "24px",
           width: "52px", height: "52px", borderRadius: "50%",
           background: "linear-gradient(135deg, #0096D6, #0050A0)",
           border: "none", color: "#fff", fontSize: "26px", cursor: "pointer",
           boxShadow: "0 4px 20px rgba(0,100,200,0.5)",
-          display: "flex", alignItems: "center", justifyContent: "center",
           zIndex: 100,
-        }}>
-          +
-        </button>
+        }}>+</button>
       )}
 
-      {/* Add Meeting Modal */}
-      {showAddModal && (
-        <AddMeetingModal
-          onClose={() => setShowAddModal(false)}
-          onSaved={() => { fetchExtraMeetings(); }}
-          todayStr={todayStr()}
-        />
-      )}
+      {/* Inline Add Meeting Sheet */}
+      {showAddForm && (() => {
+        const UN_BODIES = ["General Assembly","Security Council","Economic and Social Council","Trusteeship Council","Secretariat","OHCHR","UNDP","UNICEF","UNFPA","UN Women","WFP","UNHCR","OCHA","UNEP","UNESCO","WHO","ILO","FAO","Other UN Body"];
+        const ROOMS = ["General Assembly Hall","Security Council Chamber","Trusteeship Council Chamber","Economic and Social Council Chamber","Conference Room 1","Conference Room 2","Conference Room 3","Conference Room 4","Conference Room 5","Conference Room 6","Conference Room 7","Conference Room 8","Conference Room 9","Conference Room 10","Conference Room 11","Conference Room 12","Other"];
+
+        async function handleSave() {
+          if (!formOrgName.trim()) { setFormErr("Please enter the organizer name."); return; }
+          if (!formTitle.trim()) { setFormErr("Please enter a meeting title."); return; }
+          if (!SB_URL || !SB_KEY) { setFormErr("Supabase not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to GitHub Secrets."); return; }
+          setFormSaving(true);
+          setFormErr("");
+          try {
+            const res = await fetch(SB_URL + "/rest/v1/extra_meetings", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "apikey": SB_KEY,
+                "Authorization": "Bearer " + SB_KEY,
+                "Prefer": "return=minimal",
+              },
+              body: JSON.stringify({
+                date: todayStr(),
+                organizer_type: formOrgType,
+                organizer_name: formOrgName.trim(),
+                title: formTitle.trim(),
+                room: formRoom,
+                time_start: formTimeStart || null,
+                time_end: formTimeEnd || null,
+                is_closed: formClosed,
+                note: formNote.trim() || null,
+              }),
+            });
+            if (!res.ok) { const t = await res.text(); throw new Error(t); }
+            setFormOrgName(""); setFormTitle(""); setFormNote("");
+            setFormSaving(false);
+            setShowAddForm(false);
+            fetchExtraMeetings();
+          } catch(e) {
+            setFormErr(e.message);
+            setFormSaving(false);
+          }
+        }
+
+        const inp = { width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "8px", padding: "10px 12px", color: "#fff", fontSize: "14px", fontFamily: "inherit", boxSizing: "border-box" };
+        const lbl = { fontSize: "11px", fontWeight: "700", color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "6px", display: "block" };
+
+        return (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.75)", zIndex: 1000 }}
+            onClick={e => { if (e.target === e.currentTarget) setShowAddForm(false); }}>
+            <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#0d2044", borderRadius: "20px 20px 0 0", maxHeight: "88vh", overflowY: "scroll", padding: "24px 20px 60px", zIndex: 1001 }}>
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                <div style={{ fontSize: "18px", fontWeight: "800", fontFamily: "'Playfair Display', serif" }}>Add a Meeting</div>
+                <button onClick={() => setShowAddForm(false)} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#fff", borderRadius: "50%", width: "32px", height: "32px", fontSize: "16px", cursor: "pointer" }}>x</button>
+              </div>
+
+              {/* Organizer Type */}
+              <div style={{ marginBottom: "16px" }}>
+                <span style={lbl}>Who is organizing?</span>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  {[["un_body","UN Body"],["mission","Mission"],["joint","Joint"]].map(([val, label]) => (
+                    <button key={val} onClick={() => setFormOrgType(val)} style={{
+                      flex: 1, padding: "10px 4px", borderRadius: "10px", cursor: "pointer",
+                      border: formOrgType === val ? "2px solid #0096D6" : "1px solid rgba(255,255,255,0.15)",
+                      background: formOrgType === val ? "rgba(0,150,214,0.2)" : "rgba(255,255,255,0.04)",
+                      color: "#fff", fontSize: "13px", fontWeight: "600", fontFamily: "inherit",
+                    }}>{label}</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Organizer Name */}
+              <div style={{ marginBottom: "16px" }}>
+                <span style={lbl}>{formOrgType === "un_body" ? "UN Body" : "Mission / Group"}</span>
+                {formOrgType === "un_body" ? (
+                  <select value={formOrgName} onChange={e => setFormOrgName(e.target.value)} style={inp}>
+                    <option value="">Select UN Body...</option>
+                    {UN_BODIES.map(b => <option key={b} value={b}>{b}</option>)}
+                  </select>
+                ) : (
+                  <input type="text" value={formOrgName} onChange={e => setFormOrgName(e.target.value)}
+                    placeholder={formOrgType === "mission" ? "e.g. Permanent Mission of Monaco" : "e.g. Monaco + France + OHCHR"}
+                    style={inp} />
+                )}
+              </div>
+
+              {/* Title */}
+              <div style={{ marginBottom: "16px" }}>
+                <span style={lbl}>Meeting Title</span>
+                <input type="text" value={formTitle} onChange={e => setFormTitle(e.target.value)}
+                  placeholder="e.g. High-level discussion on sexual abuse prevention"
+                  style={inp} />
+              </div>
+
+              {/* Room */}
+              <div style={{ marginBottom: "16px" }}>
+                <span style={lbl}>Room</span>
+                <select value={formRoom} onChange={e => setFormRoom(e.target.value)} style={inp}>
+                  {ROOMS.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+
+              {/* Time */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+                <div>
+                  <span style={lbl}>Start Time</span>
+                  <input type="time" value={formTimeStart} onChange={e => setFormTimeStart(e.target.value)} style={inp} />
+                </div>
+                <div>
+                  <span style={lbl}>End Time (opt.)</span>
+                  <input type="time" value={formTimeEnd} onChange={e => setFormTimeEnd(e.target.value)} style={inp} />
+                </div>
+              </div>
+
+              {/* Closed toggle */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.04)", borderRadius: "10px", padding: "12px 14px", marginBottom: "16px" }}>
+                <div>
+                  <div style={{ fontSize: "14px", fontWeight: "600" }}>Closed Meeting</div>
+                  <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)" }}>Toggle if not open to public</div>
+                </div>
+                <div onClick={() => setFormClosed(c => !c)} style={{ width: "44px", height: "24px", borderRadius: "12px", background: formClosed ? "#0096D6" : "rgba(255,255,255,0.2)", cursor: "pointer", position: "relative" }}>
+                  <div style={{ position: "absolute", top: "2px", left: formClosed ? "22px" : "2px", width: "20px", height: "20px", borderRadius: "50%", background: "#fff", transition: "left 0.15s" }} />
+                </div>
+              </div>
+
+              {/* Note */}
+              <div style={{ marginBottom: "20px" }}>
+                <span style={lbl}>Note (optional)</span>
+                <input type="text" value={formNote} onChange={e => setFormNote(e.target.value)}
+                  placeholder="e.g. Co-organized with France, part of GA 80th session"
+                  style={inp} />
+              </div>
+
+              {formErr && <div style={{ color: "#ff6b6b", fontSize: "13px", marginBottom: "12px", padding: "10px", background: "rgba(255,100,100,0.1)", borderRadius: "8px" }}>{formErr}</div>}
+
+              <button onClick={handleSave} disabled={formSaving} style={{
+                width: "100%", padding: "14px",
+                background: formSaving ? "rgba(255,255,255,0.1)" : "linear-gradient(135deg, #0096D6, #0050A0)",
+                color: formSaving ? "rgba(255,255,255,0.4)" : "#fff",
+                border: "none", borderRadius: "50px", fontSize: "15px", fontWeight: "700",
+                cursor: formSaving ? "default" : "pointer", fontFamily: "inherit",
+              }}>
+                {formSaving ? "Saving..." : "Add to Today's Briefing"}
+              </button>
+
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
