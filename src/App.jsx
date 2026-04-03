@@ -206,7 +206,11 @@ function ChamberCard({ chamber, index }) {
           {chamber.meetings.map((m, i) => (
             <div key={i} style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
               <span style={{ fontSize: "10px", color: "#FCC30B", fontWeight: "700", whiteSpace: "nowrap", marginTop: "2px", flexShrink: 0 }}>{m.time}</span>
-              <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.8)", lineHeight: "1.4" }}>{m.title}</span>
+              <span style={{
+                fontSize: "12px", lineHeight: "1.4",
+                color: m.cancelled ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.8)",
+                textDecoration: m.cancelled ? "line-through" : "none",
+              }}>{m.title}{m.cancelled && <span style={{ marginLeft: "4px", fontSize: "8px", color: "#ff6b6b", fontWeight: "700" }}>CANC.</span>}</span>
             </div>
           ))}
         </div>
@@ -218,25 +222,47 @@ function ChamberCard({ chamber, index }) {
 }
 
 // ── Meetings List ─────────────────────────────────────────────────────────────
-function MeetingsList({ meetings }) {
+// meetings = [{ title, isExtra, extraId, cancelled }]
+function MeetingsList({ meetings, onCancel, onDelete }) {
   const [expanded, setExpanded] = useState(false);
   const preview = meetings.slice(0, 5);
   const rest = meetings.slice(5);
+  const visible = [...preview, ...(expanded ? rest : [])];
   return (
     <div style={{
       background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
       borderRadius: "10px", padding: "16px",
       animation: "fadeSlideIn 0.4s ease both", animationDelay: "0.35s",
     }}>
-      {[...preview, ...(expanded ? rest : [])].map((m, i, arr) => (
+      {visible.map((m, i) => (
         <div key={i} style={{
-          display: "flex", alignItems: "flex-start", gap: "10px",
-          paddingBottom: i < arr.length - 1 ? "8px" : "0",
-          marginBottom: i < arr.length - 1 ? "8px" : "0",
-          borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+          display: "flex", alignItems: "flex-start", gap: "8px",
+          paddingBottom: i < visible.length - 1 ? "8px" : "0",
+          marginBottom: i < visible.length - 1 ? "8px" : "0",
+          borderBottom: i < visible.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+          opacity: m.cancelled ? 0.5 : 1,
         }}>
-          <span style={{ color: "rgba(0,160,220,0.5)", fontSize: "9px", marginTop: "5px", flexShrink: 0 }}>●</span>
-          <span style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", lineHeight: "1.45" }}>{m}</span>
+          <span style={{ color: m.cancelled ? "rgba(255,100,100,0.5)" : "rgba(0,160,220,0.5)", fontSize: "9px", marginTop: "5px", flexShrink: 0 }}>●</span>
+          <span style={{
+            flex: 1, fontSize: "13px", lineHeight: "1.45",
+            color: m.cancelled ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.75)",
+            textDecoration: m.cancelled ? "line-through" : "none",
+          }}>
+            {m.title}
+            {m.isExtra && !m.cancelled && <span style={{ marginLeft: "6px", fontSize: "9px", color: "#FCC30B", fontWeight: "700", verticalAlign: "middle" }}>ADDED</span>}
+            {m.cancelled && <span style={{ marginLeft: "6px", fontSize: "9px", color: "#ff6b6b", fontWeight: "700", verticalAlign: "middle" }}>CANCELLED</span>}
+          </span>
+          <button
+            onClick={e => { e.stopPropagation(); m.isExtra ? onDelete(m.extraId) : onCancel(m.title); }}
+            title={m.isExtra ? "Remove this meeting" : "Mark as cancelled"}
+            style={{
+              background: "transparent", border: "none", color: m.cancelled ? "rgba(255,255,255,0.2)" : "rgba(255,100,100,0.5)",
+              fontSize: "14px", cursor: m.cancelled ? "default" : "pointer",
+              flexShrink: 0, padding: "0 2px", lineHeight: 1,
+              fontFamily: "inherit",
+            }}
+            disabled={m.cancelled}
+          >x</button>
         </div>
       ))}
       {rest.length > 0 && (
@@ -245,7 +271,7 @@ function MeetingsList({ meetings }) {
           fontSize: "12px", fontWeight: "600", cursor: "pointer",
           padding: "8px 0 0", fontFamily: "'DM Sans', sans-serif",
         }}>
-          {expanded ? "▲ Show less" : `▾ Show ${rest.length} more meetings`}
+          {expanded ? "Show less" : "Show " + rest.length + " more meetings"}
         </button>
       )}
     </div>
@@ -361,6 +387,7 @@ export default function App() {
   const fetchedRef = useRef(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [extraMeetings, setExtraMeetings] = useState([]);
+  const [cancelledTitles, setCancelledTitles] = useState([]);
   // Add meeting form fields
   const [formOrgType, setFormOrgType] = useState("mission");
   const [formOrgName, setFormOrgName] = useState("");
@@ -392,6 +419,7 @@ export default function App() {
       }
     } catch (_) {}
     fetchExtraMeetings();
+    fetchCancelledMeetings();
   }, []);
 
   useEffect(() => {
@@ -408,19 +436,61 @@ export default function App() {
     try {
       const res = await fetch(
         SB_URL + "/rest/v1/extra_meetings?date=eq." + todayStr() + "&order=time_start.asc",
-        {
-          headers: {
-            "apikey": SB_KEY,
-            "Authorization": "Bearer " + SB_KEY,
-          },
-        }
+        { headers: { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY } }
+      );
+      if (res.ok) { const rows = await res.json(); setExtraMeetings(rows || []); }
+    } catch (e) { console.warn("fetchExtraMeetings:", e.message); }
+  }
+
+  async function fetchCancelledMeetings() {
+    if (!SB_URL || !SB_KEY) return;
+    try {
+      const res = await fetch(
+        SB_URL + "/rest/v1/cancelled_meetings?date=eq." + todayStr(),
+        { headers: { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY } }
       );
       if (res.ok) {
         const rows = await res.json();
-        setExtraMeetings(rows || []);
+        setCancelledTitles((rows || []).map(r => r.meeting_title));
       }
+    } catch (e) { console.warn("fetchCancelledMeetings:", e.message); }
+  }
+
+  async function cancelMeeting(title) {
+    if (!SB_URL || !SB_KEY) return;
+    // Optimistic update
+    setCancelledTitles(prev => [...prev, title]);
+    try {
+      await fetch(SB_URL + "/rest/v1/cancelled_meetings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SB_KEY,
+          "Authorization": "Bearer " + SB_KEY,
+          "Prefer": "return=minimal",
+        },
+        body: JSON.stringify({ date: todayStr(), meeting_title: title }),
+      });
     } catch (e) {
-      console.warn("fetchExtraMeetings error:", e.message);
+      // Rollback on error
+      setCancelledTitles(prev => prev.filter(t => t !== title));
+      console.warn("cancelMeeting:", e.message);
+    }
+  }
+
+  async function deleteExtraMeeting(id) {
+    if (!SB_URL || !SB_KEY) return;
+    // Optimistic update
+    setExtraMeetings(prev => prev.filter(m => m.id !== id));
+    try {
+      await fetch(SB_URL + "/rest/v1/extra_meetings?id=eq." + id, {
+        method: "DELETE",
+        headers: { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY },
+      });
+    } catch (e) {
+      // Refetch on error
+      fetchExtraMeetings();
+      console.warn("deleteExtraMeeting:", e.message);
     }
   }
 
@@ -744,16 +814,31 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
             "Economic and Social Council Chamber": "Economic and Social Council",
           };
 
-          // Build extra meeting display strings
-          const extraForList = extraMeetings.map(e => {
+          // Build extra meeting label
+          function extraLabel(e) {
             const org = e.organizer_type === "un_body" ? e.organizer_name
               : e.organizer_type === "mission" ? "Mission of " + e.organizer_name
               : e.organizer_name;
-            const t = fmtTime(e.time_start);
-            return org + " -- " + e.title + " (" + t + ", " + e.room + ")" + (e.is_closed ? " [Closed]" : "");
-          });
+            return org + " -- " + e.title + " (" + fmtTime(e.time_start) + ", " + e.room + ")" + (e.is_closed ? " [Closed]" : "");
+          }
 
-          // Merge extras into chambers
+          // Build allMeetings as objects for cancel/delete support
+          const allMeetings = [
+            ...(data.meetings || []).map(title => ({
+              title,
+              isExtra: false,
+              extraId: null,
+              cancelled: cancelledTitles.includes(title),
+            })),
+            ...extraMeetings.map(e => ({
+              title: extraLabel(e),
+              isExtra: true,
+              extraId: e.id,
+              cancelled: false,
+            })),
+          ];
+
+          // Merge extras into chambers (show cancelled with strikethrough)
           const mergedChambers = (data.chambers || []).map(chamber => {
             const extras = extraMeetings
               .filter(e => (ROOM_TO_CHAMBER[e.room] || e.room) === chamber.room)
@@ -763,10 +848,13 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
                   : e.organizer_name;
                 return { time: fmtTime(e.time_start), title: org + " -- " + e.title + (e.is_closed ? " [Closed]" : "") };
               });
-            return { ...chamber, meetings: [...(chamber.meetings || []), ...extras] };
+            // Also mark journal chamber meetings as cancelled if needed
+            const journalMeetings = (chamber.meetings || []).map(m => ({
+              ...m,
+              cancelled: cancelledTitles.some(ct => m.title && m.title.includes(ct.slice(0, 20))),
+            }));
+            return { ...chamber, meetings: [...journalMeetings, ...extras] };
           });
-
-          const allMeetings = [...(data.meetings || []), ...extraForList];
 
           return (
             <div>
@@ -792,7 +880,11 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
                 }}>+ Add</button>
               </div>
               <div style={{ marginBottom: "28px" }}>
-                <MeetingsList meetings={allMeetings} />
+                <MeetingsList
+                  meetings={allMeetings}
+                  onCancel={cancelMeeting}
+                  onDelete={deleteExtraMeeting}
+                />
               </div>
 
               <SectionHeader icon="💡" title="Briefing Topics" subtitle="Tap any topic to expand" />
