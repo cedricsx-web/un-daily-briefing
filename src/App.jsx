@@ -143,6 +143,32 @@ function getTodayObservance() {
   return UN_OBSERVANCES[key] || null;
 }
 
+function getWeekendObservances() {
+  // If today is Friday, return Saturday + Sunday observances for preview
+  const now = new Date();
+  const nyParts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York", weekday: "long", month: "2-digit", day: "2-digit",
+  }).formatToParts(now);
+  const p = {};
+  nyParts.forEach(({ type, value }) => { p[type] = value; });
+  if (p.weekday !== "Friday") return [];
+
+  const results = [];
+  for (let offset = 1; offset <= 2; offset++) {
+    const d = new Date(now);
+    d.setDate(d.getDate() + offset);
+    const parts2 = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/New_York", month: "2-digit", day: "2-digit", weekday: "long",
+    }).formatToParts(d);
+    const p2 = {};
+    parts2.forEach(({ type, value }) => { p2[type] = value; });
+    const key = p2.month + "-" + p2.day;
+    const obs = UN_OBSERVANCES[key];
+    if (obs) results.push({ ...obs, weekday: p2.weekday, key });
+  }
+  return results;
+}
+
 function formatDate(d) {
   return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 }
@@ -245,16 +271,22 @@ function TopicCard({ topic, index }) {
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
         <div style={{ flex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px", flexWrap: "wrap" }}>
             {topic.sdg && (
               <span style={{
                 background: sdgColor, color: "#fff", fontSize: "10px", fontWeight: "700",
                 padding: "2px 8px", borderRadius: "20px", letterSpacing: "0.5px", whiteSpace: "nowrap",
               }}>{topic.sdg}</span>
             )}
+            {topic.un_entity && (
+              <span style={{
+                background: "rgba(0,150,214,0.2)", color: "#00A0DC", border: "1px solid rgba(0,150,214,0.3)",
+                fontSize: "10px", fontWeight: "700", padding: "2px 8px", borderRadius: "20px", whiteSpace: "nowrap",
+              }}>{topic.un_entity}</span>
+            )}
             {topic.tag && (
               <span style={{
-                background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)",
+                background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.6)",
                 fontSize: "10px", fontWeight: "600", padding: "2px 8px", borderRadius: "20px",
               }}>{topic.tag}</span>
             )}
@@ -322,7 +354,8 @@ export default function App() {
   const [error, setError] = useState(null);
   const [dateLabel, setDateLabel] = useState("");
   const [journalSource, setJournalSource] = useState("live");
-  const [todayObservance] = useState(() => getTodayObservance()); // "live" | "ai"
+  const [todayObservance] = useState(() => getTodayObservance());
+  const [weekendObservances] = useState(() => getWeekendObservances());
   const [dots, setDots] = useState(".");
   const [loadingMsg, setLoadingMsg] = useState("Fetching UN Journal");
   const fetchedRef = useRef(false);
@@ -372,7 +405,6 @@ export default function App() {
 
   async function fetchExtraMeetings() {
     if (!SB_URL || !SB_KEY) return;
-    setExtraLoading(true);
     try {
       const res = await fetch(
         SB_URL + "/rest/v1/extra_meetings?date=eq." + todayStr() + "&order=time_start.asc",
@@ -387,8 +419,9 @@ export default function App() {
         const rows = await res.json();
         setExtraMeetings(rows || []);
       }
-    } catch (_) {}
-    setExtraLoading(false);
+    } catch (e) {
+      console.warn("fetchExtraMeetings error:", e.message);
+    }
   }
 
   // Step 1: Try to load live journal.json (fetched this morning by GitHub Action)
@@ -416,6 +449,15 @@ export default function App() {
     const today = new Date();
     const dateStr = `${MONTHS[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`;
     const dow = today.toLocaleDateString("en-US", { weekday: "long" });
+
+    // Build observances context
+    const obsToday = getTodayObservance();
+    const obsWeekend = getWeekendObservances();
+    let observanceContext = "";
+    if (obsToday) observanceContext += `\n\nToday's UN International Day: ${obsToday.name}`;
+    if (obsWeekend.length > 0) {
+      observanceContext += `\nUpcoming this weekend: ${obsWeekend.map(o => o.weekday + ": " + o.name).join("; ")}`;
+    }
 
     const meetingsList = meetingsContext?.meetings?.length > 0
       ? `\n\nToday's actual UN meetings from the Journal:\n${meetingsContext.meetings.slice(0, 15).map(m => `- ${m}`).join("\n")}`
@@ -451,27 +493,28 @@ export default function App() {
     "Preparatory Commission for BBNJ Agreement — [meeting description] (10:00 AM, Conference Room 4)"
   ],` : "";
 
-    const prompt = `Today is ${dow}, ${dateStr}.${meetingsList}
+    const prompt = `Today is ${dow}, ${dateStr}.${observanceContext}${meetingsList}
 
-You are a UN expert generating a daily briefing for UN tour guides at the United Nations in New York.
-${meetingsList ? "Use the actual meetings listed above." : `
-IMPORTANT — generate REALISTIC UN meetings for today based on the UN calendar:
-- Security Council typically meets formally (numbered meetings like "10128th meeting") and/or holds closed consultations
-- General Assembly bodies active in ${MONTHS[today.getMonth()]} include: ACABQ (Advisory Committee on Administrative and Budgetary Questions), ICSC (International Civil Service Commission), Sixth Committee, and the BBNJ PrepCom
-- Bodies meeting in the MAIN CHAMBERS (General Assembly Hall, Security Council Chamber, Trusteeship Council Chamber, Economic and Social Council Chamber) go in the chambers section
-- Bodies meeting in Conference Rooms (1, 2, 3, 4, 5, 8, 10, 12) go in the meetings list only
-- A General Assembly body using the Economic and Social Council Chamber still appears under "Economic and Social Council" chamber
-- Include 8-12 meetings in the meetings list covering all active bodies`}
+You are a UN expert generating a daily briefing for UN tour guides at United Nations Headquarters in New York.
+${meetingsList ? `Use the actual meetings and international days listed above as primary sources for your topics.` : `IMPORTANT: generate REALISTIC UN meetings for today. Security Council meets formally with numbered meetings. General Assembly bodies active in ${MONTHS[today.getMonth()]} include ACABQ, ICSC, Sixth Committee, BBNJ PrepCom. Main chamber meetings go in chambers; Conference Rooms go in meetings list.`}
 
-Return ONLY raw JSON — no markdown, no explanation:
+Generate exactly 5 briefing topics following these rules:
+- If today has an International Day listed above, make it one of the 5 topics
+- If today is Friday and weekend International Days are listed, include them as coming-up topics
+- For each topic identify the most relevant UN entity: WHO, UNICEF, UNHCR, UNEP, WFP, UNESCO, UNDP, ILO, FAO, IAEA, UN Women, UNODC, UN-Habitat, UNFPA, OCHA, Security Council, General Assembly, or ECOSOC
+- Link each topic to the most relevant SDG AND the most relevant UN entity
+- Make topics feel timely and connected to today's actual UN activity
+
+Return ONLY raw JSON:
 {
   "topics": [
     {
       "title": "Concise compelling title (max 8 words)",
       "sdg": "SDG X: Short Name",
+      "un_entity": "e.g. WHO | UNICEF | UNHCR | UNEP | WFP | UNESCO | UNDP | ILO | FAO",
       "tag": "one of: UN Meeting | International Day | Global Crisis | Diplomacy | Humanitarian",
-      "bullets": ["Key fact", "Key fact", "Key fact", "Key fact"],
-      "detail": "80-120 words of richer context and why this matters at the UN today."
+      "bullets": ["Key fact or statistic", "Key fact or statistic", "Key fact or statistic", "Key fact or statistic"],
+      "detail": "80-120 words: what this issue is, why it matters at the UN today, and what the relevant UN entity does on this issue."
     }
   ]${chambersSection}
 }
@@ -601,31 +644,36 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
         </div>
       </div>
 
-      {/* International Day Banner */}
-      {todayObservance && (
-        <a
-          href={todayObservance.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: "block",
-            background: "linear-gradient(90deg, rgba(0,96,214,0.3), rgba(0,150,220,0.15))",
-            borderBottom: "1px solid rgba(0,160,220,0.2)",
-            padding: "10px 24px",
-            animation: "fadeSlideIn 0.5s ease",
-            textDecoration: "none",
-            cursor: "pointer",
-          }}
-        >
-          <div style={{ maxWidth: "520px", margin: "0 auto", display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "16px", flexShrink: 0 }}>&#127981;</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: "9px", letterSpacing: "1.5px", color: "rgba(255,255,255,0.45)", fontWeight: "700", textTransform: "uppercase" }}>International Day</div>
-              <div style={{ fontSize: "13px", fontWeight: "600", color: "#fff", lineHeight: "1.3" }}>{todayObservance.name}</div>
-            </div>
-            <span style={{ fontSize: "11px", color: "rgba(0,160,220,0.7)", flexShrink: 0 }}>&#8599;</span>
-          </div>
-        </a>
+      {/* International Day Banners */}
+      {(todayObservance || weekendObservances.length > 0) && (
+        <div style={{ borderBottom: "1px solid rgba(0,160,220,0.15)" }}>
+          {todayObservance && (
+            <a href={todayObservance.url} target="_blank" rel="noopener noreferrer"
+              style={{ display: "block", background: "linear-gradient(90deg, rgba(0,96,214,0.3), rgba(0,150,220,0.15))", padding: "10px 24px", textDecoration: "none" }}>
+              <div style={{ maxWidth: "520px", margin: "0 auto", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontSize: "15px" }}>&#127981;</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: "9px", letterSpacing: "1.5px", color: "rgba(255,255,255,0.45)", fontWeight: "700", textTransform: "uppercase" }}>Today</div>
+                  <div style={{ fontSize: "13px", fontWeight: "600", color: "#fff", lineHeight: "1.3" }}>{todayObservance.name}</div>
+                </div>
+                <span style={{ fontSize: "11px", color: "rgba(0,160,220,0.7)" }}>&#8599;</span>
+              </div>
+            </a>
+          )}
+          {weekendObservances.map((obs, i) => (
+            <a key={obs.key} href={obs.url} target="_blank" rel="noopener noreferrer"
+              style={{ display: "block", background: i % 2 === 0 ? "rgba(0,80,160,0.2)" : "rgba(0,60,140,0.15)", padding: "9px 24px", textDecoration: "none", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+              <div style={{ maxWidth: "520px", margin: "0 auto", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontSize: "13px" }}>&#128197;</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: "9px", letterSpacing: "1.5px", color: "rgba(255,255,255,0.35)", fontWeight: "700", textTransform: "uppercase" }}>{obs.weekday}</div>
+                  <div style={{ fontSize: "12px", fontWeight: "600", color: "rgba(255,255,255,0.8)", lineHeight: "1.3" }}>{obs.name}</div>
+                </div>
+                <span style={{ fontSize: "11px", color: "rgba(0,160,220,0.5)" }}>&#8599;</span>
+              </div>
+            </a>
+          ))}
+        </div>
       )}
 
       {/* Content */}
