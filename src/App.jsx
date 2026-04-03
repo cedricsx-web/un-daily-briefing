@@ -144,17 +144,28 @@ function getTodayObservance() {
 }
 
 function getWeekendObservances() {
-  // If today is Friday, return Saturday + Sunday observances for preview
+  // Friday: show upcoming Sat + Sun. Monday: show past Sat + Sun.
   const now = new Date();
   const nyParts = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/New_York", weekday: "long", month: "2-digit", day: "2-digit",
   }).formatToParts(now);
   const p = {};
   nyParts.forEach(({ type, value }) => { p[type] = value; });
-  if (p.weekday !== "Friday") return [];
+
+  let offsets = [];
+  let label = "";
+  if (p.weekday === "Friday") {
+    offsets = [1, 2];   // Sat, Sun ahead
+    label = "This weekend";
+  } else if (p.weekday === "Monday") {
+    offsets = [-2, -1]; // Sat, Sun behind
+    label = "This weekend";
+  } else {
+    return [];
+  }
 
   const results = [];
-  for (let offset = 1; offset <= 2; offset++) {
+  for (const offset of offsets) {
     const d = new Date(now);
     d.setDate(d.getDate() + offset);
     const parts2 = new Intl.DateTimeFormat("en-US", {
@@ -164,7 +175,7 @@ function getWeekendObservances() {
     parts2.forEach(({ type, value }) => { p2[type] = value; });
     const key = p2.month + "-" + p2.day;
     const obs = UN_OBSERVANCES[key];
-    if (obs) results.push({ ...obs, weekday: p2.weekday, key });
+    if (obs) results.push({ ...obs, weekday: p2.weekday, key, past: p.weekday === "Monday" });
   }
   return results;
 }
@@ -736,8 +747,10 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
               <div style={{ maxWidth: "520px", margin: "0 auto", display: "flex", alignItems: "center", gap: "8px" }}>
                 <span style={{ fontSize: "13px" }}>&#128197;</span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: "9px", letterSpacing: "1.5px", color: "rgba(255,255,255,0.35)", fontWeight: "700", textTransform: "uppercase" }}>{obs.weekday}</div>
-                  <div style={{ fontSize: "12px", fontWeight: "600", color: "rgba(255,255,255,0.8)", lineHeight: "1.3" }}>{obs.name}</div>
+                  <div style={{ fontSize: "9px", letterSpacing: "1.5px", color: "rgba(255,255,255,0.35)", fontWeight: "700", textTransform: "uppercase" }}>
+                    {obs.past ? "Last " + obs.weekday : obs.weekday}
+                  </div>
+                  <div style={{ fontSize: "12px", fontWeight: "600", color: obs.past ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.8)", lineHeight: "1.3" }}>{obs.name}</div>
                 </div>
                 <span style={{ fontSize: "11px", color: "rgba(0,160,220,0.5)" }}>&#8599;</span>
               </div>
