@@ -245,37 +245,53 @@ function MeetingsList({ meetings, onCancel, onDelete }) {
       borderRadius: "10px", padding: "16px",
       animation: "fadeSlideIn 0.4s ease both", animationDelay: "0.35s",
     }}>
-      {visible.map((m, i) => (
+      {visible.map((m, i) => {
+        // Support both object {title, isExtra, ...} and plain string (fallback)
+        const title   = typeof m === "string" ? m : (m.title || "");
+        const isExtra = typeof m === "string" ? false : !!m.isExtra;
+        const extraId = typeof m === "string" ? null : m.extraId;
+        const cancelled = typeof m === "string" ? false : !!m.cancelled;
+        return (
         <div key={i} style={{
-          display: "flex", alignItems: "flex-start", gap: "8px",
-          paddingBottom: i < visible.length - 1 ? "8px" : "0",
-          marginBottom: i < visible.length - 1 ? "8px" : "0",
+          display: "flex", alignItems: "center", gap: "8px",
+          paddingBottom: i < visible.length - 1 ? "10px" : "0",
+          marginBottom: i < visible.length - 1 ? "10px" : "0",
           borderBottom: i < visible.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
-          opacity: m.cancelled ? 0.5 : 1,
         }}>
-          <span style={{ color: m.cancelled ? "rgba(255,100,100,0.5)" : "rgba(0,160,220,0.5)", fontSize: "9px", marginTop: "5px", flexShrink: 0 }}>●</span>
+          <span style={{ color: cancelled ? "rgba(255,100,100,0.4)" : "rgba(0,160,220,0.5)", fontSize: "9px", flexShrink: 0 }}>●</span>
           <span style={{
             flex: 1, fontSize: "13px", lineHeight: "1.45",
-            color: m.cancelled ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.75)",
-            textDecoration: m.cancelled ? "line-through" : "none",
+            color: cancelled ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.8)",
+            textDecoration: cancelled ? "line-through" : "none",
           }}>
-            {m.title}
-            {m.isExtra && !m.cancelled && <span style={{ marginLeft: "6px", fontSize: "9px", color: "#FCC30B", fontWeight: "700", verticalAlign: "middle" }}>ADDED</span>}
-            {m.cancelled && <span style={{ marginLeft: "6px", fontSize: "9px", color: "#ff6b6b", fontWeight: "700", verticalAlign: "middle" }}>CANCELLED</span>}
+            {title}
+            {isExtra && !cancelled && (
+              <span style={{ marginLeft: "6px", fontSize: "9px", color: "#FCC30B", fontWeight: "700", verticalAlign: "middle" }}>ADDED</span>
+            )}
+            {cancelled && (
+              <span style={{ marginLeft: "6px", fontSize: "9px", color: "#ff6b6b", fontWeight: "700", verticalAlign: "middle" }}>CANCELLED</span>
+            )}
           </span>
-          <button
-            onClick={e => { e.stopPropagation(); m.isExtra ? onDelete(m.extraId) : onCancel(m.title); }}
-            title={m.isExtra ? "Remove this meeting" : "Mark as cancelled"}
-            style={{
-              background: "transparent", border: "none", color: m.cancelled ? "rgba(255,255,255,0.2)" : "rgba(255,100,100,0.5)",
-              fontSize: "14px", cursor: m.cancelled ? "default" : "pointer",
-              flexShrink: 0, padding: "0 2px", lineHeight: 1,
-              fontFamily: "inherit",
-            }}
-            disabled={m.cancelled}
-          >x</button>
+          {!cancelled && (
+            <button
+              onClick={e => { e.stopPropagation(); isExtra ? onDelete(extraId) : onCancel(title); }}
+              style={{
+                flexShrink: 0,
+                background: "rgba(220,50,50,0.15)",
+                border: "1px solid rgba(220,50,50,0.35)",
+                color: "#ff8080",
+                borderRadius: "6px",
+                width: "24px", height: "24px",
+                fontSize: "13px", fontWeight: "700",
+                cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                lineHeight: 1, fontFamily: "inherit", padding: 0,
+              }}
+            >&#x2715;</button>
+          )}
         </div>
-      ))}
+        );
+      })}
       {rest.length > 0 && (
         <button onClick={() => setExpanded(e => !e)} style={{
           background: "transparent", border: "none", color: "#00A0DC",
@@ -505,24 +521,106 @@ export default function App() {
     }
   }
 
-  // Step 1: Try to load live journal.json (fetched this morning by GitHub Action)
+  // Parse the journal-api.un.org/api/allnew JSON structure
+  function parseAllNew(data) {
+    const CHAMBER_MAP = {
+      "general assembly hall": "General Assembly Hall",
+      "security council chamber": "Security Council",
+      "security council consultations room": "Security Council",
+      "trusteeship council chamber": "Trusteeship Council",
+      "economic and social council chamber": "Economic and Social Council",
+    };
+    function chamberFor(raw) {
+      if (!raw) return null;
+      const l = raw.toLowerCase();
+      for (const [k, v] of Object.entries(CHAMBER_MAP)) { if (l.includes(k)) return v; }
+      return null;
+    }
+    function stripHtml(s) {
+      return (s || "").replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&nbsp;/g, " ").trim();
+    }
+    function getText(f) {
+      if (!f) return "";
+      if (typeof f === "string") return stripHtml(f);
+      return stripHtml((f.en || Object.values(f)[0] || "").toString());
+    }
+    function fmtTime(t) {
+      if (!t) return "TBD";
+      const m = t.toString().match(/(\d{1,2}):(\d{2})/);
+      if (!m) return t.toString();
+      let h = parseInt(m[1]); const min = m[2];
+      const p = h >= 12 ? "PM" : "AM";
+      if (h > 12) h -= 12; if (h === 0) h = 12;
+      return h + ":" + min + " " + p;
+    }
+
+    const allMeetings = [];
+    const chamberMap = {};
+
+    function processSection(section) {
+      if (!section) return;
+      const groups = Array.isArray(section) ? section : (section.groups || []);
+      groups.forEach(group => {
+        const organName = stripHtml(group.groupNameTitle || getText(group.name) || "");
+        (group.sessions || []).forEach(session => {
+          const sessionName = stripHtml(session.name || getText(session.title) || organName);
+          const sessionNum = stripHtml(session.session || "");
+          const bodyLabel = sessionNum ? sessionName + ", " + sessionNum : sessionName;
+          (session.meetings || []).forEach(m => {
+            if (m.cancelled || m.isCancelled) return;
+            const num = getText(m.meetingNumber);
+            const ttl = getText(m.title) || getText(m.name) || getText(m.subject);
+            const rawTitle = num || ttl;
+            if (!rawTitle) return;
+            const fullTitle = bodyLabel ? bodyLabel + " -- " + rawTitle : rawTitle;
+            const time = fmtTime(m.timeFrom || m.startTime || "");
+            const rawRoom = Array.isArray(m.rooms) && m.rooms[0] ? m.rooms[0].value : getText(m.room);
+            const chamber = chamberFor(rawRoom);
+            allMeetings.push({ title: fullTitle, time, room: rawRoom || null });
+            if (chamber) {
+              if (!chamberMap[chamber]) chamberMap[chamber] = [];
+              chamberMap[chamber].push({ time, title: fullTitle });
+            }
+          });
+        });
+      });
+    }
+
+    processSection(data.officialMeetings);
+    processSection(data.informalMeetings || data.informalConsultations);
+
+    const chambers = ["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"]
+      .map(name => ({ room: name, meetings: (chamberMap[name] || []) }));
+    const titles = [...new Set(allMeetings.map(m => m.title).filter(Boolean))];
+    return { chambers, meetings: titles };
+  }
+
+  // Step 1a: Try direct API call to journal-api.un.org (fastest, most reliable)
+  async function fetchJournalAPI() {
+    const date = todayStr();
+    const url = "https://journal-api.un.org/api/allnew/" + date;
+    const res = await fetch(url, {
+      headers: {
+        "Accept": "application/json",
+        "Origin": "https://journal.un.org",
+        "Referer": "https://journal.un.org/",
+      },
+    });
+    if (!res.ok) throw new Error("API returned " + res.status);
+    const data = await res.json();
+    if (!data.officialMeetings) throw new Error("No officialMeetings in response");
+    return parseAllNew(data);
+  }
+
+  // Step 1b: Fallback to journal.json pre-fetched by GitHub Action
   async function fetchLiveJournal() {
     const url = `${BASE}journal.json`;
     const res = await fetch(url + "?t=" + Date.now());
     if (!res.ok) throw new Error(`journal.json not found (${res.status})`);
     const json = await res.json();
-
-    // Check if it's today's data
-    if (json.date !== todayStr()) {
-      throw new Error(`journal.json is from ${json.date}, not today`);
-    }
-    if (json.error) {
-      throw new Error(`journal.json fetch error: ${json.error}`);
-    }
-    return {
-      chambers: json.chambers || [],
-      meetings: json.meetings || [],
-    };
+    if (json.date !== todayStr()) throw new Error(`journal.json is from ${json.date}, not today`);
+    if (!json.meetings || json.meetings.length === 0) throw new Error("journal.json has 0 meetings");
+    return { chambers: json.chambers || [], meetings: json.meetings || [] };
   }
 
   // Step 2: Ask Claude for topics (and optionally meetings if live failed)
@@ -638,13 +736,21 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
       let liveData = null;
       let source = "ai";
 
-      // Try live journal first
+      // 1. Try direct API call to journal-api.un.org
       try {
-        liveData = await fetchLiveJournal();
+        liveData = await fetchJournalAPI();
         source = "live";
-        console.log("✅ Loaded live UN Journal data");
+        console.log("Loaded from journal-api.un.org directly");
       } catch (e) {
-        console.warn("Live journal unavailable, using AI fallback:", e.message);
+        console.warn("Direct API failed:", e.message);
+        // 2. Fallback to pre-fetched journal.json
+        try {
+          liveData = await fetchLiveJournal();
+          source = "live";
+          console.log("Loaded from journal.json");
+        } catch (e2) {
+          console.warn("journal.json also failed:", e2.message);
+        }
       }
 
       // Get Claude topics (passing live meetings as context if available)
