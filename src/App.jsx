@@ -456,6 +456,9 @@ export default function App() {
 
   useEffect(() => {
     setDateLabel(formatDate(new Date()));
+    // Clear stale cancellations from previous sessions/days
+    setCancelledTitles([]);
+    setDeletedExtraIds([]);
     try {
       const cached = sessionStorage.getItem(todayKey());
       if (cached) {
@@ -464,6 +467,7 @@ export default function App() {
         setJournalSource(parsed.source || "ai");
       }
     } catch (_) {}
+    // Always re-fetch live cancellation state from Supabase
     fetchExtraMeetings();
     fetchCancelledMeetings();
   }, []);
@@ -1027,7 +1031,7 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
                     <span style={{ fontSize: "14px" }}>📋</span>
                     <span style={{ fontSize: "11px", fontWeight: "700", color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "1.5px" }}>All Meetings Today</span>
                     {journalSource === "live" && <span style={{ background: "rgba(0,160,220,0.15)", color: "#00A0DC", fontSize: "9px", fontWeight: "700", padding: "2px 6px", borderRadius: "10px" }}>LIVE</span>}
-                    {extraMeetings.length > 0 && <span style={{ background: "rgba(252,195,11,0.15)", color: "#FCC30B", fontSize: "9px", fontWeight: "700", padding: "2px 6px", borderRadius: "10px" }}>+{extraMeetings.length} added</span>}
+                    {visibleExtras.length > 0 && <span style={{ background: "rgba(252,195,11,0.15)", color: "#FCC30B", fontSize: "9px", fontWeight: "700", padding: "2px 6px", borderRadius: "10px" }}>+{visibleExtras.length} added</span>}
                   </div>
                   <p style={{ margin: "4px 0 0 22px", fontSize: "11px", color: "rgba(255,255,255,0.25)" }}>{allMeetings.length} meetings across the UN</p>
                 </div>
