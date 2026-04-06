@@ -247,9 +247,10 @@ function MeetingsList({ meetings, onCancel, onDelete, onUncancel }) {
     }}>
       {visible.map((m, i) => {
         // Support both object {title, isExtra, ...} and plain string (fallback)
-        const title   = typeof m === "string" ? m : (m.title || "");
-        const isExtra = typeof m === "string" ? false : !!m.isExtra;
-        const extraId = typeof m === "string" ? null : m.extraId;
+        const title     = typeof m === "string" ? m : (m.title || "");
+        const isExtra   = typeof m === "string" ? false : !!m.isExtra;
+        const extraId   = typeof m === "string" ? null : m.extraId;
+        const cancelKey = typeof m === "string" ? m : (m.cancelKey || m.title || m);
         const cancelled = typeof m === "string" ? false : !!m.cancelled;
         return (
         <div key={i} style={{
@@ -274,7 +275,7 @@ function MeetingsList({ meetings, onCancel, onDelete, onUncancel }) {
           </span>
           {!cancelled ? (
             <button
-              onClick={e => { e.stopPropagation(); isExtra ? onDelete(extraId) : onCancel(title); }}
+              onClick={e => { e.stopPropagation(); isExtra ? onDelete(extraId) : onCancel(cancelKey || title); }}
               title={isExtra ? "Remove this meeting" : "Mark as cancelled"}
               style={{
                 flexShrink: 0,
@@ -291,7 +292,7 @@ function MeetingsList({ meetings, onCancel, onDelete, onUncancel }) {
             >&#x2715;</button>
           ) : !isExtra && (
             <button
-              onClick={e => { e.stopPropagation(); onUncancel(title); }}
+              onClick={e => { e.stopPropagation(); onUncancel(cancelKey || title); }}
               title="Restore this meeting"
               style={{
                 flexShrink: 0,
@@ -985,16 +986,25 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
           // Build allMeetings — filter out locally deleted extra meetings
           const visibleExtras = extraMeetings.filter(e => !deletedExtraIds.includes(e.id));
           const allMeetings = [
-            ...(data.meetings || []).map(title => ({
-              title,
-              isExtra: false,
-              extraId: null,
-              cancelled: cancelledTitles.includes(title),
-            })),
+            ...(data.meetings || []).map(title => {
+              // chamber meetings have a time prefix like "10:00 AM -- Title"
+              // extract time if present for a unique cancel key
+              const timeMatch = title.match(/^(\d{1,2}:\d{2} [AP]M)/);
+              const meetingTime = timeMatch ? timeMatch[1] : "";
+              const cancelKey = title + "|||" + meetingTime;
+              return {
+                title,
+                isExtra: false,
+                extraId: null,
+                cancelKey,
+                cancelled: cancelledTitles.includes(cancelKey),
+              };
+            }),
             ...visibleExtras.map(e => ({
               title: extraLabel(e),
               isExtra: true,
               extraId: e.id,
+              cancelKey: null,
               cancelled: false,
             })),
           ];
@@ -1010,11 +1020,11 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
                   : e.organizer_name;
                 return { time: fmtTime(e.time_start), title: org + " -- " + e.title + (e.is_closed ? " [Closed]" : "") };
               });
-            // Also mark journal chamber meetings as cancelled if needed
-            const journalMeetings = (chamber.meetings || []).map(m => ({
-              ...m,
-              cancelled: cancelledTitles.some(ct => m.title && m.title.includes(ct.slice(0, 20))),
-            }));
+            // Mark chamber meetings cancelled — match on title + time
+            const journalMeetings = (chamber.meetings || []).map(m => {
+              const key = m.title + "|||" + (m.time || "");
+              return { ...m, cancelKey: key, cancelled: cancelledTitles.includes(key) };
+            });
             return { ...chamber, meetings: [...journalMeetings, ...extras] };
           });
 
