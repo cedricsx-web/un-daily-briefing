@@ -213,15 +213,27 @@ function ChamberCard({ chamber, index }) {
         }}>{chamber.room}</span>
       </div>
       {hasSession ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {chamber.meetings.map((m, i) => (
-            <div key={i} style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
-              <span style={{ fontSize: "10px", color: "#FCC30B", fontWeight: "700", whiteSpace: "nowrap", marginTop: "2px", flexShrink: 0 }}>{m.time}</span>
-              <span style={{
-                fontSize: "12px", lineHeight: "1.4",
-                color: m.cancelled ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.8)",
-                textDecoration: m.cancelled ? "line-through" : "none",
-              }}>{m.title}{m.cancelled && <span style={{ marginLeft: "4px", fontSize: "8px", color: "#ff6b6b", fontWeight: "700" }}>CANC.</span>}</span>
+            <div key={i} style={{ opacity: m.cancelled ? 0.45 : 1 }}>
+              <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+                <span style={{ fontSize: "10px", color: "#FCC30B", fontWeight: "700", whiteSpace: "nowrap", marginTop: "1px", flexShrink: 0 }}>{m.time}</span>
+                <span style={{
+                  fontSize: "12px", lineHeight: "1.35", fontWeight: "600",
+                  color: m.cancelled ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.9)",
+                  textDecoration: m.cancelled ? "line-through" : "none",
+                }}>{m.title}{m.cancelled && <span style={{ marginLeft: "4px", fontSize: "8px", color: "#ff6b6b", fontWeight: "700" }}>CANC.</span>}</span>
+              </div>
+              {m.agenda && m.agenda.length > 0 && !m.cancelled && (
+                <div style={{ marginTop: "3px", paddingLeft: "40px", display: "flex", flexDirection: "column", gap: "2px" }}>
+                  {m.agenda.map((item, j) => (
+                    <span key={j} style={{ fontSize: "10px", color: "rgba(255,255,255,0.45)", lineHeight: "1.4", display: "flex", gap: "5px" }}>
+                      <span style={{ color: "rgba(0,160,220,0.4)", flexShrink: 0 }}>-</span>
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -599,6 +611,27 @@ export default function App() {
     const allMeetings = [];
     const chamberMap = {};
 
+    function getAgendaItems(m) {
+      // agenda items live in m.agendaText (array) or m.program (array of {description})
+      const items = [];
+      const agendaText = m.agendaText || m.agenda || [];
+      if (Array.isArray(agendaText)) {
+        agendaText.forEach(a => {
+          const t = getText(a.description || a.title || a.text || a) ;
+          if (t && t.length > 2) items.push(t);
+        });
+      }
+      // Also check program field
+      const program = m.program || m.programItems || [];
+      if (Array.isArray(program)) {
+        program.forEach(p => {
+          const t = getText(p.description || p.title || p.text || p);
+          if (t && t.length > 2 && !items.includes(t)) items.push(t);
+        });
+      }
+      return items;
+    }
+
     function processSection(section) {
       if (!section) return;
       const groups = Array.isArray(section) ? section : (section.groups || []);
@@ -614,14 +647,24 @@ export default function App() {
             const ttl = getText(m.title) || getText(m.name) || getText(m.subject);
             const rawTitle = num || ttl;
             if (!rawTitle) return;
-            const fullTitle = bodyLabel ? bodyLabel + " -- " + rawTitle : rawTitle;
+
+            // Get agenda items if available
+            const agendaItems = getAgendaItems(m);
+            const agendaSuffix = agendaItems.length > 0
+              ? " [" + agendaItems.join(" / ") + "]"
+              : "";
+
+            const fullTitle = bodyLabel ? bodyLabel + " -- " + rawTitle + agendaSuffix : rawTitle + agendaSuffix;
             const time = fmtTime(m.timeFrom || m.startTime || "");
             const rawRoom = Array.isArray(m.rooms) && m.rooms[0] ? m.rooms[0].value : getText(m.room);
             const chamber = chamberFor(rawRoom);
+
+            // For chamber cards, show agenda on separate lines
+            const chamberTitle = rawTitle;
             allMeetings.push({ title: fullTitle, time, room: rawRoom || null });
             if (chamber) {
               if (!chamberMap[chamber]) chamberMap[chamber] = [];
-              chamberMap[chamber].push({ time, title: fullTitle });
+              chamberMap[chamber].push({ time, title: chamberTitle, agenda: agendaItems, id: m.id || null });
             }
           });
         });
@@ -635,6 +678,33 @@ export default function App() {
       .map(name => ({ room: name, meetings: (chamberMap[name] || []) }));
     const titles = [...new Set(allMeetings.map(m => m.title).filter(Boolean))];
     return { chambers, meetings: titles };
+  }
+
+  // Fetch agenda items for a specific meeting
+  async function fetchMeetingAgenda(meetingId) {
+    try {
+      const endpoints = [
+        "https://journal-api.un.org/api/meeting/" + meetingId + "/agenda",
+        "https://journal-api.un.org/api/meeting/" + meetingId + "/program",
+      ];
+      for (const url of endpoints) {
+        const res = await fetch(url, {
+          headers: { "Accept": "application/json", "Origin": "https://journal.un.org", "Referer": "https://journal.un.org/" },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            return data.map(item => {
+              const t = (item.description && (item.description.en || Object.values(item.description)[0]))
+                     || (item.title && (item.title.en || Object.values(item.title)[0]))
+                     || item.text || item.name || "";
+              return (t || "").replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").trim();
+            }).filter(t => t.length > 2);
+          }
+        }
+      }
+    } catch (_) {}
+    return [];
   }
 
   // Step 1a: Try direct API call to journal-api.un.org (fastest, most reliable)
@@ -651,7 +721,21 @@ export default function App() {
     if (!res.ok) throw new Error("API returned " + res.status);
     const data = await res.json();
     if (!data.officialMeetings) throw new Error("No officialMeetings in response");
-    return parseAllNew(data);
+    const result = parseAllNew(data);
+
+    // Enrich SC & GA chamber meetings with agenda items
+    const enriched = await Promise.all(result.chambers.map(async chamber => {
+      if (chamber.room !== "Security Council" && chamber.room !== "General Assembly Hall") return chamber;
+      const enrichedMeetings = await Promise.all(chamber.meetings.map(async m => {
+        if (m.agenda && m.agenda.length > 0) return m; // already has agenda
+        if (!m.id) return m;
+        const agenda = await fetchMeetingAgenda(m.id);
+        return { ...m, agenda };
+      }));
+      return { ...chamber, meetings: enrichedMeetings };
+    }));
+
+    return { ...result, chambers: enriched };
   }
 
   // Step 1b: Fallback to journal.json pre-fetched by GitHub Action
