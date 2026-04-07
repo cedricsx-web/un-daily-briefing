@@ -1,9 +1,9 @@
 {
   "date": "2026-04-07",
-  "fetched_at": "2026-04-07T13:15:05.741Z",
+  "fetched_at": "2026-04-07T17:10:11.299Z",
   "ny_date": "2026-04-07",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 9 meetings",
+  "note": "Live from journal-api.un.org -- 8 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -46,10 +46,9 @@
     "Sixth Committee, Resumed session -- 3rd Working Group of the Whole",
     "Sixth Committee, Resumed session -- 4th Working Group of the Whole",
     "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
-    "Disarmament Commission -- 407th plenary meeting",
-    "Disarmament Commission -- 408th plenary meeting",
     "Economic and Social Council, 2026 session -- Informal consultations on ECOSOC FfD Forum agreed conclusions and recommendations",
     "Commission on Population and Development, Fifty-ninth session -- Informal consultations on Commission draft proposals",
+    "General Assembly -- Informal consultations on the draft resolution on sustainable, safe and universal water, sanitation, hygiene, waste and electricity services in health-care facilities (under agenda item 127) (convened by the Permanent Missions of Hungary and the Philippines)",
     "Permanent Mission of Rwanda,Outreach Programme on the 1994 Genocide against the Tutsi in Rwanda and the United Nations -- Commemoration of the thirty-second anniversary of the 1994 Genocide against the Tutsi in Rwanda (on the occasion of the International Day of Reflection on the Genocide against the Tutsi in Rwanda) (co-organized by the Permanent Mission of Rwanda and the Outreach Programme on the 1994 Genocide against the Tutsi in Rwanda and the United Nations)"
   ]
 }
