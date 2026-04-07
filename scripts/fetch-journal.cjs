@@ -1,4 +1,6 @@
 // fetch-journal.cjs
+// Captures allnew + agenda API calls via Puppeteer
+
 const { writeFileSync, mkdirSync } = require("fs");
 const puppeteer = require("puppeteer");
 
@@ -34,11 +36,20 @@ function getText(field) {
   return "";
 }
 
+function getTime(item) {
+  const t = item.timeFrom || item.startTime || item.scheduledStartTime || item.time || item.hour || "";
+  return t.toString();
+}
+
+function getRoom(item) {
+  if (Array.isArray(item.rooms) && item.rooms.length > 0) return item.rooms[0].value || "";
+  return getText(item.room) || getText(item.location) || "";
+}
+
 function normalizeTime(raw) {
   if (!raw) return "TBD";
-  const str = raw.toString().trim().replace(/\s*-\s*\d{1,2}:\d{2}$/, "");
-  const m = str.match(/(\d{1,2}):(\d{2})/);
-  if (!m) return str;
+  const m = raw.toString().trim().match(/(\d{1,2}):(\d{2})/);
+  if (!m) return raw.toString().trim();
   let h = parseInt(m[1]), min = m[2];
   const p = h >= 12 ? "PM" : "AM";
   if (h > 12) h -= 12;
@@ -74,27 +85,21 @@ function saveResult(dateStr, chambers, meetings, note) {
   console.log("Saved " + meetings.length + " meetings | " + (note || "ok"));
 }
 
-function getTime(item) {
-  if (!item || typeof item !== "object") return "";
-  // timeFrom is the correct field per API inspection
-  const t = item.timeFrom || item.startTime || item.scheduledStartTime
-          || item.meetingTime || item.time || item.hour || item.startHour || "";
-  return t.toString();
+function parseAgendaItems(data) {
+  // data can be an array or object with items
+  const items = Array.isArray(data) ? data : (data.items || data.agendaItems || data.program || []);
+  const results = [];
+  items.forEach(function(item) {
+    const t = getText(item.description || item.title || item.text || item.name || item);
+    if (t && t.length > 2) results.push(t);
+  });
+  return results;
 }
 
-function getRoom(item) {
-  if (!item || typeof item !== "object") return "";
-  // rooms is an array: [{ value: "Security Council Chamber" }]
-  if (Array.isArray(item.rooms) && item.rooms.length > 0) {
-    return item.rooms[0].value || "";
-  }
-  return getText(item.room) || getText(item.location) || getText(item.venue)
-       || (typeof item.roomName === "string" ? item.roomName : "");
-}
-
-function parseJournalData(data) {
+function parseJournalData(data, agendaByMeetingId) {
   const allMeetings = [];
   const chamberMap  = {};
+  agendaByMeetingId = agendaByMeetingId || {};
 
   function processMeeting(item, organLabel) {
     if (!item || typeof item !== "object") return;
@@ -105,37 +110,47 @@ function parseJournalData(data) {
     const rawTitle   = meetingNum || titleText || "";
     if (!rawTitle) return;
 
-    const fullTitle   = organLabel ? organLabel + " -- " + rawTitle : rawTitle;
-    const normTime    = normalizeTime(getTime(item));
-    const rawRoom     = getRoom(item);
-    const normChamber = chamberForRoom(rawRoom);
+    const agenda = agendaByMeetingId[item.id] || [];
+    const agendaSuffix = agenda.length > 0 ? " [" + agenda.join(" / ") + "]" : "";
+    const fullTitle = (organLabel ? organLabel + " -- " + rawTitle : rawTitle) + agendaSuffix;
+    const shortTitle = organLabel ? organLabel + " -- " + rawTitle : rawTitle;
+
+    const rawTime  = getTime(item);
+    const normTime = normalizeTime(rawTime);
+    const rawRoom  = getRoom(item);
+    const chamber  = chamberForRoom(rawRoom);
 
     allMeetings.push({ title: fullTitle, time: normTime, room: rawRoom || null });
 
-    if (normChamber) {
-      if (!chamberMap[normChamber]) chamberMap[normChamber] = [];
-      chamberMap[normChamber].push({ time: normTime, title: fullTitle });
+    if (chamber) {
+      if (!chamberMap[chamber]) chamberMap[chamber] = [];
+      chamberMap[chamber].push({ time: normTime, title: shortTitle, agenda: agenda, id: item.id || null });
     }
   }
 
   function processSection(section) {
     if (!section) return;
     const groups = Array.isArray(section) ? section : (section.groups || []);
-
     groups.forEach(function(group) {
-      const organName = stripHtml(group.groupNameTitle || getText(group.name) || "");
+      const organName = group.groupNameTitle || getText(group.name) || "";
       const sessions  = group.sessions || group.items || [];
-
       sessions.forEach(function(session) {
-        const sessionName = stripHtml(session.name || getText(session.title) || organName);
+        const sessionName = session.name || getText(session.title) || organName;
         const sessionNum  = stripHtml(session.session || session.sessionNumber || "");
         const bodyLabel   = sessionNum ? sessionName + ", " + sessionNum : sessionName;
-        const meetings    = session.meetings || session.items || session.events || [];
+        const sessionTime = session.startTime || session.time || session.hour || "";
+        const meetings = session.meetings || session.items || session.events || [];
 
         if (Array.isArray(meetings) && meetings.length > 0) {
-          meetings.forEach(function(m) { processMeeting(m, bodyLabel); });
+          meetings.forEach(function(m) {
+            if (sessionTime && !m.startTime && !m.time && !m.hour) {
+              m = Object.assign({}, m, { startTime: sessionTime });
+            }
+            processMeeting(m, bodyLabel);
+          });
         } else {
-          processMeeting(session, organName);
+          var sw = sessionTime ? Object.assign({}, session, { startTime: sessionTime }) : session;
+          processMeeting(sw, organName);
         }
       });
     });
@@ -176,22 +191,76 @@ async function main() {
     await page.setExtraHTTPHeaders({ "Accept-Language": "en-US,en;q=0.9" });
 
     let journalData = null;
+    const agendaByMeetingId = {};
 
+    // Capture ALL journal-api.un.org responses
     page.on("response", async function(response) {
-      if (!response.url().includes("allnew")) return;
+      const respUrl = response.url();
+      if (!respUrl.includes("journal-api.un.org")) return;
+
       try {
         const buf  = await response.buffer();
         const text = buf.toString("utf8");
-        console.log("Captured: " + response.url() + " | " + buf.length + "b");
-        journalData = JSON.parse(text);
-        console.log("JSON parsed OK");
+        const isJson = text.trim().startsWith("{") || text.trim().startsWith("[");
+        if (!isJson) return;
+
+        const parsed = JSON.parse(text);
+
+        if (respUrl.includes("/allnew/")) {
+          console.log("Captured allnew: " + buf.length + "b");
+          journalData = parsed;
+        } else if (respUrl.includes("/agendatext") || respUrl.includes("/agenda") || respUrl.includes("/program")) {
+          // Extract meeting ID from URL
+          const idMatch = respUrl.match(/\/([a-f0-9-]{36})\//i) || respUrl.match(/\/([a-f0-9-]{36})$/i);
+          const meetingId = idMatch ? idMatch[1] : null;
+          const items = parseAgendaItems(parsed);
+          if (meetingId && items.length > 0) {
+            agendaByMeetingId[meetingId] = items;
+            console.log("Agenda for " + meetingId + ": " + items.join(" | "));
+          } else if (items.length > 0) {
+            console.log("Agenda (no ID): " + items.join(" | "));
+          }
+        } else {
+          // Log other API calls so we can discover agenda endpoints
+          console.log("API call: " + respUrl.replace("https://journal-api.un.org", "") + " | " + buf.length + "b");
+          if (buf.length < 2000) {
+            console.log("  Preview: " + text.slice(0, 200));
+          }
+        }
       } catch (e) {
-        console.log("Parse error: " + e.message);
+        // ignore parse errors
       }
     });
 
     await page.goto(url, { waitUntil: "networkidle2", timeout: 45000 });
     await new Promise(function(r) { setTimeout(r, 5000); });
+
+    // If we have SC meetings, navigate to the first one to trigger agenda API calls
+    if (journalData) {
+      const scGroups = (journalData.officialMeetings || {}).groups || [];
+      for (const group of scGroups) {
+        if ((group.groupNameTitle || "").includes("Security Council")) {
+          for (const session of (group.sessions || [])) {
+            for (const meeting of (session.meetings || [])) {
+              if (meeting.id && !meeting.isCancelled) {
+                const meetingUrl = "https://journal.un.org/en/meeting/Officials/" + meeting.id + "/" + dateStr;
+                console.log("Navigating to SC meeting: " + meetingUrl);
+                try {
+                  await page.goto(meetingUrl, { waitUntil: "networkidle2", timeout: 20000 });
+                  await new Promise(function(r) { setTimeout(r, 3000); });
+                } catch(e) {
+                  console.log("Meeting nav error: " + e.message);
+                }
+                break;
+              }
+            }
+            break;
+          }
+          break;
+        }
+      }
+    }
+
     await browser.close();
 
     if (!journalData) {
@@ -199,14 +268,21 @@ async function main() {
       return;
     }
 
-    const result    = parseJournalData(journalData);
+    console.log("Agenda captured for " + Object.keys(agendaByMeetingId).length + " meetings");
+
+    const result    = parseJournalData(journalData, agendaByMeetingId);
     const chamberMap = result.chamberMap;
 
     console.log("Chambers:");
     ["General Assembly Hall", "Security Council", "Trusteeship Council", "Economic and Social Council"].forEach(function(c) {
       const ms = chamberMap[c] || [];
       if (ms.length > 0) {
-        ms.forEach(function(m) { console.log("  " + c + ": " + m.time + " -- " + m.title); });
+        ms.forEach(function(m) {
+          console.log("  " + c + ": " + m.time + " -- " + m.title);
+          if (m.agenda && m.agenda.length > 0) {
+            m.agenda.forEach(function(a) { console.log("    - " + a); });
+          }
+        });
       } else {
         console.log("  " + c + ": none");
       }
@@ -222,13 +298,15 @@ async function main() {
     });
     const finalTitles = titles.slice(0, 30);
     console.log("Total meetings: " + finalTitles.length);
-    finalTitles.forEach(function(t) { console.log("  - " + t); });
 
     const chambers = ["General Assembly Hall", "Security Council", "Trusteeship Council", "Economic and Social Council"]
       .map(function(name) {
+        const ms = chamberMap[name] || [];
         return {
           room: name,
-          meetings: (chamberMap[name] || []).map(function(m) { return { time: m.time, title: m.title }; })
+          meetings: ms.map(function(m) {
+            return { time: m.time, title: m.title, agenda: m.agenda || [], id: m.id || null };
+          }),
         };
       });
 
