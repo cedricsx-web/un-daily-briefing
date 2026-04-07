@@ -680,33 +680,6 @@ export default function App() {
     return { chambers, meetings: titles };
   }
 
-  // Fetch agenda items for a specific meeting
-  async function fetchMeetingAgenda(meetingId) {
-    try {
-      const endpoints = [
-        "https://journal-api.un.org/api/meeting/" + meetingId + "/agenda",
-        "https://journal-api.un.org/api/meeting/" + meetingId + "/program",
-      ];
-      for (const url of endpoints) {
-        const res = await fetch(url, {
-          headers: { "Accept": "application/json", "Origin": "https://journal.un.org", "Referer": "https://journal.un.org/" },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            return data.map(item => {
-              const t = (item.description && (item.description.en || Object.values(item.description)[0]))
-                     || (item.title && (item.title.en || Object.values(item.title)[0]))
-                     || item.text || item.name || "";
-              return (t || "").replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").trim();
-            }).filter(t => t.length > 2);
-          }
-        }
-      }
-    } catch (_) {}
-    return [];
-  }
-
   // Step 1a: Try direct API call to journal-api.un.org (fastest, most reliable)
   async function fetchJournalAPI() {
     const date = todayStr();
@@ -721,24 +694,10 @@ export default function App() {
     if (!res.ok) throw new Error("API returned " + res.status);
     const data = await res.json();
     if (!data.officialMeetings) throw new Error("No officialMeetings in response");
-    const result = parseAllNew(data);
-
-    // Enrich SC & GA chamber meetings with agenda items
-    const enriched = await Promise.all(result.chambers.map(async chamber => {
-      if (chamber.room !== "Security Council" && chamber.room !== "General Assembly Hall") return chamber;
-      const enrichedMeetings = await Promise.all(chamber.meetings.map(async m => {
-        if (m.agenda && m.agenda.length > 0) return m; // already has agenda
-        if (!m.id) return m;
-        const agenda = await fetchMeetingAgenda(m.id);
-        return { ...m, agenda };
-      }));
-      return { ...chamber, meetings: enrichedMeetings };
-    }));
-
-    return { ...result, chambers: enriched };
+    return parseAllNew(data);
   }
 
-  // Step 1b: Fallback to journal.json pre-fetched by GitHub Action
+  // Step 1b: Fallback to journal.json pre-fetched by GitHub Action (includes agenda)
   async function fetchLiveJournal() {
     const url = `${BASE}journal.json`;
     const res = await fetch(url + "?t=" + Date.now());
@@ -746,6 +705,7 @@ export default function App() {
     const json = await res.json();
     if (json.date !== todayStr()) throw new Error(`journal.json is from ${json.date}, not today`);
     if (!json.meetings || json.meetings.length === 0) throw new Error("journal.json has 0 meetings");
+    // chambers already include agenda array from Puppeteer script
     return { chambers: json.chambers || [], meetings: json.meetings || [] };
   }
 
