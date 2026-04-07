@@ -1,52 +1,55 @@
 {
-  "date": "2026-04-06",
-  "fetched_at": "2026-04-06T19:21:30.369Z",
-  "ny_date": "2026-04-06",
+  "date": "2026-04-07",
+  "fetched_at": "2026-04-07T12:31:15.900Z",
+  "ny_date": "2026-04-07",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 7 meetings",
+  "note": "Live from journal-api.un.org -- 9 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "Permanent Mission of Rwanda,Outreach Programme on the 1994 Genocide against the Tutsi in Rwanda and the United Nations -- Commemoration of the thirty-second anniversary of the 1994 Genocide against the Tutsi in Rwanda (on the occasion of the International Day of Reflection on the Genocide against the Tutsi in Rwanda) (co-organized by the Permanent Mission of Rwanda and the Outreach Programme on the 1994 Genocide against the Tutsi in Rwanda and the United Nations)"
+        }
+      ]
     },
     {
       "room": "Security Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "11:00 AM",
+          "title": "Security Council -- 10130th meeting"
+        }
+      ]
     },
     {
       "room": "Trusteeship Council",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Sixth Committee, Resumed session -- 40th plenary meeting"
-        },
-        {
-          "time": "10:30 AM",
-          "title": "Sixth Committee, Resumed session -- 1st Working Group of the Whole"
+          "title": "Sixth Committee, Resumed session -- 3rd Working Group of the Whole"
         },
         {
           "time": "3:00 PM",
-          "title": "Sixth Committee, Resumed session -- 2nd Working Group of the Whole"
+          "title": "Sixth Committee, Resumed session -- 4th Working Group of the Whole"
         }
       ]
     },
     {
       "room": "Economic and Social Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal meeting of the plenary to hear a briefing on the UN80 Initiative"
-        }
-      ]
+      "meetings": []
     }
   ],
   "meetings": [
-    "General Assembly, Eightieth session -- Informal meeting of the plenary to hear a briefing on the UN80 Initiative",
-    "Sixth Committee, Resumed session -- 40th plenary meeting",
-    "Sixth Committee, Resumed session -- 1st Working Group of the Whole",
-    "Sixth Committee, Resumed session -- 2nd Working Group of the Whole",
+    "Security Council -- 10130th meeting",
+    "Sixth Committee, Resumed session -- 3rd Working Group of the Whole",
+    "Sixth Committee, Resumed session -- 4th Working Group of the Whole",
     "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
-    "Disarmament Commission -- Organizational session, followed by 405th plenary meeting",
-    "Disarmament Commission -- 406th plenary meeting"
+    "Disarmament Commission -- 407th plenary meeting",
+    "Disarmament Commission -- 408th plenary meeting",
+    "Economic and Social Council, 2026 session -- Informal consultations on ECOSOC FfD Forum agreed conclusions and recommendations",
+    "Commission on Population and Development, Fifty-ninth session -- Informal consultations on Commission draft proposals",
+    "Permanent Mission of Rwanda,Outreach Programme on the 1994 Genocide against the Tutsi in Rwanda and the United Nations -- Commemoration of the thirty-second anniversary of the 1994 Genocide against the Tutsi in Rwanda (on the occasion of the International Day of Reflection on the Genocide against the Tutsi in Rwanda) (co-organized by the Permanent Mission of Rwanda and the Outreach Programme on the 1994 Genocide against the Tutsi in Rwanda and the United Nations)"
   ]
 }
