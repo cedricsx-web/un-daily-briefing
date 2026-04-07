@@ -1,6 +1,6 @@
 {
   "date": "2026-04-07",
-  "fetched_at": "2026-04-07T18:50:24.063Z",
+  "fetched_at": "2026-04-07T19:01:27.109Z",
   "ny_date": "2026-04-07",
   "source": "journal-api.un.org",
   "note": "Live from journal-api.un.org -- 9 meetings",
@@ -10,7 +10,9 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Permanent Mission of Rwanda,Outreach Programme on the 1994 Genocide against the Tutsi in Rwanda and the United Nations -- Commemoration of the thirty-second anniversary of the 1994 Genocide against the Tutsi in Rwanda (on the occasion of the International Day of Reflection on the Genocide against the Tutsi in Rwanda) (co-organized by the Permanent Mission of Rwanda and the Outreach Programme on the 1994 Genocide against the Tutsi in Rwanda and the United Nations)"
+          "title": "Permanent Mission of Rwanda,Outreach Programme on the 1994 Genocide against the Tutsi in Rwanda and the United Nations -- Commemoration of the thirty-second anniversary of the 1994 Genocide against the Tutsi in Rwanda (on the occasion of the International Day of Reflection on the Genocide against the Tutsi in Rwanda) (co-organized by the Permanent Mission of Rwanda and the Outreach Programme on the 1994 Genocide against the Tutsi in Rwanda and the United Nations)",
+          "agenda": [],
+          "id": "a86a4a97-a2e7-4d53-9e16-7d0ab3a34058"
         }
       ]
     },
@@ -19,7 +21,9 @@
       "meetings": [
         {
           "time": "11:00 AM",
-          "title": "Security Council -- 10130th meeting"
+          "title": "Security Council -- 10130th meeting",
+          "agenda": [],
+          "id": "703aca60-2e4e-47c9-952e-9fb78895a2ee"
         }
       ]
     },
@@ -28,11 +32,15 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Sixth Committee, Resumed session -- 3rd Working Group of the Whole"
+          "title": "Sixth Committee, Resumed session -- 3rd Working Group of the Whole",
+          "agenda": [],
+          "id": "59c94cce-a04c-48fb-8be7-b094f4ba4805"
         },
         {
           "time": "3:00 PM",
-          "title": "Sixth Committee, Resumed session -- 4th Working Group of the Whole"
+          "title": "Sixth Committee, Resumed session -- 4th Working Group of the Whole",
+          "agenda": [],
+          "id": "180f3260-566c-4fcc-b757-11836a82ecd8"
         }
       ]
     },
