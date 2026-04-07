@@ -14,10 +14,10 @@ const SDG_COLORS = {
 };
 
 const CHAMBER_ICONS = {
-  "General Assembly Hall": "&#127963;&#65039;",
-  "Security Council": "&#128737;&#65039;",
-  "Trusteeship Council": "&#9878;&#65039;",
-  "Economic and Social Council": "&#129309;",
+  "General Assembly Hall": "GA",
+  "Security Council": "SC",
+  "Trusteeship Council": "TC",
+  "Economic and Social Council": "ECOSOC",
 };
 
 const MONTHS = ["January","February","March","April","May","June","July",
@@ -195,7 +195,7 @@ function todayKey() {
 
 // -- Chamber Card --------------------------------------------------------------
 function ChamberCard({ chamber, index }) {
-  const icon = CHAMBER_ICONS[chamber.room] || "&#127970;";
+  const icon = CHAMBER_ICONS[chamber.room] || "UN";
   const hasSession = chamber.meetings && chamber.meetings.length > 0;
   return (
     <div style={{
@@ -205,7 +205,7 @@ function ChamberCard({ chamber, index }) {
       animation: `fadeSlideIn 0.4s ease both`, animationDelay: `${index * 0.08}s`,
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: hasSession ? "10px" : "0" }}>
-        <span style={{ fontSize: "16px", flexShrink: 0 }}>{icon}</span>
+        <span style={{ fontSize: "9px", fontWeight: "800", color: hasSession ? "#00A0DC" : "rgba(255,255,255,0.3)", background: hasSession ? "rgba(0,150,214,0.15)" : "rgba(255,255,255,0.06)", borderRadius: "5px", padding: "2px 5px", letterSpacing: "0.5px", flexShrink: 0 }}>{icon}</span>
         <span style={{
           fontSize: "10px", fontWeight: "700",
           color: hasSession ? "#00A0DC" : "rgba(255,255,255,0.3)",
@@ -993,20 +993,12 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
                   : e.organizer_name;
                 return { time: fmtTime(e.time_start), title: org + " -- " + e.title + (e.is_closed ? " [Closed]" : "") };
               });
-            // Mark chamber meetings cancelled
-            // cancelledTitles stores full list strings e.g. "Body -- Meeting (10:00 AM, Room)"
-            // chamber meeting has separate title + time fields - match both
-            const journalMeetings = (chamber.meetings || []).map(m => {
-              const cancelled = cancelledTitles.some(ct => {
-                // Must contain the title text AND the time to be specific
-                const hasTitle = ct.includes(m.title);
-                const hasTime  = m.time ? ct.includes(m.time) : true;
-                return hasTitle && hasTime;
-              });
-              // Build a cancelKey that matches what the list would store
-              const cancelKey = m.title + " (" + (m.time || "") + ",";
-              return { ...m, cancelKey: m.title, cancelled };
-            });
+            // Mark chamber meetings cancelled - exact title match
+            // cancelledTitles stores the flat meeting title string (no time)
+            const journalMeetings = (chamber.meetings || []).map(m => ({
+              ...m,
+              cancelled: cancelledTitles.includes(m.title),
+            }));
             return { ...chamber, meetings: [...journalMeetings, ...extras] };
           });
 
