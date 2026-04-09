@@ -194,24 +194,84 @@ function todayKey() {
 }
 
 // -- Chamber Card --------------------------------------------------------------
-function ChamberCard({ chamber, index }) {
+function ChamberCard({ chamber, index, apiKey }) {
   const icon = CHAMBER_ICONS[chamber.room] || "UN";
   const hasSession = chamber.meetings && chamber.meetings.length > 0;
+  const isSC = chamber.room === "Security Council";
+
+  const [recap, setRecap] = useState(null);
+  const [recapLoading, setRecapLoading] = useState(false);
+  const [recapOpen, setRecapOpen] = useState(false);
+
+  // Extract meeting numbers from SC meetings
+  const scMeetingNumbers = isSC
+    ? chamber.meetings
+        .filter(m => !m.cancelled)
+        .map(m => { const match = m.title.match(/(\d+)(st|nd|rd|th) meeting/i); return match ? match[1] + match[2] + " meeting" : null; })
+        .filter(Boolean)
+    : [];
+
+  async function fetchRecap() {
+    if (!apiKey || scMeetingNumbers.length === 0) return;
+    setRecapLoading(true);
+    setRecapOpen(true);
+    try {
+      const meetingRef = scMeetingNumbers.join(" and ");
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          tools: [{ type: "web_search_20250305", name: "web_search" }],
+          messages: [{
+            role: "user",
+            content: "Search press.un.org for the UN Security Council " + meetingRef + " today. Find the exact meeting on https://press.un.org/en/security-council and return a brief 3-5 sentence summary of what this meeting is about, what agenda item is being discussed, and who is briefing. Use the meeting number as reference to ensure accuracy. Return ONLY the summary, no preamble.",
+          }],
+        }),
+      });
+      const data = await res.json();
+      const text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("").trim();
+      setRecap(text || "No information found for this meeting.");
+    } catch (e) {
+      setRecap("Could not fetch meeting details.");
+    }
+    setRecapLoading(false);
+  }
+
   return (
     <div style={{
       background: hasSession ? "rgba(0,150,214,0.08)" : "rgba(255,255,255,0.02)",
       border: hasSession ? "1px solid rgba(0,150,214,0.25)" : "1px solid rgba(255,255,255,0.06)",
       borderRadius: "10px", padding: "14px 16px",
-      animation: `fadeSlideIn 0.4s ease both`, animationDelay: `${index * 0.08}s`,
+      animation: "fadeSlideIn 0.4s ease both", animationDelay: (index * 0.08) + "s",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: hasSession ? "10px" : "0" }}>
         <span style={{ fontSize: "9px", fontWeight: "800", color: hasSession ? "#00A0DC" : "rgba(255,255,255,0.3)", background: hasSession ? "rgba(0,150,214,0.15)" : "rgba(255,255,255,0.06)", borderRadius: "5px", padding: "2px 5px", letterSpacing: "0.5px", flexShrink: 0 }}>{icon}</span>
         <span style={{
-          fontSize: "10px", fontWeight: "700",
+          flex: 1, fontSize: "10px", fontWeight: "700",
           color: hasSession ? "#00A0DC" : "rgba(255,255,255,0.3)",
           textTransform: "uppercase", letterSpacing: "0.6px", lineHeight: "1.3",
         }}>{chamber.room}</span>
+        {isSC && hasSession && scMeetingNumbers.length > 0 && (
+          <button
+            onClick={recapOpen ? () => setRecapOpen(false) : fetchRecap}
+            style={{
+              background: recapOpen ? "rgba(0,150,214,0.2)" : "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(0,150,214,0.3)",
+              color: "#00A0DC", borderRadius: "6px", padding: "2px 7px",
+              fontSize: "9px", fontWeight: "700", cursor: "pointer",
+              letterSpacing: "0.5px", flexShrink: 0,
+            }}
+          >{recapOpen ? "HIDE" : "RECAP"}</button>
+        )}
       </div>
+
       {hasSession ? (
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {chamber.meetings.map((m, i) => (
@@ -239,6 +299,23 @@ function ChamberCard({ chamber, index }) {
         </div>
       ) : (
         <p style={{ margin: 0, fontSize: "11px", color: "rgba(255,255,255,0.25)", fontStyle: "italic" }}>No session today</p>
+      )}
+
+      {/* SC Recap Panel */}
+      {recapOpen && (
+        <div style={{
+          marginTop: "12px", paddingTop: "12px",
+          borderTop: "1px solid rgba(0,150,214,0.2)",
+        }}>
+          {recapLoading ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <div style={{ width: "12px", height: "12px", border: "2px solid rgba(0,150,214,0.3)", borderTop: "2px solid #00A0DC", borderRadius: "50%", animation: "spin 0.9s linear infinite", flexShrink: 0 }} />
+              <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>Searching press.un.org...</span>
+            </div>
+          ) : (
+            <p style={{ margin: 0, fontSize: "12px", color: "rgba(255,255,255,0.75)", lineHeight: "1.6" }}>{recap}</p>
+          )}
+        </div>
       )}
     </div>
   );
@@ -1050,7 +1127,7 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
             <div>
               <SectionHeader icon="&#127963;&#65039;" title="Council Chambers" subtitle="Today's session schedule" badge={journalSource === "live" ? "LIVE" : null} />
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "28px" }}>
-                {mergedChambers.map((c, i) => <ChamberCard key={i} chamber={c} index={i} />)}
+                {mergedChambers.map((c, i) => <ChamberCard key={i} chamber={c} index={i} apiKey={API_KEY} />)}
               </div>
 
               {data.journalFailed && (
