@@ -10,6 +10,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  PUPPETEER_CACHE_DIR: ~/.cache/puppeteer
 
 jobs:
   fetch:
@@ -23,15 +24,20 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install Chromium
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y chromium-browser
-          echo "PUPPETEER_EXECUTABLE_PATH=$(which chromium-browser)" >> $GITHUB_ENV
-          echo "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true" >> $GITHUB_ENV
+      - name: Cache Puppeteer browser
+        uses: actions/cache@v4
+        id: puppeteer-cache
+        with:
+          path: ~/.cache/puppeteer
+          key: puppeteer-chromium-v1
 
       - name: Install Puppeteer
+        if: steps.puppeteer-cache.outputs.cache-hit != 'true'
         run: npm install puppeteer --no-save
+
+      - name: Install Puppeteer (no download, use cache)
+        if: steps.puppeteer-cache.outputs.cache-hit == 'true'
+        run: npm install puppeteer --no-save --ignore-scripts
 
       - name: Fetch UN Journal
         run: node scripts/fetch-journal.cjs
@@ -44,4 +50,4 @@ jobs:
           git config user.name "UN Journal Bot"
           git config user.email "bot@un-briefing"
           git add public/journal.json
-          git diff --staged --quiet && echo "No changes" || (git commit -m "📋 Update UN Journal: $(TZ=America/New_York date +'%Y-%m-%d')" && git push)
+          git diff --staged --quiet && echo "No changes" || (git commit -m "Update UN Journal: $(TZ=America/New_York date +'%Y-%m-%d')" && git push)
