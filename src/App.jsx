@@ -217,6 +217,7 @@ function ChamberCard({ chamber, index, apiKey }) {
     setRecapOpen(true);
     try {
       const meetingRef = scMeetingNumbers.join(" and ");
+      const today = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", month: "long", day: "numeric", year: "numeric" });
       const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
@@ -226,20 +227,26 @@ function ChamberCard({ chamber, index, apiKey }) {
           "anthropic-dangerous-direct-browser-access": "true",
         },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-sonnet-4-6",
           max_tokens: 1000,
           tools: [{ type: "web_search_20250305", name: "web_search" }],
           messages: [{
             role: "user",
-            content: "Search press.un.org for the UN Security Council " + meetingRef + " today. Find the exact meeting on https://press.un.org/en/security-council and return a brief 3-5 sentence summary of what this meeting is about, what agenda item is being discussed, and who is briefing. Use the meeting number as reference to ensure accuracy. Return ONLY the summary, no preamble.",
+            content: `Today is ${today}. The Security Council is holding the ${meetingRef} today. Search for what this meeting is about using these sources in order:
+1. Search "Security Council ${meetingRef} ${today}" on press.un.org/en/security-council
+2. Search main.un.org/securitycouncil for today's programme of work
+3. Search securitycouncilreport.org for today's SC meeting
+
+From your search results, provide a 3-5 sentence briefing covering: the agenda item (e.g. "The situation in the Middle East", "Haiti", "Kosovo"), who is briefing the Council, and the key issue being discussed. Be specific and accurate - use only what you find in the search results. Return ONLY the briefing text, no preamble or labels.`,
           }],
         }),
       });
       const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
       const text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("").trim();
-      setRecap(text || "No information found for this meeting.");
+      setRecap(text || "No information found for this meeting yet. Check back after the meeting begins.");
     } catch (e) {
-      setRecap("Could not fetch meeting details.");
+      setRecap("Search failed: " + e.message);
     }
     setRecapLoading(false);
   }
