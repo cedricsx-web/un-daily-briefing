@@ -966,7 +966,7 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
                   color: journalSource === "live" ? "#56C02B" : "rgba(255,255,255,0.3)",
                   letterSpacing: "0.5px", textTransform: "uppercase",
                 }}>
-                  {journalSource === "live" ? "&#128994; Live Journal" : "AI Generated"}
+                  {journalSource === "live" ? "Live Journal" : "AI Generated"}
                 </span>
               )}
             </div>
