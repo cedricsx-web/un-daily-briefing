@@ -10,7 +10,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  PUPPETEER_CACHE_DIR: ~/.cache/puppeteer
+  PUPPETEER_CACHE_DIR: /home/runner/.cache/puppeteer
 
 jobs:
   fetch:
@@ -25,19 +25,18 @@ jobs:
           node-version: 24
 
       - name: Cache Puppeteer browser
-        uses: actions/cache@v4
         id: puppeteer-cache
+        uses: actions/cache@v4
         with:
-          path: ~/.cache/puppeteer
-          key: puppeteer-chromium-v1
+          path: /home/runner/.cache/puppeteer
+          key: puppeteer-chrome-linux-v1
 
-      - name: Install Puppeteer
-        if: steps.puppeteer-cache.outputs.cache-hit != 'true'
-        run: npm install puppeteer --no-save
-
-      - name: Install Puppeteer (no download, use cache)
-        if: steps.puppeteer-cache.outputs.cache-hit == 'true'
-        run: npm install puppeteer --no-save --ignore-scripts
+      - name: Install Puppeteer and browser
+        run: |
+          npm install puppeteer --no-save
+          if [ "${{ steps.puppeteer-cache.outputs.cache-hit }}" != "true" ]; then
+            npx puppeteer browsers install chrome
+          fi
 
       - name: Fetch UN Journal
         run: node scripts/fetch-journal.cjs
