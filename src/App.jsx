@@ -244,18 +244,7 @@ function ChamberCard({ chamber, index, apiKey }) {
           tools: [{ type: "web_search_20250305", name: "web_search" }],
           messages: [{
             role: "user",
-            content: "Today is " + today + ". The Security Council is holding its " + meetingRef + " today.
-
-Search for information using these queries in order:
-1. Search: "" + meetingRef + " Security Council " + today + ""
-2. Search: "" + meetingRef + " UNMIK OR Haiti OR Kosovo OR Yemen OR Gaza OR Syria OR Congo OR Sudan Security Council"
-3. Fetch https://main.un.org/securitycouncil/en/content/programme-work for today's agenda
-
-Return your answer in two parts separated by the delimiter ---FULL---:
-Part 1 (before ---FULL---): The agenda item title only, very short, e.g. "The situation in Kosovo (UNMIK)" or "The situation in the Middle East". Max 10 words.
-Part 2 (after ---FULL---): A full 3-5 sentence briefing covering the agenda item, who is briefing, the main issue, and any expected outcome.
-
-Be specific and accurate. Use only verified information from search results.",
+            content: "Today is " + today + ". The Security Council holds its " + meetingRef + " today. Search: \"" + meetingRef + " Security Council " + today + "\". Also search: \"" + meetingRef + " UNMIK OR Kosovo OR Haiti OR Yemen OR Gaza OR Syria OR Congo OR Sudan Security Council\". Also check main.un.org/securitycouncil/en/content/programme-work. Return answer in two parts split by ---FULL--- : Part 1 (before ---FULL---) the agenda item title only max 10 words e.g. The situation in Kosovo (UNMIK). Part 2 (after ---FULL---) a 3-5 sentence briefing: agenda item, who is briefing, main issue, expected outcome. Be accurate, use only search results.",
           }],
         }),
       });
