@@ -757,33 +757,38 @@ export default function App() {
     return { chambers, meetings: titles };
   }
 
-  // Step 1a: Try direct API call to journal-api.un.org (fastest, most reliable)
-  async function fetchJournalAPI() {
-    const date = todayStr();
-    const url = "https://journal-api.un.org/api/allnew/" + date;
-    const res = await fetch(url, {
-      headers: {
-        "Accept": "application/json",
-        "Origin": "https://journal.un.org",
-        "Referer": "https://journal.un.org/",
-      },
-    });
-    if (!res.ok) throw new Error("API returned " + res.status);
-    const data = await res.json();
-    if (!data.officialMeetings) throw new Error("No officialMeetings in response");
-    return parseAllNew(data);
-  }
-
-  // Step 1b: Fallback to journal.json pre-fetched by GitHub Action (includes agenda)
+  // Fetch live journal data - first from journal.json, then direct API fallback
   async function fetchLiveJournal() {
-    const url = `${BASE}journal.json`;
-    const res = await fetch(url + "?t=" + Date.now());
-    if (!res.ok) throw new Error(`journal.json not found (${res.status})`);
-    const json = await res.json();
-    if (json.date !== todayStr()) throw new Error(`journal.json is from ${json.date}, not today`);
-    if (!json.meetings || json.meetings.length === 0) throw new Error("journal.json has 0 meetings");
-    // chambers already include agenda array from Puppeteer script
-    return { chambers: json.chambers || [], meetings: json.meetings || [] };
+    // Try journal.json (pre-fetched each morning by GitHub Action)
+    try {
+      const url = BASE + "journal.json";
+      const res = await fetch(url + "?t=" + Date.now());
+      if (res.ok) {
+        const json = await res.json();
+        const fetchedAt = json.fetched_at ? new Date(json.fetched_at) : null;
+        const ageHours = fetchedAt ? (Date.now() - fetchedAt.getTime()) / 3600000 : 999;
+        const isToday = json.date === todayStr();
+        const isRecent = ageHours < 20;
+        if ((isToday || isRecent) && json.meetings && json.meetings.length > 0) {
+          console.log("journal.json OK: " + json.meetings.length + " meetings, date=" + json.date);
+          return { chambers: json.chambers || [], meetings: json.meetings || [] };
+        }
+        console.warn("journal.json stale or empty: date=" + json.date + ", meetings=" + (json.meetings || []).length);
+      }
+    } catch (e) {
+      console.warn("journal.json fetch error:", e.message);
+    }
+
+    // Fallback: call journal-api.un.org directly (works if CORS allows it)
+    console.log("Trying direct journal-api.un.org...");
+    const date = todayStr();
+    const apiRes = await fetch("https://journal-api.un.org/api/allnew/" + date, {
+      headers: { "Accept": "application/json", "Origin": "https://journal.un.org", "Referer": "https://journal.un.org/" },
+    });
+    if (!apiRes.ok) throw new Error("Both journal.json and direct API failed");
+    const data = await apiRes.json();
+    if (!data.officialMeetings) throw new Error("Direct API: no officialMeetings");
+    return parseAllNew(data);
   }
 
   // Step 2: Ask Claude for topics (and optionally meetings if live failed)
@@ -872,21 +877,13 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
       let liveData = null;
       let source = "ai";
 
-      // 1. Try direct API call to journal-api.un.org
+      // Load from journal.json (pre-fetched each morning by GitHub Action)
       try {
-        liveData = await fetchJournalAPI();
+        liveData = await fetchLiveJournal();
         source = "live";
-        console.log("Loaded from journal-api.un.org directly");
+        console.log("Loaded from journal.json:", liveData.meetings.length, "meetings");
       } catch (e) {
-        console.warn("Direct API failed:", e.message);
-        // 2. Fallback to pre-fetched journal.json
-        try {
-          liveData = await fetchLiveJournal();
-          source = "live";
-          console.log("Loaded from journal.json");
-        } catch (e2) {
-          console.warn("journal.json also failed:", e2.message);
-        }
+        console.warn("journal.json failed:", e.message);
       }
 
       // Get Claude topics (passing live meetings as context if available)
@@ -910,7 +907,10 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
       setData(finalData);
       setJournalSource(source);
       try {
-        sessionStorage.setItem(todayKey(), JSON.stringify({ data: finalData, source }));
+        // Only cache if we have real journal data, not a failed state
+        if (!finalData.journalFailed) {
+          sessionStorage.setItem(todayKey(), JSON.stringify({ data: finalData, source }));
+        }
       } catch (_) {}
 
     } catch (err) {
