@@ -232,12 +232,20 @@ function ChamberCard({ chamber, index, apiKey }) {
           tools: [{ type: "web_search_20250305", name: "web_search" }],
           messages: [{
             role: "user",
-            content: `Today is ${today}. The Security Council is holding the ${meetingRef} today. Search for what this meeting is about using these sources in order:
-1. Search "Security Council ${meetingRef} ${today}" on press.un.org/en/security-council
-2. Search main.un.org/securitycouncil for today's programme of work
-3. Search securitycouncilreport.org for today's SC meeting
+            content: `Today is ${today}. The Security Council is holding its ${meetingRef} today.
 
-From your search results, provide a 3-5 sentence briefing covering: the agenda item (e.g. "The situation in the Middle East", "Haiti", "Kosovo"), who is briefing the Council, and the key issue being discussed. Be specific and accurate - use only what you find in the search results. Return ONLY the briefing text, no preamble or labels.`,
+Search for information using these queries in order:
+1. Search: "${meetingRef} Security Council ${today}"
+2. Search: "${meetingRef} UNMIK OR Haiti OR Kosovo OR Yemen OR Gaza OR Syria OR Congo OR Sudan Security Council"
+3. Fetch https://main.un.org/securitycouncil/en/content/programme-work for today's agenda
+
+From your search results, return a briefing covering:
+- The agenda item title (e.g. "The situation in Kosovo", "UNMIK", "The situation in the Middle East")
+- Who is briefing the Council (name and title)
+- The main issue being discussed and its current context
+- Any expected outcome (vote, resolution, consultations)
+
+Be specific and accurate. Use only verified information from search results. 3-5 sentences. Return ONLY the briefing text.`,
           }],
         }),
       });
