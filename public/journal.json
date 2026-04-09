@@ -1,6 +1,6 @@
 {
   "date": "2026-04-09",
-  "fetched_at": "2026-04-09T13:47:24.712Z",
+  "fetched_at": "2026-04-09T13:58:19.563Z",
   "ny_date": "2026-04-09",
   "source": "journal-api.un.org",
   "note": "Error: Could not find Chrome (ver. 146.0.7680.153). This can occur if either\n 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or\n 2. your cache path is incorrectly configured (which is: ~/.cache/puppeteer).\nFor (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.",
