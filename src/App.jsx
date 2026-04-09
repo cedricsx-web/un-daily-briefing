@@ -199,22 +199,34 @@ function ChamberCard({ chamber, index, apiKey }) {
   const hasSession = chamber.meetings && chamber.meetings.length > 0;
   const isSC = chamber.room === "Security Council";
 
-  const [recap, setRecap] = useState(null);
+  const [recap, setRecap] = useState(null);      // full text
+  const [recapTitle, setRecapTitle] = useState(null); // first line / topic title
   const [recapLoading, setRecapLoading] = useState(false);
   const [recapOpen, setRecapOpen] = useState(false);
+  const fetchedRef = useRef(false); // fetch only once
 
   // Extract meeting numbers from SC meetings
   const scMeetingNumbers = isSC
     ? chamber.meetings
-        .filter(m => !m.cancelled)
-        .map(m => { const match = m.title.match(/(\d+)(st|nd|rd|th) meeting/i); return match ? match[1] + match[2] + " meeting" : null; })
+        .filter(function(m) { return !m.cancelled; })
+        .map(function(m) {
+          const match = m.title.match(/(\d+)(st|nd|rd|th) meeting/i);
+          return match ? match[1] + match[2] + " meeting" : null;
+        })
         .filter(Boolean)
     : [];
 
-  async function fetchRecap() {
+  // Auto-fetch once when SC card mounts with meetings
+  useEffect(function() {
+    if (isSC && hasSession && scMeetingNumbers.length > 0 && apiKey && !fetchedRef.current) {
+      fetchedRef.current = true;
+      doFetch();
+    }
+  }, []);
+
+  async function doFetch() {
     if (!apiKey || scMeetingNumbers.length === 0) return;
     setRecapLoading(true);
-    setRecapOpen(true);
     try {
       const meetingRef = scMeetingNumbers.join(" and ");
       const today = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", month: "long", day: "numeric", year: "numeric" });
@@ -232,27 +244,27 @@ function ChamberCard({ chamber, index, apiKey }) {
           tools: [{ type: "web_search_20250305", name: "web_search" }],
           messages: [{
             role: "user",
-            content: `Today is ${today}. The Security Council is holding its ${meetingRef} today.
+            content: "Today is " + today + ". The Security Council is holding its " + meetingRef + " today.
 
 Search for information using these queries in order:
-1. Search: "${meetingRef} Security Council ${today}"
-2. Search: "${meetingRef} UNMIK OR Haiti OR Kosovo OR Yemen OR Gaza OR Syria OR Congo OR Sudan Security Council"
+1. Search: "" + meetingRef + " Security Council " + today + ""
+2. Search: "" + meetingRef + " UNMIK OR Haiti OR Kosovo OR Yemen OR Gaza OR Syria OR Congo OR Sudan Security Council"
 3. Fetch https://main.un.org/securitycouncil/en/content/programme-work for today's agenda
 
-From your search results, return a briefing covering:
-- The agenda item title (e.g. "The situation in Kosovo", "UNMIK", "The situation in the Middle East")
-- Who is briefing the Council (name and title)
-- The main issue being discussed and its current context
-- Any expected outcome (vote, resolution, consultations)
+Return your answer in two parts separated by the delimiter ---FULL---:
+Part 1 (before ---FULL---): The agenda item title only, very short, e.g. "The situation in Kosovo (UNMIK)" or "The situation in the Middle East". Max 10 words.
+Part 2 (after ---FULL---): A full 3-5 sentence briefing covering the agenda item, who is briefing, the main issue, and any expected outcome.
 
-Be specific and accurate. Use only verified information from search results. 3-5 sentences. Return ONLY the briefing text.`,
+Be specific and accurate. Use only verified information from search results.",
           }],
         }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error.message);
-      const text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("").trim();
-      setRecap(text || "No information found for this meeting yet. Check back after the meeting begins.");
+      const text = (data.content || []).filter(function(b) { return b.type === "text"; }).map(function(b) { return b.text; }).join("").trim();
+      const parts = text.split("---FULL---");
+      setRecapTitle((parts[0] || "").trim() || null);
+      setRecap((parts[1] || parts[0] || "").trim() || "No information found yet.");
     } catch (e) {
       setRecap("Search failed: " + e.message);
     }
@@ -273,9 +285,9 @@ Be specific and accurate. Use only verified information from search results. 3-5
           color: hasSession ? "#00A0DC" : "rgba(255,255,255,0.3)",
           textTransform: "uppercase", letterSpacing: "0.6px", lineHeight: "1.3",
         }}>{chamber.room}</span>
-        {isSC && hasSession && scMeetingNumbers.length > 0 && (
+        {isSC && hasSession && (recap || recapLoading) && (
           <button
-            onClick={recapOpen ? () => setRecapOpen(false) : fetchRecap}
+            onClick={function() { setRecapOpen(function(o) { return !o; }); }}
             style={{
               background: recapOpen ? "rgba(0,150,214,0.2)" : "rgba(255,255,255,0.06)",
               border: "1px solid rgba(0,150,214,0.3)",
@@ -283,53 +295,52 @@ Be specific and accurate. Use only verified information from search results. 3-5
               fontSize: "9px", fontWeight: "700", cursor: "pointer",
               letterSpacing: "0.5px", flexShrink: 0,
             }}
-          >{recapOpen ? "HIDE" : "RECAP"}</button>
+          >{recapOpen ? "HIDE" : "DETAILS"}</button>
         )}
       </div>
 
       {hasSession ? (
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          {chamber.meetings.map((m, i) => (
+          {chamber.meetings.map(function(m, i) { return (
             <div key={i} style={{ opacity: m.cancelled ? 0.45 : 1 }}>
               <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
                 <span style={{ fontSize: "10px", color: "#FCC30B", fontWeight: "700", whiteSpace: "nowrap", marginTop: "1px", flexShrink: 0 }}>{m.time}</span>
-                <span style={{
-                  fontSize: "12px", lineHeight: "1.35", fontWeight: "600",
-                  color: m.cancelled ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.9)",
-                  textDecoration: m.cancelled ? "line-through" : "none",
-                }}>{m.title}{m.cancelled && <span style={{ marginLeft: "4px", fontSize: "8px", color: "#ff6b6b", fontWeight: "700" }}>CANC.</span>}</span>
+                <div style={{ flex: 1 }}>
+                  <span style={{
+                    fontSize: "12px", lineHeight: "1.35", fontWeight: "600",
+                    color: m.cancelled ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.9)",
+                    textDecoration: m.cancelled ? "line-through" : "none",
+                  }}>{m.title}{m.cancelled && <span style={{ marginLeft: "4px", fontSize: "8px", color: "#ff6b6b", fontWeight: "700" }}>CANC.</span>}</span>
+                  {/* Show topic title under meeting number for SC */}
+                  {isSC && recapTitle && !m.cancelled && (
+                    <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.55)", fontStyle: "italic", marginTop: "2px", lineHeight: "1.3" }}>{recapTitle}</div>
+                  )}
+                  {isSC && recapLoading && !recap && !m.cancelled && (
+                    <div style={{ fontSize: "10px", color: "rgba(0,150,214,0.5)", marginTop: "2px" }}>Loading topic...</div>
+                  )}
+                </div>
               </div>
               {m.agenda && m.agenda.length > 0 && !m.cancelled && (
                 <div style={{ marginTop: "3px", paddingLeft: "40px", display: "flex", flexDirection: "column", gap: "2px" }}>
-                  {m.agenda.map((item, j) => (
+                  {m.agenda.map(function(item, j) { return (
                     <span key={j} style={{ fontSize: "10px", color: "rgba(255,255,255,0.45)", lineHeight: "1.4", display: "flex", gap: "5px" }}>
                       <span style={{ color: "rgba(0,160,220,0.4)", flexShrink: 0 }}>-</span>
                       {item}
                     </span>
-                  ))}
+                  ); })}
                 </div>
               )}
             </div>
-          ))}
+          ); })}
         </div>
       ) : (
         <p style={{ margin: 0, fontSize: "11px", color: "rgba(255,255,255,0.25)", fontStyle: "italic" }}>No session today</p>
       )}
 
-      {/* SC Recap Panel */}
-      {recapOpen && (
-        <div style={{
-          marginTop: "12px", paddingTop: "12px",
-          borderTop: "1px solid rgba(0,150,214,0.2)",
-        }}>
-          {recapLoading ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <div style={{ width: "12px", height: "12px", border: "2px solid rgba(0,150,214,0.3)", borderTop: "2px solid #00A0DC", borderRadius: "50%", animation: "spin 0.9s linear infinite", flexShrink: 0 }} />
-              <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>Searching press.un.org...</span>
-            </div>
-          ) : (
-            <p style={{ margin: 0, fontSize: "12px", color: "rgba(255,255,255,0.75)", lineHeight: "1.6" }}>{recap}</p>
-          )}
+      {/* SC Details Panel - shown/hidden by toggle, NOT re-fetched */}
+      {isSC && recapOpen && (
+        <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid rgba(0,150,214,0.2)" }}>
+          <p style={{ margin: 0, fontSize: "12px", color: "rgba(255,255,255,0.8)", lineHeight: "1.65" }}>{recap}</p>
         </div>
       )}
     </div>
