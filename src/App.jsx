@@ -252,7 +252,13 @@ function ChamberCard({ chamber, index, apiKey }) {
       if (data.error) throw new Error(data.error.message);
       const text = (data.content || []).filter(function(b) { return b.type === "text"; }).map(function(b) { return b.text; }).join("").trim();
       const parts = text.split("---FULL---");
-      setRecapTitle((parts[0] || "").trim() || null);
+      // Clean the title: take only the last line before ---FULL--- that has real content
+      // This strips Claude's reasoning text like "Now let me search..."
+      const rawTitle = (parts[0] || "").trim();
+      const titleLines = rawTitle.split("\n").map(function(l) { return l.replace(/[*_#]/g, "").trim(); }).filter(function(l) { return l.length > 3; });
+      // The real title is usually the last non-empty line, often after "---" or "**"
+      const cleanTitle = titleLines[titleLines.length - 1] || rawTitle;
+      setRecapTitle(cleanTitle || null);
       setRecap((parts[1] || parts[0] || "").trim() || "No information found yet.");
     } catch (e) {
       setRecap("Search failed: " + e.message);
