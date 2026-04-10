@@ -576,6 +576,30 @@ export default function App() {
         const parsed = JSON.parse(cached);
         setData(parsed.data);
         setJournalSource(parsed.source || "ai");
+        // Even when using cache, always re-check journal.json so chambers/meetings stay fresh
+        fetchLiveJournal().then(function(liveData) {
+          setData(function(prev) {
+            if (!prev) return prev;
+            return Object.assign({}, prev, {
+              chambers: liveData.chambers,
+              meetings: liveData.meetings,
+              journalFailed: false,
+            });
+          });
+          setJournalSource("live");
+          // Update cache with fresh journal data
+          try {
+            const existing = sessionStorage.getItem(todayKey());
+            if (existing) {
+              const parsed2 = JSON.parse(existing);
+              parsed2.data.chambers = liveData.chambers;
+              parsed2.data.meetings = liveData.meetings;
+              parsed2.data.journalFailed = false;
+              parsed2.source = "live";
+              sessionStorage.setItem(todayKey(), JSON.stringify(parsed2));
+            }
+          } catch (_) {}
+        }).catch(function() {});
       }
     } catch (_) {}
     // Always re-fetch live cancellation state from Supabase
