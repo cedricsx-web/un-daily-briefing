@@ -997,13 +997,7 @@ export default function App() {
       {/* Content */}
       <div style={{ maxWidth: "520px", margin: "0 auto", padding: "24px 18px 0" }}>
 
-        {!API_KEY && (
-          <div style={{ background: "rgba(255,180,0,0.1)", border: "1px solid rgba(255,180,0,0.3)", borderRadius: "12px", padding: "20px", textAlign: "center" }}>
-            <p style={{ color: "#ffcc44", margin: 0, fontSize: "14px" }}>&#9888;&#65039; No API key configured. Add VITE_ANTHROPIC_KEY as a GitHub Secret and redeploy.</p>
-          </div>
-        )}
-
-        {API_KEY && !data && !loading && !error && (
+        {!data && !loading && !error && (
           <div style={{ textAlign: "center", padding: "48px 24px", animation: "fadeSlideIn 0.5s ease" }}>
             <div style={{ fontSize: "52px", marginBottom: "20px" }}>&#127482;&#127475;</div>
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "22px", fontWeight: "700", margin: "0 0 10px" }}>Your daily UN briefing awaits</h2>
@@ -1017,7 +1011,7 @@ export default function App() {
               boxShadow: "0 8px 24px rgba(0,100,200,0.4)", fontFamily: "'DM Sans', sans-serif",
             }}>Generate Today's Briefing</button>
           </div>
-        )}
+        }
 
         {loading && (
           <div style={{ textAlign: "center", padding: "60px 24px" }}>
@@ -1332,3 +1326,4 @@ export default function App() {
     </div>
   );
 }
+
