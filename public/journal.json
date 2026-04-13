@@ -1,9 +1,9 @@
 {
-  "date": "2026-04-10",
-  "fetched_at": "2026-04-10T14:05:35.582Z",
-  "ny_date": "2026-04-10",
+  "date": "2026-04-13",
+  "fetched_at": "2026-04-13T13:09:40.479Z",
+  "ny_date": "2026-04-13",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 5 meetings",
+  "note": "Live from journal-api.un.org -- 9 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -11,42 +11,46 @@
     },
     {
       "room": "Security Council",
-      "meetings": []
-    },
-    {
-      "room": "Trusteeship Council",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Sixth Committee, Resumed session -- 41st plenary meeting",
+          "title": "Security Council -- 10133rd meeting",
           "agenda": [],
-          "id": "363d8c43-f4cc-490d-a24d-ba7143e0d5f3"
+          "id": "08744e5e-f9ec-4ad0-8a3c-f99a474c8983"
         }
       ]
+    },
+    {
+      "room": "Trusteeship Council",
+      "meetings": []
     },
     {
       "room": "Economic and Social Council",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the the implementation of the International Decade for People of African Descent",
+          "title": "General Assembly, Eightieth session -- Informal consultations on the progress declaration of the International Migration Review Forum",
           "agenda": [],
-          "id": "9f6af801-c076-4702-8f99-011478a6e55e"
+          "id": "78394c9d-ef35-4bfa-ae49-c6d6f8410a82"
         },
         {
           "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the the implementation of the International Decade for People of African Descent",
+          "title": "General Assembly, Eightieth session -- Informal consultations on the progress declaration of the International Migration Review Forum",
           "agenda": [],
-          "id": "30000eee-5e10-4133-bcc0-6c7b88eca424"
+          "id": "47b0447a-af37-444d-adb1-654abd9d5806"
         }
       ]
     }
   ],
   "meetings": [
-    "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
-    "General Assembly, Eightieth session -- Informal consultations on the the implementation of the International Decade for People of African Descent",
-    "General Assembly, Eightieth session -- Informal consultations on the modalities of the High-level meeting on HIV and AIDS",
-    "Sixth Committee, Resumed session -- 41st plenary meeting",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)"
+    "Security Council -- 10133rd meeting",
+    "General Assembly, Eightieth session -- Informal consultations on the progress declaration of the International Migration Review Forum",
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
+    "UNCITRAL Working Group V (Insolvency Law), Sixty-eighth session -- Meeting of the Working Group",
+    "Disarmament Commission -- Informal plenary meeting",
+    "Committee of Experts on Public Administration, Twenty-fifth session -- 1st meeting",
+    "Committee of Experts on Public Administration, Twenty-fifth session -- 2nd meeting",
+    "Commission on Population and Development, Fifty-ninth session -- 2nd plenary meeting",
+    "Commission on Population and Development, Fifty-ninth session -- 3rd plenary meeting"
   ]
 }
