@@ -1011,7 +1011,7 @@ export default function App() {
               boxShadow: "0 8px 24px rgba(0,100,200,0.4)", fontFamily: "'DM Sans', sans-serif",
             }}>Generate Today's Briefing</button>
           </div>
-        }
+        )}
 
         {loading && (
           <div style={{ textAlign: "center", padding: "60px 24px" }}>
@@ -1326,4 +1326,3 @@ export default function App() {
     </div>
   );
 }
-
