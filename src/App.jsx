@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
-const API_KEY = import.meta.env.VITE_ANTHROPIC_KEY || "";
+// API key no longer used in browser - topics generated server-side
+const API_KEY = "";
 const BASE = import.meta.env.BASE_URL || "/";
 const SB_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SB_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
@@ -194,7 +195,7 @@ function todayKey() {
 }
 
 // -- Chamber Card --------------------------------------------------------------
-function ChamberCard({ chamber, index, apiKey }) {
+function ChamberCard({ chamber, index }) {
   const icon = CHAMBER_ICONS[chamber.room] || "UN";
   const hasSession = chamber.meetings && chamber.meetings.length > 0;
   const isSC = chamber.room === "Security Council";
@@ -218,14 +219,14 @@ function ChamberCard({ chamber, index, apiKey }) {
 
   // Auto-fetch once when SC card mounts with meetings
   useEffect(function() {
-    if (isSC && hasSession && scMeetingNumbers.length > 0 && apiKey && !fetchedRef.current) {
+    if (isSC && hasSession && scMeetingNumbers.length > 0 && SB_URL && !fetchedRef.current) {
       fetchedRef.current = true;
       doFetch();
     }
   }, []);
 
   async function doFetch() {
-    if (!apiKey || scMeetingNumbers.length === 0) return;
+    if (scMeetingNumbers.length === 0) return;
     setRecapLoading(true);
     try {
       const meetingRef = scMeetingNumbers.join(" and ");
@@ -234,7 +235,7 @@ function ChamberCard({ chamber, index, apiKey }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": apiKey,
+          "x-api-key": import.meta.env.VITE_ANTHROPIC_KEY || "",
           "anthropic-version": "2023-06-01",
           "anthropic-dangerous-direct-browser-access": "true",
         },
@@ -836,80 +837,19 @@ export default function App() {
     return parseAllNew(data);
   }
 
-  // Step 2: Ask Claude for topics (and optionally meetings if live failed)
-  async function fetchClaudeTopics(meetingsContext) {
-    const today = new Date();
-    const dateStr = `${MONTHS[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`;
-    const dow = today.toLocaleDateString("en-US", { weekday: "long" });
-
-    // Build observances context
-    const obsToday = getTodayObservance();
-    const obsWeekend = getWeekendObservances();
-    let observanceContext = "";
-    if (obsToday) observanceContext += `\n\nToday's UN International Day: ${obsToday.name}`;
-    if (obsWeekend.length > 0) {
-      observanceContext += `\nUpcoming this weekend: ${obsWeekend.map(o => o.weekday + ": " + o.name).join("; ")}`;
-    }
-
-    const meetingsList = meetingsContext?.meetings?.length > 0
-      ? `\n\nToday's actual UN meetings from the Journal:\n${meetingsContext.meetings.slice(0, 15).map(m => `- ${m}`).join("\n")}`
-      : "";
-
-    // No AI-generated meetings - always empty if live fails
-    const chambersSection = "";
-
-    const prompt = `Today is ${dow}, ${dateStr}.${observanceContext}${meetingsList}
-
-You are a UN expert generating a daily briefing for UN tour guides at United Nations Headquarters in New York.
-${meetingsList ? "Use the actual meetings and international days listed above as primary sources for your topics." : "No meeting data available today - focus topics on international days and current UN global issues."}
-
-Generate exactly 5 briefing topics following these rules:
-- If today has an International Day listed above, make it one of the 5 topics
-- If today is Friday and weekend International Days are listed, include them as coming-up topics
-- For each topic identify the most relevant UN entity: WHO, UNICEF, UNHCR, UNEP, WFP, UNESCO, UNDP, ILO, FAO, IAEA, UN Women, UNODC, UN-Habitat, UNFPA, OCHA, Security Council, General Assembly, or ECOSOC
-- Link each topic to the most relevant SDG AND the most relevant UN entity
-- Make topics feel timely and connected to today's actual UN activity
-
-Return ONLY raw JSON:
-{
-  "topics": [
-    {
-      "title": "Concise compelling title (max 8 words)",
-      "sdg": "SDG X: Short Name",
-      "un_entity": "e.g. WHO | UNICEF | UNHCR | UNEP | WFP | UNESCO | UNDP | ILO | FAO",
-      "tag": "one of: UN Meeting | International Day | Global Crisis | Diplomacy | Humanitarian",
-      "bullets": ["Key fact or statistic", "Key fact or statistic", "Key fact or statistic", "Key fact or statistic"],
-      "detail": "80-120 words: what this issue is, why it matters at the UN today, and what the relevant UN entity does on this issue."
-    }
-  ]${chambersSection}
-}
-
-Generate exactly 5 topics. Return ONLY the JSON.`;
-
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": API_KEY,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 3500,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
-
-    const json = await res.json();
-    if (!res.ok) throw new Error(json?.error?.message || `API error ${res.status}`);
-
-    let raw = (json.content || []).filter(b => b.type === "text").map(b => b.text).join("");
-    raw = raw.replace(/```json|```/g, "").trim();
-    const start = raw.indexOf("{");
-    const end = raw.lastIndexOf("}");
-    if (start === -1) throw new Error("No JSON in response");
-    return JSON.parse(raw.slice(start, end + 1));
+  // Step 2: Load pre-generated topics from Supabase (generated each morning by GitHub Action)
+  async function fetchTopicsFromSupabase(dateStr) {
+    if (!SB_URL || !SB_KEY) throw new Error("Supabase not configured");
+    const res = await fetch(
+      SB_URL + "/rest/v1/daily_topics?date=eq." + dateStr + "&limit=1",
+      { headers: { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY } }
+    );
+    if (!res.ok) throw new Error("Supabase error " + res.status);
+    const rows = await res.json();
+    if (!rows || rows.length === 0) throw new Error("No topics for " + dateStr);
+    const topics = typeof rows[0].topics === "string" ? JSON.parse(rows[0].topics) : rows[0].topics;
+    if (!topics || !topics.length) throw new Error("Empty topics array");
+    return topics;
   }
 
   async function fetchBriefing() {
@@ -918,48 +858,49 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
     setLoading(true);
     setError(null);
 
-    try {
-      let liveData = null;
-      let source = "ai";
+    const EMPTY_CHAMBERS = [
+      { room: "General Assembly Hall", meetings: [] },
+      { room: "Security Council", meetings: [] },
+      { room: "Trusteeship Council", meetings: [] },
+      { room: "Economic and Social Council", meetings: [] },
+    ];
 
-      // Load from journal.json (pre-fetched each morning by GitHub Action)
-      try {
-        liveData = await fetchLiveJournal();
-        source = "live";
-        console.log("Loaded from journal.json:", liveData.meetings.length, "meetings");
-      } catch (e) {
-        console.warn("journal.json failed:", e.message);
+    try {
+      const date = todayStr();
+
+      // Load journal data and topics in parallel
+      const [liveData, topics] = await Promise.all([
+        fetchLiveJournal().catch(function(e) {
+          console.warn("journal.json failed:", e.message);
+          return null;
+        }),
+        fetchTopicsFromSupabase(date).catch(function(e) {
+          console.warn("Topics from Supabase failed:", e.message);
+          return [];
+        }),
+      ]);
+
+      if (!topics || topics.length === 0) {
+        throw new Error("No briefing topics available yet. The daily briefing is generated at 8 AM NY time. Please try again later.");
       }
 
-      // Get Claude topics (passing live meetings as context if available)
-      const claudeResult = await fetchClaudeTopics(liveData);
-
-      const emptyChambers = [
-        { room: "General Assembly Hall", meetings: [] },
-        { room: "Security Council", meetings: [] },
-        { room: "Trusteeship Council", meetings: [] },
-        { room: "Economic and Social Council", meetings: [] },
-      ];
       const finalData = {
-        chambers: liveData?.chambers || emptyChambers,
-        meetings: liveData?.meetings || [],
-        topics: claudeResult.topics || [],
+        chambers: liveData ? liveData.chambers : EMPTY_CHAMBERS,
+        meetings: liveData ? liveData.meetings : [],
+        topics: topics,
         journalFailed: !liveData,
       };
 
-      if (!finalData.topics.length) throw new Error("No topics returned");
-
       setData(finalData);
-      setJournalSource(source);
+      setJournalSource(liveData ? "live" : "ai");
       try {
-        // Only cache if we have real journal data, not a failed state
         if (!finalData.journalFailed) {
-          sessionStorage.setItem(todayKey(), JSON.stringify({ data: finalData, source }));
+          sessionStorage.setItem(todayKey(), JSON.stringify({ data: finalData, source: "live" }));
         }
       } catch (_) {}
 
     } catch (err) {
-      setError(`Error: ${err.message}`);
+      setError(err.message);
       fetchedRef.current = false;
     } finally {
       setLoading(false);
@@ -1172,7 +1113,7 @@ Generate exactly 5 topics. Return ONLY the JSON.`;
             <div>
               <SectionHeader icon="&#127963;&#65039;" title="Council Chambers" subtitle="Today's session schedule" badge={journalSource === "live" ? "LIVE" : null} />
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "28px" }}>
-                {mergedChambers.map((c, i) => <ChamberCard key={i} chamber={c} index={i} apiKey={API_KEY} />)}
+                {mergedChambers.map((c, i) => <ChamberCard key={i} chamber={c} index={i} />)}
               </div>
 
               {data.journalFailed && (
