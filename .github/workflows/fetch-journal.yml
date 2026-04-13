@@ -38,8 +38,12 @@ jobs:
             npx puppeteer browsers install chrome
           fi
 
-      - name: Fetch UN Journal
+      - name: Fetch UN Journal and Generate Topics
         run: node scripts/fetch-journal.cjs
+        env:
+          VITE_ANTHROPIC_KEY: ${{ secrets.VITE_ANTHROPIC_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
       - name: Show result
         run: cat public/journal.json
