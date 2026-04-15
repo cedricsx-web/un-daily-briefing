@@ -1110,7 +1110,7 @@ export default function App() {
                 {mergedChambers.map((c, i) => <ChamberCard key={i} chamber={c} index={i} />)}
               </div>
 
-              {data.journalFailed && (
+              {data.journalFailed && (!data.meetings || data.meetings.length === 0) && (
                 <div style={{ background: "rgba(255,180,0,0.08)", border: "1px solid rgba(255,180,0,0.2)", borderRadius: "10px", padding: "12px 16px", marginBottom: "16px", display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ fontSize: "16px" }}>&#9888;&#65039;</span>
                   <div>
