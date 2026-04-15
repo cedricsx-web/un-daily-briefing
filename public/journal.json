@@ -1,55 +1,17 @@
 {
-  "date": "2026-04-14",
-  "fetched_at": "2026-04-14T13:12:25.854Z",
-  "ny_date": "2026-04-14",
+  "date": "2026-04-15",
+  "fetched_at": "2026-04-15T13:10:01.710Z",
+  "ny_date": "2026-04-15",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 15 meetings",
+  "note": "Live from journal-api.un.org -- 9 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal meeting of the plenary on the intergovernmental negotiations on the question of equitable representation on and increase in the membership of the Security Council and other matters related to the Council",
-          "agenda": [],
-          "id": "96631fe3-b27a-44fb-82e8-1b447ab25b36"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- Informal meeting of the plenary on the intergovernmental negotiations on the question of equitable representation on and increase in the membership of the Security Council and other matters related to the Council",
-          "agenda": [],
-          "id": "37ffa344-f66b-4361-816a-4c46be00eb0e"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Security Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Security Council -- 10134th meeting",
-          "agenda": [],
-          "id": "c97069d1-b04b-45c8-bb66-cef795c1595b"
-        },
-        {
-          "time": "Followed By",
-          "title": "Security Council -- 10135th meeting",
-          "agenda": [],
-          "id": "5d87aa5d-7c90-4248-bbf0-a6e705d5d66b"
-        },
-        {
-          "time": "Followed By",
-          "title": "Security Council -- Consultations of the whole",
-          "agenda": [],
-          "id": "c3e65880-b131-4694-ad89-74701adad0d4"
-        },
-        {
-          "time": "3:30 PM",
-          "title": "Security Council -- Consultations of the whole",
-          "agenda": [],
-          "id": "02d94f91-11d1-4b5f-8986-8e57c501e2d4"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Trusteeship Council",
@@ -58,49 +20,30 @@
           "time": "10:00 AM",
           "title": "Economic and Social Council, 2026 session -- Youth Forum",
           "agenda": [],
-          "id": "56c3efd1-0d5c-4361-a3b4-85cba145bcca"
+          "id": "38378360-c2d7-490b-aab9-bdf40e4b1bfe"
         },
         {
           "time": "3:00 PM",
           "title": "Economic and Social Council, 2026 session -- Youth Forum",
           "agenda": [],
-          "id": "db3d64f6-ffc5-4c6f-979b-ff18aa78b3ec"
+          "id": "f217f6ac-b0cd-42df-bdfb-11b83dd9237d"
         }
       ]
     },
     {
       "room": "Economic and Social Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the progress declaration of the International Migration Review Forum",
-          "agenda": [],
-          "id": "b810e9f5-1d29-415e-961d-b39b82171799"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the progress declaration of the International Migration Review Forum",
-          "agenda": [],
-          "id": "78a52a9d-6603-4495-9ce9-b540a29a4aa4"
-        }
-      ]
+      "meetings": []
     }
   ],
   "meetings": [
-    "Security Council -- 10134th meeting",
-    "Security Council -- 10135th meeting",
-    "Security Council -- Consultations of the whole",
-    "General Assembly, Eightieth session -- Informal meeting of the plenary on the intergovernmental negotiations on the question of equitable representation on and increase in the membership of the Security Council and other matters related to the Council",
-    "General Assembly, Eightieth session -- Informal consultations on the progress declaration of the International Migration Review Forum",
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
     "UNCITRAL Working Group V (Insolvency Law), Sixty-eighth session -- Meeting of the Working Group",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
-    "Committee on Information -- Informal briefing",
+    "Disarmament Commission -- Informal plenary meeting",
     "Economic and Social Council, 2026 session -- Youth Forum",
-    "Committee of Experts on Public Administration, Twenty-fifth session -- 3rd meeting",
-    "Committee of Experts on Public Administration, Twenty-fifth session -- 4th meeting",
-    "Commission on Population and Development, Fifty-ninth session -- 4th plenary meeting",
-    "Commission on Population and Development, Fifty-ninth session -- 5th plenary meeting",
-    "General Assembly -- Informal consultations on the draft resolution entitled “Global health and foreign policy: accelerating the fight against diseases driven social determinants of health” (under agenda item 128) (convened by the Permanent Missions of Brazil, France, Indonesia, Norway, Senegal, South Africa and Thailand)",
-    "Permanent Mission of Angola,Permanent Mission of Antigua and Barbuda,United Nations Volunteers,Office of Human Resources, Department of Management Strategy, Policy and Compliance,AIESEC International -- Panel discussion on the theme “Workforce Rejuvenation in a Changing World: Investing in Youth for Sustainable Multilateralism” (co-organized by the Permanent Missions of Angola and Antigua and Barbuda, United Nations Volunteers, the Office of Human Resources of the Department of Management Strategy, Policy and Compliance and AIESEC International)"
+    "Committee of Experts on Public Administration, Twenty-fifth session -- 5th meeting",
+    "Committee of Experts on Public Administration, Twenty-fifth session -- 6th meeting",
+    "Commission on Population and Development, Fifty-ninth session -- 6th plenary meeting",
+    "Commission on Population and Development, Fifty-ninth session -- 7th plenary meeting",
+    "Permanent Mission of Georgia,Ministry of Justice of Georgia,Department of Economic and Social Affairs (DESA) -- Event entitled “Briefing on the 2026 United Nations Public Service Forum: Transforming Public Institutions, Advancing Innovation, Accountability, Participation and Inclusion” (co-organized by the Permanent Mission of Georgia, the Ministry of Justice of Georgia and the Department of Economic and Social Affairs (DESA))"
   ]
 }
