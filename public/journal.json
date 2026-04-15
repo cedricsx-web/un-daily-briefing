@@ -1,13 +1,38 @@
 {
   "date": "2026-04-15",
-  "fetched_at": "2026-04-15T19:50:15.129Z",
+  "fetched_at": "2026-04-15T19:57:17.388Z",
   "ny_date": "2026-04-15",
   "source": "journal-api.un.org",
   "note": "Live from journal-api.un.org -- 9 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
+          "agenda": [],
+          "id": "5f45020c-c6e4-43b0-ba65-ed46a9a2c03d"
+        },
+        {
+          "time": "10:00 AM",
+          "title": "UNCITRAL Working Group V (Insolvency Law), Sixty-eighth session -- Meeting of the Working Group",
+          "agenda": [],
+          "id": "2278c6e7-e19e-41b3-8a2a-62f3e19ddd2b"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "UNCITRAL Working Group V (Insolvency Law), Sixty-eighth session -- Meeting of the Working Group",
+          "agenda": [],
+          "id": "af4b6a15-d8e3-4b7c-8018-cee276441e47"
+        },
+        {
+          "time": "10:00 AM",
+          "title": "Disarmament Commission -- Informal plenary meeting",
+          "agenda": [],
+          "id": "f04d0437-4378-4dbe-905d-7318380acc09"
+        }
+      ]
     },
     {
       "room": "Security Council",
@@ -27,6 +52,23 @@
           "title": "Economic and Social Council, 2026 session -- Youth Forum",
           "agenda": [],
           "id": "f217f6ac-b0cd-42df-bdfb-11b83dd9237d"
+        }
+      ]
+    },
+    {
+      "room": "Economic and Social Council",
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "Committee of Experts on Public Administration, Twenty-fifth session -- 5th meeting",
+          "agenda": [],
+          "id": "a8034435-4978-41ee-96d3-fe79669a72c0"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Committee of Experts on Public Administration, Twenty-fifth session -- 6th meeting",
+          "agenda": [],
+          "id": "0757ccdc-8664-4cfd-bd3c-8f78cbacf068"
         },
         {
           "time": "10:00 AM",
@@ -41,10 +83,6 @@
           "id": "e8c09a31-e78f-44fd-9df5-cdbb1a1d0115"
         }
       ]
-    },
-    {
-      "room": "Economic and Social Council",
-      "meetings": []
     }
   ],
   "meetings": [
