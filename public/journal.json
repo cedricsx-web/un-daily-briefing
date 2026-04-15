@@ -1,6 +1,6 @@
 {
   "date": "2026-04-15",
-  "fetched_at": "2026-04-15T15:11:16.652Z",
+  "fetched_at": "2026-04-15T19:50:15.129Z",
   "ny_date": "2026-04-15",
   "source": "journal-api.un.org",
   "note": "Live from journal-api.un.org -- 9 meetings",
@@ -27,6 +27,18 @@
           "title": "Economic and Social Council, 2026 session -- Youth Forum",
           "agenda": [],
           "id": "f217f6ac-b0cd-42df-bdfb-11b83dd9237d"
+        },
+        {
+          "time": "10:00 AM",
+          "title": "Commission on Population and Development, Fifty-ninth session -- 6th plenary meeting",
+          "agenda": [],
+          "id": "3470593e-4515-4356-8226-c2057caacce6"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Commission on Population and Development, Fifty-ninth session -- 7th plenary meeting",
+          "agenda": [],
+          "id": "e8c09a31-e78f-44fd-9df5-cdbb1a1d0115"
         }
       ]
     },
