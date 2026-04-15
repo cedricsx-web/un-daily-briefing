@@ -6,24 +6,36 @@ const API_KEY  = process.env.VITE_ANTHROPIC_KEY || "";
 const SB_URL   = process.env.VITE_SUPABASE_URL || "";
 const SB_KEY   = process.env.VITE_SUPABASE_ANON_KEY || "";
 
-// Expanded chamber map covering all known room name variants
+// Room name -> display chamber
 const CHAMBER_MAP = {
   "general assembly hall": "General Assembly Hall",
-  "ga hall": "General Assembly Hall",
   "security council chamber": "Security Council",
   "security council consultations room": "Security Council",
-  "sc chamber": "Security Council",
   "trusteeship council chamber": "Trusteeship Council",
-  "tc chamber": "Trusteeship Council",
   "economic and social council chamber": "Economic and Social Council",
-  "ecosoc chamber": "Economic and Social Council",
-  "conference room 4": "Trusteeship Council",
+};
+
+// Group name -> display chamber (fallback when room = "New York" or unknown)
+const GROUP_CHAMBER_MAP = {
+  "security council": "Security Council",
+  "general assembly": "General Assembly Hall",
+  "trusteeship council": "Trusteeship Council",
+  "economic and social council": "Economic and Social Council",
 };
 
 function chamberForRoom(raw) {
   if (!raw) return null;
   const lower = (raw || "").toString().toLowerCase().trim();
   for (const [key, val] of Object.entries(CHAMBER_MAP)) {
+    if (lower.includes(key)) return val;
+  }
+  return null;
+}
+
+function chamberForGroup(groupName) {
+  if (!groupName) return null;
+  const lower = (groupName || "").toString().toLowerCase().trim();
+  for (const [key, val] of Object.entries(GROUP_CHAMBER_MAP)) {
     if (lower.includes(key)) return val;
   }
   return null;
@@ -50,14 +62,10 @@ function getTime(item) {
 }
 
 function getRoom(item) {
-  // Log ALL room info so we can debug future changes
   if (Array.isArray(item.rooms) && item.rooms.length > 0) {
-    const roomVal = item.rooms[0].value || "";
-    if (roomVal) return roomVal;
+    return item.rooms[0].value || "";
   }
-  // Fallback fields
-  const r = getText(item.room) || getText(item.location) || "";
-  return r;
+  return getText(item.room) || getText(item.location) || "";
 }
 
 function normalizeTime(raw) {
@@ -112,10 +120,9 @@ function parseAgendaItems(data) {
 function parseJournalData(data, agendaByMeetingId) {
   const allMeetings = [];
   const chamberMap  = {};
-  const roomsSeen   = {};  // track all unique room values for debugging
   agendaByMeetingId = agendaByMeetingId || {};
 
-  function processMeeting(item, organLabel) {
+  function processMeeting(item, organLabel, groupName) {
     if (!item || typeof item !== "object") return;
     if (item.cancelled || item.isCancelled) return;
     const meetingNum = getText(item.meetingNumber);
@@ -123,21 +130,20 @@ function parseJournalData(data, agendaByMeetingId) {
     const rawTitle   = meetingNum || titleText || "";
     if (!rawTitle) return;
 
-    const agenda     = agendaByMeetingId[item.id] || [];
+    const agenda       = agendaByMeetingId[item.id] || [];
     const agendaSuffix = agenda.length > 0 ? " [" + agenda.join(" / ") + "]" : "";
-    const fullTitle  = (organLabel ? organLabel + " -- " + rawTitle : rawTitle) + agendaSuffix;
-    const shortTitle = organLabel ? organLabel + " -- " + rawTitle : rawTitle;
-    const rawTime    = getTime(item);
-    const normTime   = normalizeTime(rawTime);
-    const rawRoom    = getRoom(item);
+    const fullTitle    = (organLabel ? organLabel + " -- " + rawTitle : rawTitle) + agendaSuffix;
+    const shortTitle   = organLabel ? organLabel + " -- " + rawTitle : rawTitle;
+    const rawTime      = getTime(item);
+    const normTime     = normalizeTime(rawTime);
+    const rawRoom      = getRoom(item);
 
-    // Log every unique room value for debugging
-    if (rawRoom && !roomsSeen[rawRoom]) {
-      roomsSeen[rawRoom] = true;
-      console.log("ROOM SEEN: [" + rawRoom + "] -> " + (chamberForRoom(rawRoom) || "NOT MAPPED"));
-    }
+    // Primary: map by room name
+    // Fallback: map by group name (handles "New York" room after API change)
+    const chamber = chamberForRoom(rawRoom) || chamberForGroup(groupName);
 
-    const chamber = chamberForRoom(rawRoom);
+    console.log("MTG: [" + rawRoom + "] group=[" + groupName + "] -> " + (chamber || "none") + " | " + shortTitle.slice(0, 50));
+
     allMeetings.push({ title: fullTitle, time: normTime, room: rawRoom || null });
     if (chamber) {
       if (!chamberMap[chamber]) chamberMap[chamber] = [];
@@ -157,23 +163,21 @@ function parseJournalData(data, agendaByMeetingId) {
         const bodyLabel   = sessionNum ? sessionName + ", " + sessionNum : sessionName;
         const sessionTime = session.startTime || session.time || session.hour || "";
         const meetings    = session.meetings || session.items || session.events || [];
-
         if (Array.isArray(meetings) && meetings.length > 0) {
           meetings.forEach(function(m) {
             if (sessionTime && !m.startTime && !m.time && !m.hour) {
               m = Object.assign({}, m, { startTime: sessionTime });
             }
-            processMeeting(m, bodyLabel);
+            processMeeting(m, bodyLabel, organName);
           });
         } else {
           var sw = sessionTime ? Object.assign({}, session, { startTime: sessionTime }) : session;
-          processMeeting(sw, organName);
+          processMeeting(sw, organName, organName);
         }
       });
     });
   }
 
-  console.log("Top-level keys: " + Object.keys(data).join(", "));
   processSection(data.officialMeetings);
   processSection(data.informalMeetings || data.informalConsultations);
   processSection(data.otherMeetings);
@@ -196,7 +200,7 @@ const UN_OBSERVANCES = {
 };
 
 async function generateTopics(meetings, dateStr) {
-  if (!API_KEY) { console.log("No API key -- skipping topic generation"); return null; }
+  if (!API_KEY) { console.log("No API key -- skipping topics"); return null; }
   const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const d = new Date(dateStr + "T12:00:00");
   const month = d.getMonth();
@@ -209,7 +213,7 @@ async function generateTopics(meetings, dateStr) {
     ? "\n\nToday's UN meetings:\n" + meetings.slice(0, 15).map(function(m) { return "- " + m; }).join("\n")
     : "";
   const intlContext = intlDay ? "\n\nToday's UN International Day: " + intlDay : "";
-  const prompt = "Today is " + dow + ", " + humanDate + "." + intlContext + meetingsList + "\n\nGenerate exactly 5 briefing topics for UN tour guides. For each topic name the most relevant UN entity (WHO, UNICEF, UNHCR, UNEP, WFP, UNESCO, UNDP, ILO, FAO, IAEA, UN Women, OCHA, Security Council, General Assembly, ECOSOC) and link to an SDG.\n\nReturn ONLY this JSON:\n{\"topics\":[{\"title\":\"Max 8 words\",\"sdg\":\"SDG X: Name\",\"un_entity\":\"Entity\",\"tag\":\"UN Meeting OR International Day OR Global Crisis OR Diplomacy OR Humanitarian\",\"bullets\":[\"Fact 1\",\"Fact 2\",\"Fact 3\",\"Fact 4\"],\"detail\":\"80-120 words context.\"}]}";
+  const prompt = "Today is " + dow + ", " + humanDate + "." + intlContext + meetingsList + "\n\nGenerate exactly 5 briefing topics for UN tour guides. For each topic name the most relevant UN entity and link to an SDG.\n\nReturn ONLY this JSON:\n{\"topics\":[{\"title\":\"Max 8 words\",\"sdg\":\"SDG X: Name\",\"un_entity\":\"Entity\",\"tag\":\"UN Meeting OR International Day OR Global Crisis OR Diplomacy OR Humanitarian\",\"bullets\":[\"Fact 1\",\"Fact 2\",\"Fact 3\",\"Fact 4\"],\"detail\":\"80-120 words context.\"}]}";
   console.log("Generating topics with Claude Haiku...");
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -227,7 +231,7 @@ async function generateTopics(meetings, dateStr) {
 }
 
 async function saveTopicsToSupabase(dateStr, topics) {
-  if (!SB_URL || !SB_KEY) { console.log("No Supabase -- skipping topic save"); return; }
+  if (!SB_URL || !SB_KEY) { console.log("No Supabase -- skipping"); return; }
   await fetch(SB_URL + "/rest/v1/daily_topics?date=eq." + dateStr, {
     method: "DELETE",
     headers: { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY },
@@ -249,7 +253,6 @@ async function main() {
 
   const url = "https://journal.un.org/en/new-york/all/" + dateStr;
   console.log("Opening: " + url);
-
   let browser;
   try {
     browser = await puppeteer.launch({
@@ -280,7 +283,7 @@ async function main() {
           const items = parseAgendaItems(parsed);
           if (meetingId && items.length > 0) {
             agendaByMeetingId[meetingId] = items;
-            console.log("Agenda for " + meetingId.slice(0,8) + ": " + items.join(" | "));
+            console.log("Agenda " + meetingId.slice(0,8) + ": " + items.join(" | "));
           }
         }
       } catch (e) {}
@@ -297,7 +300,6 @@ async function main() {
             for (const meeting of (session.meetings || [])) {
               if (meeting.id && !meeting.isCancelled) {
                 const meetingUrl = "https://journal.un.org/en/meeting/Officials/" + meeting.id + "/" + dateStr;
-                console.log("Navigating to SC meeting: " + meetingUrl);
                 try {
                   await page.goto(meetingUrl, { waitUntil: "networkidle2", timeout: 20000 });
                   await new Promise(function(r) { setTimeout(r, 3000); });
@@ -313,7 +315,6 @@ async function main() {
     }
 
     await browser.close();
-
     if (!journalData) { saveResult(dateStr, emptyChambers(), [], "No allnew data captured"); return; }
 
     const result    = parseJournalData(journalData, agendaByMeetingId);
