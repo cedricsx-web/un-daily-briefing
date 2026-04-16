@@ -1,36 +1,48 @@
 {
-  "date": "2026-04-15",
-  "fetched_at": "2026-04-15T19:57:17.388Z",
-  "ny_date": "2026-04-15",
+  "date": "2026-04-16",
+  "fetched_at": "2026-04-16T13:17:23.778Z",
+  "ny_date": "2026-04-16",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 9 meetings",
+  "note": "Live from journal-api.un.org -- 12 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
+          "title": "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
           "agenda": [],
-          "id": "5f45020c-c6e4-43b0-ba65-ed46a9a2c03d"
+          "id": "fda42b34-db7b-4d37-b44c-3bf057044a66"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
+          "agenda": [],
+          "id": "401a76ba-739d-4829-91e5-f3173b54c5a2"
         },
         {
           "time": "10:00 AM",
           "title": "UNCITRAL Working Group V (Insolvency Law), Sixty-eighth session -- Meeting of the Working Group",
           "agenda": [],
-          "id": "2278c6e7-e19e-41b3-8a2a-62f3e19ddd2b"
+          "id": "736ee707-7825-497b-ae09-0b02835adbc6"
         },
         {
           "time": "3:00 PM",
           "title": "UNCITRAL Working Group V (Insolvency Law), Sixty-eighth session -- Meeting of the Working Group",
           "agenda": [],
-          "id": "af4b6a15-d8e3-4b7c-8018-cee276441e47"
+          "id": "60773760-0c24-40b9-8cf4-1fb28af1cdd5"
         },
         {
           "time": "10:00 AM",
           "title": "Disarmament Commission -- Informal plenary meeting",
           "agenda": [],
-          "id": "f04d0437-4378-4dbe-905d-7318380acc09"
+          "id": "9c052753-a303-4ffe-94c0-bf6f7907a4c3"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Steering Committee on partnerships for Small Island Developing States, Eightieth session -- Steering Committee on partnerships for Small Island Developing States (at the ambassadorial level)",
+          "agenda": [],
+          "id": "fe42c48e-40cf-45b4-a633-eb35098de585"
         }
       ]
     },
@@ -45,13 +57,13 @@
           "time": "10:00 AM",
           "title": "Economic and Social Council, 2026 session -- Youth Forum",
           "agenda": [],
-          "id": "38378360-c2d7-490b-aab9-bdf40e4b1bfe"
+          "id": "e2ad86b0-133d-4afd-9791-b37100812d63"
         },
         {
           "time": "3:00 PM",
           "title": "Economic and Social Council, 2026 session -- Youth Forum",
           "agenda": [],
-          "id": "f217f6ac-b0cd-42df-bdfb-11b83dd9237d"
+          "id": "093ceeb8-8661-463a-815d-c02b7cba1d5a"
         }
       ]
     },
@@ -60,40 +72,37 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Committee of Experts on Public Administration, Twenty-fifth session -- 5th meeting",
+          "title": "Committee of Experts on Public Administration, Twenty-fifth session -- 7th meeting",
           "agenda": [],
-          "id": "a8034435-4978-41ee-96d3-fe79669a72c0"
+          "id": "6c10af4f-a80e-4050-820a-7504e8cec623"
         },
         {
           "time": "3:00 PM",
-          "title": "Committee of Experts on Public Administration, Twenty-fifth session -- 6th meeting",
+          "title": "Committee of Experts on Public Administration, Twenty-fifth session -- 8th meeting",
           "agenda": [],
-          "id": "0757ccdc-8664-4cfd-bd3c-8f78cbacf068"
+          "id": "51a013b0-9eb1-4ad5-8322-437e2543df39"
         },
         {
           "time": "10:00 AM",
-          "title": "Commission on Population and Development, Fifty-ninth session -- 6th plenary meeting",
+          "title": "Commission on Population and Development, Fifty-ninth session -- 8th plenary meeting",
           "agenda": [],
-          "id": "3470593e-4515-4356-8226-c2057caacce6"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Commission on Population and Development, Fifty-ninth session -- 7th plenary meeting",
-          "agenda": [],
-          "id": "e8c09a31-e78f-44fd-9df5-cdbb1a1d0115"
+          "id": "ed1fd0cd-e7e3-4498-9c68-2b48b8963f51"
         }
       ]
     }
   ],
   "meetings": [
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
     "UNCITRAL Working Group V (Insolvency Law), Sixty-eighth session -- Meeting of the Working Group",
     "Disarmament Commission -- Informal plenary meeting",
+    "Steering Committee on partnerships for Small Island Developing States, Eightieth session -- Steering Committee on partnerships for Small Island Developing States (at the ambassadorial level)",
     "Economic and Social Council, 2026 session -- Youth Forum",
-    "Committee of Experts on Public Administration, Twenty-fifth session -- 5th meeting",
-    "Committee of Experts on Public Administration, Twenty-fifth session -- 6th meeting",
-    "Commission on Population and Development, Fifty-ninth session -- 6th plenary meeting",
-    "Commission on Population and Development, Fifty-ninth session -- 7th plenary meeting",
-    "Permanent Mission of Georgia,Ministry of Justice of Georgia,Department of Economic and Social Affairs (DESA) -- Event entitled “Briefing on the 2026 United Nations Public Service Forum: Transforming Public Institutions, Advancing Innovation, Accountability, Participation and Inclusion” (co-organized by the Permanent Mission of Georgia, the Ministry of Justice of Georgia and the Department of Economic and Social Affairs (DESA))"
+    "Committee of Experts on Public Administration, Twenty-fifth session -- 7th meeting",
+    "Committee of Experts on Public Administration, Twenty-fifth session -- 8th meeting",
+    "Commission on Population and Development, Fifty-ninth session -- 8th plenary meeting",
+    "General Assembly -- Informal consultations on the draft resolution entitled “Global health and foreign policy: accelerating the fight against diseases driven by social determinants of health” (under agenda item 128) (convened by the Permanent Missions of Brazil, France, Indonesia, Norway, Senegal, South Africa and Thailand)",
+    "Internet Governance Forum secretariat -- Briefing to Member States (organized by the Internet Governance Forum secretariat)",
+    "International Criminal Court -- New York Working Group of the Bureau - 2nd meeting",
+    "Permanent Mission of Algeria,Permanent Mission of Austria,Permanent Mission of Belgium,Permanent Mission of Ecuador,Permanent Mission of Egypt,Permanent Mission of Greece,Permanent Mission of Italy,Permanent Mission of Norway,United Nations Office on Drugs and Crime (UNODC) -- Event entitled “Youth engagement in early drug prevention systems as accelerators of SDGs” (co-organized by the Permanent Missions of Algeria, Austria, Belgium, Ecuador, Egypt, Greece, Italy and Norway in collaboration with the United Nations Office on Drugs and Crime (UNODC))"
   ]
 }
