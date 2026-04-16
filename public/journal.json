@@ -1,50 +1,13 @@
 {
   "date": "2026-04-16",
-  "fetched_at": "2026-04-16T13:53:20.565Z",
+  "fetched_at": "2026-04-16T14:03:54.145Z",
   "ny_date": "2026-04-16",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 12 meetings",
+  "note": "Debug run - see log for structure",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
-          "agenda": [],
-          "id": "fda42b34-db7b-4d37-b44c-3bf057044a66"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
-          "agenda": [],
-          "id": "401a76ba-739d-4829-91e5-f3173b54c5a2"
-        },
-        {
-          "time": "10:00 AM",
-          "title": "UNCITRAL Working Group V (Insolvency Law), Sixty-eighth session -- Meeting of the Working Group",
-          "agenda": [],
-          "id": "736ee707-7825-497b-ae09-0b02835adbc6"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "UNCITRAL Working Group V (Insolvency Law), Sixty-eighth session -- Meeting of the Working Group",
-          "agenda": [],
-          "id": "60773760-0c24-40b9-8cf4-1fb28af1cdd5"
-        },
-        {
-          "time": "10:00 AM",
-          "title": "Disarmament Commission -- Informal plenary meeting",
-          "agenda": [],
-          "id": "9c052753-a303-4ffe-94c0-bf6f7907a4c3"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Steering Committee on partnerships for Small Island Developing States, Eightieth session -- Steering Committee on partnerships for Small Island Developing States (at the ambassadorial level)",
-          "agenda": [],
-          "id": "fe42c48e-40cf-45b4-a633-eb35098de585"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Security Council",
@@ -52,57 +15,12 @@
     },
     {
       "room": "Trusteeship Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Economic and Social Council, 2026 session -- Youth Forum",
-          "agenda": [],
-          "id": "e2ad86b0-133d-4afd-9791-b37100812d63"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Economic and Social Council, 2026 session -- Youth Forum",
-          "agenda": [],
-          "id": "093ceeb8-8661-463a-815d-c02b7cba1d5a"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Economic and Social Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Committee of Experts on Public Administration, Twenty-fifth session -- 7th meeting",
-          "agenda": [],
-          "id": "6c10af4f-a80e-4050-820a-7504e8cec623"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Committee of Experts on Public Administration, Twenty-fifth session -- 8th meeting",
-          "agenda": [],
-          "id": "51a013b0-9eb1-4ad5-8322-437e2543df39"
-        },
-        {
-          "time": "10:00 AM",
-          "title": "Commission on Population and Development, Fifty-ninth session -- 8th plenary meeting",
-          "agenda": [],
-          "id": "ed1fd0cd-e7e3-4498-9c68-2b48b8963f51"
-        }
-      ]
+      "meetings": []
     }
   ],
-  "meetings": [
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
-    "UNCITRAL Working Group V (Insolvency Law), Sixty-eighth session -- Meeting of the Working Group",
-    "Disarmament Commission -- Informal plenary meeting",
-    "Steering Committee on partnerships for Small Island Developing States, Eightieth session -- Steering Committee on partnerships for Small Island Developing States (at the ambassadorial level)",
-    "Economic and Social Council, 2026 session -- Youth Forum",
-    "Committee of Experts on Public Administration, Twenty-fifth session -- 7th meeting",
-    "Committee of Experts on Public Administration, Twenty-fifth session -- 8th meeting",
-    "Commission on Population and Development, Fifty-ninth session -- 8th plenary meeting",
-    "General Assembly -- Informal consultations on the draft resolution entitled “Global health and foreign policy: accelerating the fight against diseases driven by social determinants of health” (under agenda item 128) (convened by the Permanent Missions of Brazil, France, Indonesia, Norway, Senegal, South Africa and Thailand)",
-    "Internet Governance Forum secretariat -- Briefing to Member States (organized by the Internet Governance Forum secretariat)",
-    "International Criminal Court -- New York Working Group of the Bureau - 2nd meeting",
-    "Permanent Mission of Algeria,Permanent Mission of Austria,Permanent Mission of Belgium,Permanent Mission of Ecuador,Permanent Mission of Egypt,Permanent Mission of Greece,Permanent Mission of Italy,Permanent Mission of Norway,United Nations Office on Drugs and Crime (UNODC) -- Event entitled “Youth engagement in early drug prevention systems as accelerators of SDGs” (co-organized by the Permanent Missions of Algeria, Austria, Belgium, Ecuador, Egypt, Greece, Italy and Norway in collaboration with the United Nations Office on Drugs and Crime (UNODC))"
-  ]
+  "meetings": []
 }
