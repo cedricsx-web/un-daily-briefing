@@ -1,26 +1,78 @@
 {
   "date": "2026-04-20",
-  "fetched_at": "2026-04-20T13:15:46.078Z",
+  "fetched_at": "2026-04-20T17:21:37.055Z",
   "ny_date": "2026-04-20",
   "source": "journal-api.un.org",
-  "note": "Debug run - see log for structure",
+  "note": "Live from journal-api.un.org -- 11 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "11:00 AM",
+          "title": "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 1st plenary meeting",
+          "agenda": [],
+          "id": "96e41c9a-223e-43ae-aedd-b574b78faaa8"
+        }
+      ]
     },
     {
       "room": "Security Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "3:00 PM",
+          "title": "Security Council -- 10140th meeting",
+          "agenda": [],
+          "id": "ee36de9b-6c28-4845-8f82-33c5640235a9"
+        }
+      ]
     },
     {
       "room": "Trusteeship Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "Forum on financing for development follow-up, 2026 session -- 1st meeting",
+          "agenda": [],
+          "id": "eecf2520-9f74-4301-a265-b1cfd973952b"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Forum on financing for development follow-up, 2026 session -- 2nd meeting",
+          "agenda": [],
+          "id": "e89eefed-f0e6-45c8-bfa9-87d6fece472e"
+        }
+      ]
     },
     {
       "room": "Economic and Social Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "General Assembly, Eightieth session -- Informal consultations on the progress declaration of the International Migration Review Forum",
+          "agenda": [],
+          "id": "e9d1cd16-5f57-4ac7-b185-ebe0c5d5dec6"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "General Assembly, Eightieth session -- Informal consultations of the progress declaration of the International Migration Review Forum",
+          "agenda": [],
+          "id": "1a0cf593-0b79-48a8-bf85-089e4913d0e1"
+        }
+      ]
     }
   ],
-  "meetings": []
+  "meetings": [
+    "Security Council -- 10140th meeting",
+    "General Assembly, Eightieth session -- Informal meeting of the plenary on the intergovernmental negotiations on the question of equitable representation on and increase in the membership of the Security Council and other matters related to the Council",
+    "General Assembly, Eightieth session -- Informal consultations on the progress declaration of the International Migration Review Forum",
+    "General Assembly, Eightieth session -- Informal consultations of the progress declaration of the International Migration Review Forum",
+    "Disarmament Commission -- Informal plenary meeting",
+    "Forum on financing for development follow-up, 2026 session -- 1st meeting",
+    "Forum on financing for development follow-up, 2026 session -- 2nd meeting",
+    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 1st plenary meeting",
+    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 2nd plenary meeting",
+    "Permanent Mission of Egypt,Permanent Mission of Italy,Permanent Mission of Spain,Food and Agriculture Organization of the United Nations -- Event entitled “The role of debt swaps in fostering long-term investment in agrifood systems to achieve food security and improve nutrition” (co-organized by the the Permanent Missions of Egypt, Italy and Spain and the Food and Agriculture Organization of the United Nations)",
+    "International Criminal Court -- New York Working Group - Facilitation on the composition of the Bureau’s 1st meeting"
+  ]
 }
