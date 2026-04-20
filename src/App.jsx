@@ -805,25 +805,13 @@ export default function App() {
 
   // Fetch live journal data - first from journal.json, then direct API fallback
   async function fetchLiveJournal() {
-    // Try journal.json (pre-fetched each morning by GitHub Action)
-    try {
-      const url = BASE + "journal.json";
-      const res = await fetch(url + "?t=" + Date.now());
-      if (res.ok) {
-        const json = await res.json();
-        const fetchedAt = json.fetched_at ? new Date(json.fetched_at) : null;
-        const ageHours = fetchedAt ? (Date.now() - fetchedAt.getTime()) / 3600000 : 999;
-        const isToday = json.date === todayStr();
-        const isRecent = ageHours < 20;
-        if ((isToday || isRecent) && json.meetings && json.meetings.length > 0) {
-          console.log("journal.json OK: " + json.meetings.length + " meetings, date=" + json.date);
-          return { chambers: json.chambers || [], meetings: json.meetings || [] };
-        }
-        console.warn("journal.json stale or empty: date=" + json.date + ", meetings=" + (json.meetings || []).length);
-      }
-    } catch (e) {
-      console.warn("journal.json fetch error:", e.message);
-    }
+    const url = BASE + "journal.json";
+    const res = await fetch(url + "?t=" + Date.now());
+    if (!res.ok) throw new Error("journal.json not found (" + res.status + ")");
+    const json = await res.json();
+    if (!json.meetings || json.meetings.length === 0) throw new Error("journal.json has 0 meetings");
+    return { chambers: json.chambers || [], meetings: json.meetings || [] };
+  }
 
     // Fallback: call journal-api.un.org directly (works if CORS allows it)
     console.log("Trying direct journal-api.un.org...");
