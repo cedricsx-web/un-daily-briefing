@@ -586,6 +586,12 @@ export default function App() {
     const res=await fetch(BASE+"journal.json?t="+Date.now());
     if(!res.ok)throw new Error("journal.json not found ("+res.status+")");
     const json=await res.json();
+    // Reject if it's not today's data AND it's more than 20 hours old
+    if(json.date&&json.date!==todayNY()){
+      const fetchedAt=json.fetched_at?new Date(json.fetched_at):null;
+      const ageHours=fetchedAt?(Date.now()-fetchedAt.getTime())/3600000:999;
+      if(ageHours>20)throw new Error("journal.json is from "+json.date+" ("+Math.round(ageHours)+"h old)");
+    }
     if(!json.meetings||json.meetings.length===0)throw new Error("journal.json has 0 meetings");
     return {chambers:json.chambers||[],meetings:json.meetings||[]};
   }
