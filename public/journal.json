@@ -1,9 +1,9 @@
 {
-  "date": "2026-04-22",
-  "fetched_at": "2026-04-22T15:31:26.959Z",
-  "ny_date": "2026-04-22",
+  "date": "2026-04-23",
+  "fetched_at": "2026-04-23T13:11:09.719Z",
+  "ny_date": "2026-04-23",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 14 meetings",
+  "note": "Live from journal-api.un.org -- 11 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -14,79 +14,44 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Security Council -- 10142nd meeting",
+          "title": "Security Council -- 10144th meeting",
           "agenda": [],
-          "id": "d5878409-df65-42d6-950c-baaf1f2224d8"
+          "id": "f83f910b-65f8-4bcc-8f48-a9684880169d"
         },
         {
           "time": "Followed By",
           "title": "Security Council -- Consultations of the whole",
           "agenda": [],
-          "id": "c1ce00b3-23a2-40ec-8301-8c75b0c0805e"
+          "id": "c7f9f79e-7644-435a-bdc7-66f0764dcadb"
         },
         {
           "time": "3:00 PM",
-          "title": "Security Council -- 10143rd meeting",
-          "agenda": [],
-          "id": "d50694f7-9be4-4323-a416-2fb2ec6d9409"
-        },
-        {
-          "time": "Followed By",
           "title": "Security Council -- Consultations of the whole",
           "agenda": [],
-          "id": "6ca02d32-7f8e-4d83-9b6e-25c217708fd6"
+          "id": "c41e58ed-80c0-4370-ba10-fdcc960be2f4"
         }
       ]
     },
     {
       "room": "Trusteeship Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal dialogue with a candidate for the position of the next Secretary-General",
-          "agenda": [],
-          "id": "1ace76fe-d619-4d01-9127-a72b7822551e"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- Informal dialogue with a candidate for the position of the next Secretary-General",
-          "agenda": [],
-          "id": "242409f0-bf99-43c3-a259-3a48fee3c7ab"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Economic and Social Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the ninth biennial review of the United Nations Global Counter-Terrorism Strategy",
-          "agenda": [],
-          "id": "4a4dd511-64e2-4435-8d9f-cb807ef239e1"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the ninth biennial review of the United Nations Global Counter-Terrorism Strategy",
-          "agenda": [],
-          "id": "1a19e99a-5887-4e48-9a6f-2929b92c2d92"
-        }
-      ]
+      "meetings": []
     }
   ],
   "meetings": [
-    "Security Council -- 10142nd meeting",
+    "Security Council -- 10144th meeting",
     "Security Council -- Consultations of the whole",
-    "Security Council -- 10143rd meeting",
-    "General Assembly, Eightieth session -- Informal dialogue with a candidate for the position of the next Secretary-General",
-    "General Assembly, Eightieth session -- Informal consultations on the ninth biennial review of the United Nations Global Counter-Terrorism Strategy",
-    "General Assembly, Eightieth session -- Informal consultations on the progress declaration of the International Migration Review Forum",
-    "Committee on Conferences -- 573rd meeting",
-    "Expert Mechanism on the Right to Development, Thirteenth session -- 2nd meeting",
-    "Expert Mechanism on the Right to Development, Thirteenth session -- 3rd meeting",
-    "Forum on financing for development follow-up, 2026 session -- 5th meeting",
-    "Forum on financing for development follow-up, 2026 session -- 6th meeting",
-    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 5th plenary meeting",
-    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 6th plenary meeting",
-    "General Assembly -- Informal consultations on the draft resolution on sustainable, safe and universal water, sanitation, hygiene, waste and electricity services in health-care facilities (under agenda item 127) (convened by the Permanent Missions of Hungary and the Philippines)"
+    "General Assembly, Eightieth session -- Informal consultations on the participation of Indigenous Peoples’ representatives and institutions",
+    "Expert Mechanism on the Right to Development, Thirteenth session -- 4th meeting",
+    "Expert Mechanism on the Right to Development, Thirteenth session -- 5th meeting",
+    "Forum on financing for development follow-up, 2026 session -- 7th meeting",
+    "Forum on financing for development follow-up, 2026 session -- 8th meeting",
+    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 7th meeting",
+    "General Assembly -- Informal consultations on the draft resolution entitled “Implementation of Article 27 (3) of the Charter of the United Nations” (under agenda item 124) (convened by the Permanent Mission of Liechtenstein)",
+    "Arab Group -- Meeting (at the ambassadorial level)",
+    "International Criminal Court -- Subgroup of the Working Group on Amendments - 2nd meeting"
   ]
 }
