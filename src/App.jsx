@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 const BASE    = import.meta.env.BASE_URL || "/";
 const SB_URL  = import.meta.env.VITE_SUPABASE_URL || "";
 const SB_KEY  = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
-const SC_KEY  = import.meta.env.VITE_ANTHROPIC_KEY || "";
+
 
 const SDG_COLORS = {
   1:"#E5243B",2:"#DDA63A",3:"#4C9F38",4:"#C5192D",5:"#FF3A21",
@@ -145,63 +145,13 @@ const ORGAN_TO_CHAMBER = {
 // -- Chamber Card -------------------------------------------------------
 function ChamberCard({ chamber, index }) {
   const icon = CHAMBER_ICONS[chamber.room] || "UN";
-  const hasSession = chamber.meetings && chamber.meetings.some(m=>!m.cancelled);
+  const hasSession = chamber.meetings && chamber.meetings.some(function(m){return !m.cancelled;});
   const isSC = chamber.room === "Security Council";
 
-  const [recap, setRecap] = useState(null);
-  const [recapTitle, setRecapTitle] = useState(null);
-  const [recapLoading, setRecapLoading] = useState(false);
-  const [recapOpen, setRecapOpen] = useState(false);
-  const fetchedRef = useRef(false);
-
-  const scNums = isSC
-    ? (chamber.meetings||[]).filter(m=>!m.cancelled).map(function(m){
-        const match = m.title.match(/(\d+)(st|nd|rd|th) meeting/i);
-        return match ? match[1]+match[2]+" meeting" : null;
-      }).filter(Boolean)
-    : [];
-
-  useEffect(function(){
-    if (isSC && hasSession && scNums.length>0 && SC_KEY && !fetchedRef.current) {
-      fetchedRef.current=true;
-      doFetchRecap();
-    }
-  },[]);
-
-  async function doFetchRecap() {
-    if (!SC_KEY || scNums.length===0) return;
-    setRecapLoading(true);
-    try {
-      const meetingRef = scNums.join(" and ");
-      const today = new Date().toLocaleDateString("en-US",{timeZone:"America/New_York",month:"long",day:"numeric",year:"numeric"});
-      const res = await fetch("https://api.anthropic.com/v1/messages",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "x-api-key":SC_KEY,
-          "anthropic-version":"2023-06-01",
-          "anthropic-dangerous-direct-browser-access":"true",
-        },
-        body:JSON.stringify({
-          model:"claude-sonnet-4-6",
-          max_tokens:800,
-          tools:[{type:"web_search_20250305",name:"web_search"}],
-          messages:[{role:"user",content:"Today is "+today+". The Security Council holds its "+meetingRef+" today. Search: \""+meetingRef+" Security Council "+today+"\". Also search: \""+meetingRef+" UNMIK OR Kosovo OR Haiti OR Yemen OR Gaza OR Syria OR Congo OR Sudan Security Council\". Return two parts split by ---FULL--- : Part 1 (before ---FULL---) the agenda item title only max 10 words e.g. The situation in Kosovo (UNMIK). Part 2 (after ---FULL---) a 3-5 sentence briefing: agenda item, who is briefing, main issue, expected outcome. Be accurate, use only search results."}],
-        }),
-      });
-      const data=await res.json();
-      if (data.error) throw new Error(data.error.message);
-      const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("").trim();
-      const parts=text.split("---FULL---");
-      const rawTitle=(parts[0]||"").trim();
-      const titleLines=rawTitle.split("\n").map(l=>l.replace(/[*_#\-]/g,"").trim()).filter(l=>l.length>3);
-      setRecapTitle(titleLines[titleLines.length-1]||rawTitle||null);
-      setRecap((parts[1]||parts[0]||"").trim()||"No information found yet.");
-    } catch(e) {
-      setRecap("Search failed: "+e.message);
-    }
-    setRecapLoading(false);
-  }
+  // Build press.un.org search URL for SC meetings
+  const scPressUrl = isSC
+    ? "https://press.un.org/en/security-council"
+    : null;
 
   return (
     <div style={{
@@ -213,12 +163,13 @@ function ChamberCard({ chamber, index }) {
       <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:hasSession?"10px":"0"}}>
         <span style={{fontSize:"9px",fontWeight:"800",color:hasSession?"#00A0DC":"rgba(255,255,255,0.3)",background:hasSession?"rgba(0,150,214,0.15)":"rgba(255,255,255,0.06)",borderRadius:"5px",padding:"2px 5px",letterSpacing:"0.5px",flexShrink:0}}>{icon}</span>
         <span style={{flex:1,fontSize:"10px",fontWeight:"700",color:hasSession?"#00A0DC":"rgba(255,255,255,0.3)",textTransform:"uppercase",letterSpacing:"0.6px",lineHeight:"1.3"}}>{chamber.room}</span>
-        {isSC && (recap||recapLoading) && (
-          <button onClick={function(){setRecapOpen(function(o){return !o;});}} style={{
-            background:recapOpen?"rgba(0,150,214,0.2)":"rgba(255,255,255,0.06)",
+        {isSC && hasSession && (
+          <a href={scPressUrl} target="_blank" rel="noopener noreferrer" style={{
+            background:"rgba(255,255,255,0.06)",
             border:"1px solid rgba(0,150,214,0.3)",color:"#00A0DC",borderRadius:"6px",
-            padding:"2px 7px",fontSize:"9px",fontWeight:"700",cursor:"pointer",letterSpacing:"0.5px",flexShrink:0,
-          }}>{recapOpen?"HIDE":"DETAILS"}</button>
+            padding:"2px 7px",fontSize:"9px",fontWeight:"700",cursor:"pointer",
+            letterSpacing:"0.5px",flexShrink:0,textDecoration:"none",
+          }}>PRESS &#8599;</a>
         )}
       </div>
 
@@ -228,19 +179,11 @@ function ChamberCard({ chamber, index }) {
             <div key={i} style={{opacity:m.cancelled?0.45:1}}>
               <div style={{display:"flex",gap:"8px",alignItems:"flex-start"}}>
                 <span style={{fontSize:"10px",color:"#FCC30B",fontWeight:"700",whiteSpace:"nowrap",marginTop:"1px",flexShrink:0}}>{m.time}</span>
-                <div style={{flex:1}}>
-                  <span style={{
-                    fontSize:"12px",lineHeight:"1.35",fontWeight:"600",
-                    color:m.cancelled?"rgba(255,255,255,0.3)":"rgba(255,255,255,0.9)",
-                    textDecoration:m.cancelled?"line-through":"none",
-                  }}>{m.title}{m.cancelled&&<span style={{marginLeft:"4px",fontSize:"8px",color:"#ff6b6b",fontWeight:"700"}}>CANC.</span>}</span>
-                  {isSC&&recapTitle&&!m.cancelled&&(
-                    <div style={{fontSize:"10px",color:"rgba(255,255,255,0.5)",fontStyle:"italic",marginTop:"2px",lineHeight:"1.3"}}>{recapTitle}</div>
-                  )}
-                  {isSC&&recapLoading&&!recap&&!m.cancelled&&(
-                    <div style={{fontSize:"10px",color:"rgba(0,150,214,0.5)",marginTop:"2px"}}>Loading topic...</div>
-                  )}
-                </div>
+                <span style={{
+                  fontSize:"12px",lineHeight:"1.35",fontWeight:"600",
+                  color:m.cancelled?"rgba(255,255,255,0.3)":"rgba(255,255,255,0.9)",
+                  textDecoration:m.cancelled?"line-through":"none",
+                }}>{m.title}{m.cancelled&&<span style={{marginLeft:"4px",fontSize:"8px",color:"#ff6b6b",fontWeight:"700"}}>CANC.</span>}</span>
               </div>
               {m.agenda&&m.agenda.length>0&&!m.cancelled&&(
                 <div style={{marginTop:"3px",paddingLeft:"40px",display:"flex",flexDirection:"column",gap:"2px"}}>
@@ -256,12 +199,6 @@ function ChamberCard({ chamber, index }) {
         </div>
       ):(
         <p style={{margin:0,fontSize:"11px",color:"rgba(255,255,255,0.25)",fontStyle:"italic"}}>No session today</p>
-      )}
-
-      {isSC&&recapOpen&&(
-        <div style={{marginTop:"12px",paddingTop:"12px",borderTop:"1px solid rgba(0,150,214,0.2)"}}>
-          <p style={{margin:0,fontSize:"12px",color:"rgba(255,255,255,0.8)",lineHeight:"1.65"}}>{recap}</p>
-        </div>
       )}
     </div>
   );
