@@ -335,26 +335,8 @@ export default function App() {
     setDateLabel(formatDate(new Date()));
     setCancelledTitles([]);
     setDeletedExtraIds([]);
-    try {
-      const cached = sessionStorage.getItem(todayKey());
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        setData(parsed.data);
-        setJournalSource(parsed.source||"live");
-        // Re-check journal.json in background even when cached
-        fetchLiveJournal().then(function(liveData){
-          setData(function(prev){
-            if (!prev) return prev;
-            return Object.assign({},prev,{chambers:liveData.chambers,meetings:liveData.meetings,journalFailed:false});
-          });
-          setJournalSource("live");
-          try {
-            const ex=sessionStorage.getItem(todayKey());
-            if (ex){const p2=JSON.parse(ex);p2.data.chambers=liveData.chambers;p2.data.meetings=liveData.meetings;p2.data.journalFailed=false;p2.source="live";sessionStorage.setItem(todayKey(),JSON.stringify(p2));}
-          } catch(_){}
-        }).catch(function(){});
-      }
-    } catch(_){}
+    // Always clear cache on load - journal.json is the source of truth
+    try { sessionStorage.removeItem(todayKey()); } catch(_){}
     fetchExtraMeetings();
     fetchCancelledMeetings();
   },[]);
