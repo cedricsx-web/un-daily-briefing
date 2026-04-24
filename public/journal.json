@@ -1,40 +1,35 @@
 {
-  "date": "2026-04-23",
-  "fetched_at": "2026-04-23T17:31:59.248Z",
-  "ny_date": "2026-04-23",
+  "date": "2026-04-24",
+  "fetched_at": "2026-04-24T13:07:26.864Z",
+  "ny_date": "2026-04-24",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 11 meetings",
+  "note": "Live from journal-api.un.org -- 7 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": []
-    },
-    {
-      "room": "Security Council",
       "meetings": [
         {
-          "time": "10:00 AM",
-          "title": "Security Council -- 10144th meeting",
-          "agenda": [],
-          "id": "f83f910b-65f8-4bcc-8f48-a9684880169d"
-        },
-        {
-          "time": "Followed By",
-          "title": "Security Council -- Consultations of the whole",
-          "agenda": [],
-          "id": "c7f9f79e-7644-435a-bdc7-66f0764dcadb"
-        },
-        {
           "time": "3:00 PM",
-          "title": "Security Council -- Consultations of the whole",
+          "title": "General Assembly, Eightieth session -- 81st plenary meeting",
           "agenda": [],
-          "id": "c41e58ed-80c0-4370-ba10-fdcc960be2f4"
+          "id": "4fa41221-fbd7-4b0e-89b9-f91214faba91"
         }
       ]
     },
     {
-      "room": "Trusteeship Council",
+      "room": "Security Council",
       "meetings": []
+    },
+    {
+      "room": "Trusteeship Council",
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "General Assembly, Eightieth session -- Interactive dialogue on the Pact for the Future and the UN80 Initiative: From Commitments to Delivery",
+          "agenda": [],
+          "id": "cfb7cae4-6b6f-4a5d-b318-a9ce63eff666"
+        }
+      ]
     },
     {
       "room": "Economic and Social Council",
@@ -42,16 +37,12 @@
     }
   ],
   "meetings": [
-    "Security Council -- 10144th meeting",
-    "Security Council -- Consultations of the whole",
-    "General Assembly, Eightieth session -- Informal consultations on the participation of Indigenous Peoples’ representatives and institutions",
-    "Expert Mechanism on the Right to Development, Thirteenth session -- 4th meeting",
-    "Expert Mechanism on the Right to Development, Thirteenth session -- 5th meeting",
-    "Forum on financing for development follow-up, 2026 session -- 7th meeting",
-    "Forum on financing for development follow-up, 2026 session -- 8th meeting",
-    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 7th meeting",
-    "General Assembly -- Informal consultations on the draft resolution entitled “Implementation of Article 27 (3) of the Charter of the United Nations” (under agenda item 124) (convened by the Permanent Mission of Liechtenstein)",
-    "Arab Group -- Meeting (at the ambassadorial level)",
-    "International Criminal Court -- Subgroup of the Working Group on Amendments - 2nd meeting"
+    "General Assembly, Eightieth session -- Interactive dialogue on the Pact for the Future and the UN80 Initiative: From Commitments to Delivery",
+    "General Assembly, Eightieth session -- 81st plenary meeting",
+    "Disarmament Commission -- 405th plenary meeting (resumed) to be followed by the 406th plenary meeting",
+    "Military Staff Committee -- 2147th meeting",
+    "Forum on financing for development follow-up, 2026 session -- 9th meeting",
+    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 7th plenary meeting",
+    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 8th plenary meeting"
   ]
 }
