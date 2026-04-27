@@ -1,35 +1,41 @@
 {
-  "date": "2026-04-24",
-  "fetched_at": "2026-04-24T14:24:23.480Z",
-  "ny_date": "2026-04-24",
+  "date": "2026-04-27",
+  "fetched_at": "2026-04-27T13:25:11.457Z",
+  "ny_date": "2026-04-27",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 7 meetings",
+  "note": "Live from journal-api.un.org -- 8 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
       "meetings": [
         {
-          "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- 81st plenary meeting",
+          "time": "10:00 AM",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 1st meeting",
           "agenda": [],
-          "id": "4fa41221-fbd7-4b0e-89b9-f91214faba91"
+          "id": "94fd63ea-af23-4b45-a42f-827a1fa08b3f"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 2nd meeting",
+          "agenda": [],
+          "id": "bcb20c86-4bf5-4f6c-87b3-1e7b2053aa49"
         }
       ]
     },
     {
       "room": "Security Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "11:00 AM",
+          "title": "Security Council -- 10145th meeting",
+          "agenda": [],
+          "id": "6ca69070-72ec-48d6-80b3-36b7188b9bad"
+        }
+      ]
     },
     {
       "room": "Trusteeship Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Interactive dialogue on the Pact for the Future and the UN80 Initiative: From Commitments to Delivery",
-          "agenda": [],
-          "id": "cfb7cae4-6b6f-4a5d-b318-a9ce63eff666"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Economic and Social Council",
@@ -37,12 +43,13 @@
     }
   ],
   "meetings": [
-    "General Assembly, Eightieth session -- Interactive dialogue on the Pact for the Future and the UN80 Initiative: From Commitments to Delivery",
-    "General Assembly, Eightieth session -- 81st plenary meeting",
-    "Disarmament Commission -- 405th plenary meeting (resumed) to be followed by the 406th plenary meeting",
-    "Military Staff Committee -- 2147th meeting",
-    "Forum on financing for development follow-up, 2026 session -- 9th meeting",
-    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 7th plenary meeting",
-    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 8th plenary meeting"
+    "Security Council -- 10145th meeting",
+    "Committee on Information, Forty-eighth session -- 1st meeting",
+    "Committee on Information, Forty-eighth session -- 2nd meeting",
+    "Peacebuilding Commission -- Debrief on the Peacebuilding Commission visit to the Central African Republic and working methods",
+    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 9th plenary meeting",
+    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- Informal meeting",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 1st meeting",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 2nd meeting"
   ]
 }
