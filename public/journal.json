@@ -1,7 +1,7 @@
 {
-  "date": "2026-04-27",
-  "fetched_at": "2026-04-27T13:25:11.457Z",
-  "ny_date": "2026-04-27",
+  "date": "2026-04-28",
+  "fetched_at": "2026-04-28T13:49:18.066Z",
+  "ny_date": "2026-04-28",
   "source": "journal-api.un.org",
   "note": "Live from journal-api.un.org -- 8 meetings",
   "chambers": [
@@ -10,15 +10,15 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 1st meeting",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 3rd meeting",
           "agenda": [],
-          "id": "94fd63ea-af23-4b45-a42f-827a1fa08b3f"
+          "id": "68fead78-e687-44e1-86a9-5c804ebf134d"
         },
         {
           "time": "3:00 PM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 2nd meeting",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 4th meeting",
           "agenda": [],
-          "id": "bcb20c86-4bf5-4f6c-87b3-1e7b2053aa49"
+          "id": "68c076ca-9e2c-4ad9-a3cf-397792ee45d7"
         }
       ]
     },
@@ -26,10 +26,10 @@
       "room": "Security Council",
       "meetings": [
         {
-          "time": "11:00 AM",
-          "title": "Security Council -- 10145th meeting",
+          "time": "10:00 AM",
+          "title": "Security Council -- 10146th meeting",
           "agenda": [],
-          "id": "6ca69070-72ec-48d6-80b3-36b7188b9bad"
+          "id": "d05a5fe1-3296-4d3b-9242-d5c07c1c7a24"
         }
       ]
     },
@@ -43,13 +43,13 @@
     }
   ],
   "meetings": [
-    "Security Council -- 10145th meeting",
-    "Committee on Information, Forty-eighth session -- 1st meeting",
-    "Committee on Information, Forty-eighth session -- 2nd meeting",
-    "Peacebuilding Commission -- Debrief on the Peacebuilding Commission visit to the Central African Republic and working methods",
-    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 9th plenary meeting",
-    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- Informal meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 1st meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 2nd meeting"
+    "Security Council -- 10146th meeting",
+    "Committee on Information, Forty-eighth session -- 3rd meeting",
+    "Ad hoc working group on the smooth transition for countries graduating from the category of least developed countries, Third meeting -- 2nd substantive meeting",
+    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 10th plenary meeting",
+    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- Closed meeting for Permanent Forum members",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 3rd meeting",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 4th meeting",
+    "Office of Counter-Terrorism (UNOCT) -- Briefing to Member States (organized by the Office of Counter-Terrorism (UNOCT)) All permanent representatives and permanent observers are invited to attend."
   ]
 }
