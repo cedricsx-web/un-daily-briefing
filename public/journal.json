@@ -1,24 +1,18 @@
 {
-  "date": "2026-04-29",
-  "fetched_at": "2026-04-29T13:29:57.739Z",
-  "ny_date": "2026-04-29",
+  "date": "2026-04-30",
+  "fetched_at": "2026-04-30T13:27:23.173Z",
+  "ny_date": "2026-04-30",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 11 meetings",
+  "note": "Live from journal-api.un.org -- 10 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 5th meeting",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 7th meeting",
           "agenda": [],
-          "id": "f99fbd13-e592-4a79-949f-8ac188ab6cf8"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 6th meeting",
-          "agenda": [],
-          "id": "63795cea-8404-48c8-9a10-2d23934d6319"
+          "id": "9dc9e4cb-26cc-4537-949d-81a05eb0348a"
         }
       ]
     },
@@ -27,15 +21,27 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Security Council -- 10145th meeting (resumed)",
+          "title": "Security Council -- 10147th meeting",
           "agenda": [],
-          "id": "4af42636-492d-4b0e-bf77-b24ca6e9fc05"
+          "id": "b23015b6-0ba3-472e-afe8-c52a3f230116"
+        },
+        {
+          "time": "Followed By",
+          "title": "Security Council -- Consultations of the whole",
+          "agenda": [],
+          "id": "d8607f79-4900-473f-9b53-95411603eac5"
         },
         {
           "time": "3:00 PM",
-          "title": "Security Council -- Consultations of the whole",
+          "title": "Security Council -- 10148th meeting",
           "agenda": [],
-          "id": "ec67ae5f-05a4-4bd4-ae4d-8be5605927ff"
+          "id": "00b66647-3885-451d-9c50-c3d791657f49"
+        },
+        {
+          "time": "Followed By",
+          "title": "Security Council -- 10146th meeting (resumed)",
+          "agenda": [],
+          "id": "247b219c-2a1c-4368-addd-2952fd7298c1"
         }
       ]
     },
@@ -47,25 +53,24 @@
       "room": "Economic and Social Council",
       "meetings": [
         {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal meeting of the plenary to hear a briefing on the UN80 Initiative",
+          "time": "5:00 PM",
+          "title": "Security Council -- Wrap-up session",
           "agenda": [],
-          "id": "28ba12d4-ef78-47a3-9468-a3e9e51498e8"
+          "id": "7edbb831-4511-4bcb-a3d4-eddadb388ee0"
         }
       ]
     }
   ],
   "meetings": [
-    "Security Council -- 10145th meeting (resumed)",
+    "Security Council -- 10147th meeting",
     "Security Council -- Consultations of the whole",
-    "General Assembly, Eightieth session -- Informal meeting of the plenary to hear a briefing on the UN80 Initiative",
-    "Second Committee, Eightieth session -- Informal dialogue on revitalization",
+    "Security Council -- 10148th meeting",
+    "Security Council -- 10146th meeting (resumed)",
+    "Security Council -- Wrap-up session",
     "Committee on Information, Forty-eighth session -- Open-ended working group",
-    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 11th plenary meeting",
     "Permanent Forum on Indigenous Issues, Twenty-fifth session -- Closed meeting for Permanent Forum members",
-    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- Informal meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 5th meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 6th meeting",
-    "Permanent Mission of Australia,Permanent Mission of Chile,Permanent Mission of Haiti,Permanent Mission of Indonesia,Permanent Mission of Japan,Permanent Mission of Norway,Permanent Mission of Peru,Permanent Mission of Türkiye,Permanent Mission of Uzbekistan,United Nations Office for Disaster Risk Reduction -- Panel discussion on the International Day in Memory of the Victims of Earthquakes (co-organized by the Permanent Missions of Australia, Chile, Haiti, Indonesia, Japan, Norway, Peru, Türkiye and Uzbekistan and the United Nations Office for Disaster Risk Reduction)"
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 7th meeting",
+    "International Criminal Court -- New York Working Group - Procedure for the nomination and election of judges - 1st meeting",
+    "Non-Aligned Movement -- Monthly meeting (at the ambassadorial level)"
   ]
 }
