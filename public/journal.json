@@ -1,18 +1,24 @@
 {
-  "date": "2026-04-30",
-  "fetched_at": "2026-04-30T13:27:23.173Z",
-  "ny_date": "2026-04-30",
+  "date": "2026-05-01",
+  "fetched_at": "2026-05-01T13:04:47.070Z",
+  "ny_date": "2026-05-01",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 10 meetings",
+  "note": "Live from journal-api.un.org -- 9 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 7th meeting",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 8th meeting",
           "agenda": [],
-          "id": "9dc9e4cb-26cc-4537-949d-81a05eb0348a"
+          "id": "08394c65-f064-4c7e-ae6a-feb7582c364a"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
+          "agenda": [],
+          "id": "4e09451d-792b-482d-99f1-f674f7287da7"
         }
       ]
     },
@@ -20,57 +26,38 @@
       "room": "Security Council",
       "meetings": [
         {
-          "time": "10:00 AM",
-          "title": "Security Council -- 10147th meeting",
-          "agenda": [],
-          "id": "b23015b6-0ba3-472e-afe8-c52a3f230116"
-        },
-        {
-          "time": "Followed By",
+          "time": "11:30 AM",
           "title": "Security Council -- Consultations of the whole",
           "agenda": [],
-          "id": "d8607f79-4900-473f-9b53-95411603eac5"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Security Council -- 10148th meeting",
-          "agenda": [],
-          "id": "00b66647-3885-451d-9c50-c3d791657f49"
-        },
-        {
-          "time": "Followed By",
-          "title": "Security Council -- 10146th meeting (resumed)",
-          "agenda": [],
-          "id": "247b219c-2a1c-4368-addd-2952fd7298c1"
+          "id": "a33a6b2d-e5b3-4fff-acee-cf5d853cd27e"
         }
       ]
     },
     {
       "room": "Trusteeship Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "4:00 PM",
+          "title": "Security Council -- Briefing to Member States",
+          "agenda": [],
+          "id": "6184b17e-7a98-4d4a-a92c-c5ee5fc37238"
+        }
+      ]
     },
     {
       "room": "Economic and Social Council",
-      "meetings": [
-        {
-          "time": "5:00 PM",
-          "title": "Security Council -- Wrap-up session",
-          "agenda": [],
-          "id": "7edbb831-4511-4bcb-a3d4-eddadb388ee0"
-        }
-      ]
+      "meetings": []
     }
   ],
   "meetings": [
-    "Security Council -- 10147th meeting",
     "Security Council -- Consultations of the whole",
-    "Security Council -- 10148th meeting",
-    "Security Council -- 10146th meeting (resumed)",
-    "Security Council -- Wrap-up session",
-    "Committee on Information, Forty-eighth session -- Open-ended working group",
+    "Security Council -- Briefing to Member States",
+    "General Assembly, Eightieth session -- Informal consultations on modalities of the review of the outcome document of the second High-level United Nations Conference on South-South Cooperation",
+    "General Assembly, Eightieth session -- Informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
     "Permanent Forum on Indigenous Issues, Twenty-fifth session -- Closed meeting for Permanent Forum members",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 7th meeting",
-    "International Criminal Court -- New York Working Group - Procedure for the nomination and election of judges - 1st meeting",
-    "Non-Aligned Movement -- Monthly meeting (at the ambassadorial level)"
+    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 12th plenary meeting",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 8th meeting",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
+    "Permanent Mission of Vanuatu -- Briefing on the Zero Draft Resolution on the Advisory Opinion on the Obligations of States in respect of Climate Change (organized by a Core Group of Member States and facilitated by the Permanent Mission of Vanuatu)"
   ]
 }
