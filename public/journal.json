@@ -1,46 +1,32 @@
 {
-  "date": "2026-05-01",
-  "fetched_at": "2026-05-01T13:04:47.070Z",
-  "ny_date": "2026-05-01",
+  "date": "2026-05-04",
+  "fetched_at": "2026-05-04T13:28:30.555Z",
+  "ny_date": "2026-05-04",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 9 meetings",
+  "note": "Live from journal-api.un.org -- 5 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 8th meeting",
-          "agenda": [],
-          "id": "08394c65-f064-4c7e-ae6a-feb7582c364a"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
-          "agenda": [],
-          "id": "4e09451d-792b-482d-99f1-f674f7287da7"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Security Council",
-      "meetings": [
-        {
-          "time": "11:30 AM",
-          "title": "Security Council -- Consultations of the whole",
-          "agenda": [],
-          "id": "a33a6b2d-e5b3-4fff-acee-cf5d853cd27e"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Trusteeship Council",
       "meetings": [
         {
-          "time": "4:00 PM",
-          "title": "Security Council -- Briefing to Member States",
+          "time": "10:00 AM",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II",
           "agenda": [],
-          "id": "6184b17e-7a98-4d4a-a92c-c5ee5fc37238"
+          "id": "bc479ae0-ceeb-4d2b-86b2-94351f9dd739"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
+          "agenda": [],
+          "id": "b0137dc5-54a1-4e87-bd56-11391218cfda"
         }
       ]
     },
@@ -50,14 +36,10 @@
     }
   ],
   "meetings": [
-    "Security Council -- Consultations of the whole",
-    "Security Council -- Briefing to Member States",
-    "General Assembly, Eightieth session -- Informal consultations on modalities of the review of the outcome document of the second High-level United Nations Conference on South-South Cooperation",
-    "General Assembly, Eightieth session -- Informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
-    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- Closed meeting for Permanent Forum members",
-    "Permanent Forum on Indigenous Issues, Twenty-fifth session -- 12th plenary meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 8th meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
-    "Permanent Mission of Vanuatu -- Briefing on the Zero Draft Resolution on the Advisory Opinion on the Obligations of States in respect of Climate Change (organized by a Core Group of Member States and facilitated by the Permanent Mission of Vanuatu)"
+    "Fifth Committee, Second part of the resumed eightieth session -- 28th plenary meeting",
+    "Fifth Committee, Second part of the resumed eightieth session -- Informal consultations",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
+    "Permanent Mission of France -- Event entitled “Remittances and diaspora investment for rural development” (organized by the Permanent Mission of France)"
   ]
 }
