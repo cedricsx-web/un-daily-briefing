@@ -1,9 +1,9 @@
 {
-  "date": "2026-05-05",
-  "fetched_at": "2026-05-05T13:23:11.926Z",
-  "ny_date": "2026-05-05",
+  "date": "2026-05-06",
+  "fetched_at": "2026-05-06T13:52:01.569Z",
+  "ny_date": "2026-05-06",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 10 meetings",
+  "note": "Live from journal-api.un.org -- 11 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -16,7 +16,7 @@
           "time": "10:00 AM",
           "title": "Security Council -- Consultations of the whole",
           "agenda": [],
-          "id": "cdfb4445-68ab-4349-9ce9-a5cbaf7eb3ec"
+          "id": "7d1f1636-0e81-407b-9194-014f89e06cca"
         }
       ]
     },
@@ -25,15 +25,15 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
           "agenda": [],
-          "id": "bf82f542-cf7d-4d76-9d03-80996687fc6e"
+          "id": "8e9ac1d7-5d11-413c-aac3-f1af4e260fac"
         },
         {
           "time": "3:00 PM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III - Subsidiary Body 3",
           "agenda": [],
-          "id": "91357e13-060a-423c-920b-e3b87d0863d3"
+          "id": "52253906-01af-4297-ae2a-5874a03ee907"
         }
       ]
     },
@@ -42,9 +42,9 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "General Assembly,Economic and Social Council, Eightieth session -- Joint General Assembly–Economic and Social Council special meeting on “From digital inclusion to innovation: advancing science, technology and youth entrepreneurship for development”",
+          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration to renew commitment and accelerate the implementation of the New Urban Agenda",
           "agenda": [],
-          "id": "a9c09f59-7623-4764-8b08-19647f82c6c8"
+          "id": "8d90b606-2402-4ef8-9d18-1fcad966404f"
         }
       ]
     }
@@ -52,13 +52,14 @@
   "meetings": [
     "Security Council -- Consultations of the whole",
     "General Assembly, Eightieth session -- International Migration Review Forum",
-    "Second Committee, Eighteenth session -- Informal dialogue on revitalization",
+    "General Assembly, Eightieth session -- Informal consultations on the political declaration to renew commitment and accelerate the implementation of the New Urban Agenda",
     "Fifth Committee, Second part of the resumed eightieth session -- Informal consultations",
-    "General Assembly,Economic and Social Council, Eightieth session -- Joint General Assembly–Economic and Social Council special meeting on “From digital inclusion to innovation: advancing science, technology and youth entrepreneurship for development”",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
+    "Economic and Social Council, 2026 session -- 11th multi-stakeholder forum on science, technology and innovation for the Sustainable Development Goals",
     "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
-    "Food and Agriculture Organization of the United Nations (FAO) -- Event entitled “Transformative and Equitable Agricultural Technology for the 2030 Agenda and a sustainable future” (organized by the Food and Agriculture Organization of the United Nations (FAO))",
-    "Food and Agriculture Organization of the United Nations (FAO) -- Event entitled “Agrifood Systems Technologies and Innovations Outlook (ATIO) Initiative: Mobilizing Innovation Intelligence to Advance Agrifood Systems Transformation” (organized by the Food and Agriculture Organization of the United Nations (FAO))"
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I - Subsidiary Body 1",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II - Subsidiary Body 2",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III - Subsidiary Body 3",
+    "United Nations Sustainable Development Group System-wide Evaluation Office -- Informal briefing for Member States (organized by the United Nations Sustainable Development Group System-wide Evaluation Office)",
+    "Group of 77 -- On Fifth Committee and related matters"
   ]
 }
