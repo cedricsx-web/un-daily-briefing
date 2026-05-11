@@ -1,26 +1,13 @@
 {
-  "date": "2026-05-08",
-  "fetched_at": "2026-05-08T13:17:08.173Z",
-  "ny_date": "2026-05-08",
+  "date": "2026-05-11",
+  "fetched_at": "2026-05-11T14:34:22.952Z",
+  "ny_date": "2026-05-11",
   "source": "journal-api.un.org",
   "note": "Live from journal-api.un.org -- 14 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- International Migration Review Forum - 3rd plenary meeting",
-          "agenda": [],
-          "id": "e3d9cd84-d420-4091-b515-2240e552de15"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- International Migration Review Forum - 4th plenary meeting",
-          "agenda": [],
-          "id": "1ecf9430-105f-4449-8065-5a56946e4b10"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Security Council",
@@ -31,15 +18,15 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III - Subsidiary Body 3",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II - Subsidiary Body 2",
           "agenda": [],
-          "id": "54067441-f17f-436c-b9e5-2273371b7bb5"
+          "id": "6f4b65b9-5230-4c37-8905-0cfabde6a9d7"
         },
         {
           "time": "3:00 PM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
           "agenda": [],
-          "id": "d8eb237f-004b-428e-a3c0-65bec54479d0"
+          "id": "322d3099-4296-4624-94ac-b1ebb9b81a11"
         }
       ]
     },
@@ -47,34 +34,28 @@
       "room": "Economic and Social Council",
       "meetings": [
         {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
+          "time": "1:15 PM",
+          "title": "Economic and Social Council, 2026 session -- Informal briefing - Meeting on the Transition from Relief to Development and the Humanitarian Affairs Segment",
           "agenda": [],
-          "id": "0f386215-c229-4c97-8b9b-c7c561834bca"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
-          "agenda": [],
-          "id": "7aed0417-ee81-4c81-b8aa-68a24e629fad"
+          "id": "58f37b4d-3dd0-4106-90cf-08c2c0802898"
         }
       ]
     }
   ],
   "meetings": [
-    "General Assembly, Eightieth session -- International Migration Review Forum - 3rd plenary meeting",
-    "General Assembly, Eightieth session -- International Migration Review Forum - 4th plenary meeting",
-    "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
-    "Fifth Committee, Second part of the resumed eightieth session -- 30th plenary meeting",
+    "General Assembly, Eightieth session -- Informal consultations on the ninth biennial review of the United Nations Global Counter-Terrorism Strategy",
     "Fifth Committee, Second part of the resumed eightieth session -- Informal consultations",
-    "Committee on Information, Forty-eighth session -- 4th meeting",
-    "Ad Hoc Working Group on Mandate Implementation Review -- Meeting",
-    "Military Staff Committee -- 2148th meeting",
-    "Security Council Committee established pursuant to resolution 2140 (2014) -- Informal consultations",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III - Subsidiary Body 3",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
-    "Global Dialogue on Artificial Intelligence Governance -- Informal consultations",
-    "Arab Group -- Meeting (at the ambassadorial level)",
-    "Permanent Mission of Panama,United Nations Office on Drugs and Crime (UNODC) -- Event entitled “From review to results: Advancing policy priorities to counter migrant smuggling” (co-organized by the Permanent Mission of Panama and the United Nations Office on Drugs and Crime (UNODC))"
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
+    "Economic and Social Council, 2026 session -- Informal consultations on ECOSOC HLPF/HLS ministerial declaration",
+    "Economic and Social Council, 2026 session -- Informal briefing - Meeting on the Transition from Relief to Development and the Humanitarian Affairs Segment",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 2nd meeting",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal briefings",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 3rd meeting",
+    "United Nations Forum on Forests, Twenty-first session -- 1st plenary meeting",
+    "United Nations Forum on Forests, Twenty-first session -- 2nd plenary meeting",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II - Subsidiary Body 2",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
+    "United Nations Environment Programme (UNEP) -- Event entitled “Taking action for nature: a briefing on the seventeenth meeting of the Conference of the Parties to the Convention on Biological Diversity (COP-17)” (organized by the United Nations Environment Programme (UNEP)) All permanent missions and permanent observer missions are invited.",
+    "Group of 77 -- Meeting (at the ambassadorial level)"
   ]
 }
