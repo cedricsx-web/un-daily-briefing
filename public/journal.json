@@ -1,9 +1,9 @@
 {
-  "date": "2026-05-11",
-  "fetched_at": "2026-05-11T14:34:22.952Z",
-  "ny_date": "2026-05-11",
+  "date": "2026-05-12",
+  "fetched_at": "2026-05-12T14:04:41.422Z",
+  "ny_date": "2026-05-12",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 14 meetings",
+  "note": "Live from journal-api.un.org -- 13 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -11,51 +11,50 @@
     },
     {
       "room": "Security Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "Security Council -- 10150th meeting",
+          "agenda": [],
+          "id": "9ec41a4a-0cd6-455f-a7af-1352db6a7eb8"
+        }
+      ]
     },
     {
       "room": "Trusteeship Council",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II - Subsidiary Body 2",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
           "agenda": [],
-          "id": "6f4b65b9-5230-4c37-8905-0cfabde6a9d7"
+          "id": "e83f254a-9460-40f6-b091-39b459314363"
         },
         {
           "time": "3:00 PM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II",
           "agenda": [],
-          "id": "322d3099-4296-4624-94ac-b1ebb9b81a11"
+          "id": "3ec70389-02f1-48da-88c8-e25ad203f8ec"
         }
       ]
     },
     {
       "room": "Economic and Social Council",
-      "meetings": [
-        {
-          "time": "1:15 PM",
-          "title": "Economic and Social Council, 2026 session -- Informal briefing - Meeting on the Transition from Relief to Development and the Humanitarian Affairs Segment",
-          "agenda": [],
-          "id": "58f37b4d-3dd0-4106-90cf-08c2c0802898"
-        }
-      ]
+      "meetings": []
     }
   ],
   "meetings": [
+    "Security Council -- 10150th meeting",
     "General Assembly, Eightieth session -- Informal consultations on the ninth biennial review of the United Nations Global Counter-Terrorism Strategy",
     "Fifth Committee, Second part of the resumed eightieth session -- Informal consultations",
     "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
     "Economic and Social Council, 2026 session -- Informal consultations on ECOSOC HLPF/HLS ministerial declaration",
-    "Economic and Social Council, 2026 session -- Informal briefing - Meeting on the Transition from Relief to Development and the Humanitarian Affairs Segment",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 2nd meeting",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal briefings",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 3rd meeting",
-    "United Nations Forum on Forests, Twenty-first session -- 1st plenary meeting",
-    "United Nations Forum on Forests, Twenty-first session -- 2nd plenary meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II - Subsidiary Body 2",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
-    "United Nations Environment Programme (UNEP) -- Event entitled “Taking action for nature: a briefing on the seventeenth meeting of the Conference of the Parties to the Convention on Biological Diversity (COP-17)” (organized by the United Nations Environment Programme (UNEP)) All permanent missions and permanent observer missions are invited.",
-    "Group of 77 -- Meeting (at the ambassadorial level)"
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 4th meeting",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 5th meeting",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal briefing",
+    "United Nations Forum on Forests, Twenty-first session -- 3rd plenary meeting",
+    "United Nations Forum on Forests, Twenty-first session -- 4th plenary meeting",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II",
+    "Group of 77 -- On Second Committee and related matters"
   ]
 }
