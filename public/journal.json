@@ -1,7 +1,7 @@
 {
-  "date": "2026-05-12",
-  "fetched_at": "2026-05-12T14:04:41.422Z",
-  "ny_date": "2026-05-12",
+  "date": "2026-05-13",
+  "fetched_at": "2026-05-13T14:17:34.657Z",
+  "ny_date": "2026-05-13",
   "source": "journal-api.un.org",
   "note": "Live from journal-api.un.org -- 13 meetings",
   "chambers": [
@@ -11,50 +11,50 @@
     },
     {
       "room": "Security Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Security Council -- 10150th meeting",
-          "agenda": [],
-          "id": "9ec41a4a-0cd6-455f-a7af-1352db6a7eb8"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Trusteeship Council",
       "meetings": [
         {
-          "time": "10:00 AM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
+          "time": "5:00 PM",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 10th meeting",
           "agenda": [],
-          "id": "e83f254a-9460-40f6-b091-39b459314363"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II",
-          "agenda": [],
-          "id": "3ec70389-02f1-48da-88c8-e25ad203f8ec"
+          "id": "6fd7962c-fcde-4db1-a105-949f55d9e610"
         }
       ]
     },
     {
       "room": "Economic and Social Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "General Assembly, Eightieth session -- Informal interactive dialogue with the candidates for the position of President of the General Assembly for the eighty-first session, held in accordance with General Assembly resolution 71/323",
+          "agenda": [],
+          "id": "206d6bb9-7775-41db-827f-19ce59e248c7"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "General Assembly, Eightieth session -- Informal interactive dialogue with the candidates for the position of President of the General Assembly for the eighty-first session, held in accordance with General Assembly resolution 71/323",
+          "agenda": [],
+          "id": "2f062d08-4d21-46d3-8c87-f3b8a4fc6875"
+        }
+      ]
     }
   ],
   "meetings": [
-    "Security Council -- 10150th meeting",
+    "General Assembly, Eightieth session -- Informal interactive dialogue with the candidates for the position of President of the General Assembly for the eighty-first session, held in accordance with General Assembly resolution 71/323",
     "General Assembly, Eightieth session -- Informal consultations on the ninth biennial review of the United Nations Global Counter-Terrorism Strategy",
+    "General Assembly, Eightieth session -- Informal informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
     "Fifth Committee, Second part of the resumed eightieth session -- Informal consultations",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
-    "Economic and Social Council, 2026 session -- Informal consultations on ECOSOC HLPF/HLS ministerial declaration",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 4th meeting",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 5th meeting",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal briefing",
-    "United Nations Forum on Forests, Twenty-first session -- 3rd plenary meeting",
-    "United Nations Forum on Forests, Twenty-first session -- 4th plenary meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II",
-    "Group of 77 -- On Second Committee and related matters"
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 6th meeting",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 7th meeting",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 10th meeting",
+    "Global Dialogue on Artificial Intelligence Governance -- Informal consultations",
+    "Permanent Mission of Sri Lanka,Department of Economic and Social Affairs (DESA) -- Informal briefing to States Parties and civil society stakeholders: nineteenth session of the Conference of States Parties to the Convention on the Rights of Persons with Disabilities (co-organized by the Permanent Mission of Sri Lanka and the Department of Economic and Social Affairs (DESA))",
+    "Group of 77 -- UN80 Initiative matters",
+    "Group of 77 -- On Fifth Committee and related matters"
   ]
 }
