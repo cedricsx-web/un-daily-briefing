@@ -1,9 +1,9 @@
 {
-  "date": "2026-05-14",
-  "fetched_at": "2026-05-14T13:53:32.292Z",
-  "ny_date": "2026-05-14",
+  "date": "2026-05-15",
+  "fetched_at": "2026-05-15T13:50:49.143Z",
+  "ny_date": "2026-05-15",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 10 meetings",
+  "note": "Live from journal-api.un.org -- 16 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -11,7 +11,20 @@
     },
     {
       "room": "Security Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "Security Council -- 10151st meeting",
+          "agenda": [],
+          "id": "91648027-8a93-46fe-9992-ca4c8d556b03"
+        },
+        {
+          "time": "Followed By",
+          "title": "Security Council -- Consultations of the whole",
+          "agenda": [],
+          "id": "5b84c26a-311e-44a0-b158-dfffb3ced583"
+        }
+      ]
     },
     {
       "room": "Trusteeship Council",
@@ -20,31 +33,50 @@
           "time": "10:00 AM",
           "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II",
           "agenda": [],
-          "id": "ba096292-96e5-4f35-8a87-82cafff323d4"
+          "id": "25b45ec7-eb0d-4f54-9aa4-1a3367a16336"
         },
         {
           "time": "3:00 PM",
           "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
           "agenda": [],
-          "id": "444f178f-2296-4f82-acf1-593482777282"
+          "id": "f8060103-076f-444f-bd4f-3fa4f2a3f860"
         }
       ]
     },
     {
       "room": "Economic and Social Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "Committee on the Exercise of the Inalienable Rights of the Palestinian People -- 428th meeting",
+          "agenda": [],
+          "id": "cbeec26e-a11f-4d8a-90c8-73bfc380f3ad"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
+          "agenda": [],
+          "id": "941a90b1-b9b1-4070-aecc-5b52f9c7ab1f"
+        }
+      ]
     }
   ],
   "meetings": [
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
-    "Executive Board of the United Nations Entity for Gender Equality and the Empowerment of Women -- Informal briefing (to be held remotely without physical presence)",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 8th meeting",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 9th meeting",
-    "United Nations Forum on Forests, Twenty-first session -- 5th plenary meeting",
+    "Security Council -- 10151st meeting",
+    "Security Council -- Consultations of the whole",
+    "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
+    "General Assembly, Eightieth session -- Informal consultations on the high-level meeting on universal health coverage",
+    "Second Committee, Eightieth session -- Informal dialogue on revitalization",
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
+    "Committee on the Exercise of the Inalienable Rights of the Palestinian People -- 428th meeting",
+    "Economic and Social Council, 2026 session -- Special meeting - Safeguarding energy and supply flows: Supporting global development through international cooperation",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 10th meeting",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 11th meeting",
+    "United Nations Forum on Forests, Twenty-first session -- 6th plenary meeting",
     "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II",
     "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
     "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
-    "General Assembly -- Informal consultations on the draft resolution entitled “Implementation of Article 27 (3) of the Charter of the United Nations” (under agenda item 124) (convened by the Permanent Mission of Liechtenstein)",
-    "Permanent Mission of the Philippines -- Event entitled “Agroforestry and the Economics of Forest Stewardship: Reframing Forest Landscapes for Rural Prosperity, Climate Resilience and Restoration” (organized by the Permanent Mission of the Philippines)"
+    "Division for Inclusive Social Development, Department of Economic and Social Affairs (DESA) -- Event entitled “Families, Inequalities and Child Well-being” (on the occasion of the International Day of Families) (organized by the Division for Inclusive Social Development, Department of Economic and Social Affairs (DESA))",
+    "Group of 77 -- UN80 Initiative matters"
   ]
 }
