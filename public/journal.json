@@ -1,9 +1,9 @@
 {
-  "date": "2026-05-15",
-  "fetched_at": "2026-05-15T13:50:49.143Z",
-  "ny_date": "2026-05-15",
+  "date": "2026-05-18",
+  "fetched_at": "2026-05-18T15:00:03.244Z",
+  "ny_date": "2026-05-18",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 16 meetings",
+  "note": "Live from journal-api.un.org -- 10 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -11,35 +11,22 @@
     },
     {
       "room": "Security Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Security Council -- 10151st meeting",
-          "agenda": [],
-          "id": "91648027-8a93-46fe-9992-ca4c8d556b03"
-        },
-        {
-          "time": "Followed By",
-          "title": "Security Council -- Consultations of the whole",
-          "agenda": [],
-          "id": "5b84c26a-311e-44a0-b158-dfffb3ced583"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Trusteeship Council",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 12th meeting",
           "agenda": [],
-          "id": "25b45ec7-eb0d-4f54-9aa4-1a3367a16336"
+          "id": "75fc2c9d-b587-40d8-ad69-704fe7c4def8"
         },
         {
           "time": "3:00 PM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 13th meeting",
           "agenda": [],
-          "id": "f8060103-076f-444f-bd4f-3fa4f2a3f860"
+          "id": "cd6abe10-1f80-4947-a3da-020d1156f6f5"
         }
       ]
     },
@@ -48,35 +35,29 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Committee on the Exercise of the Inalienable Rights of the Palestinian People -- 428th meeting",
+          "title": "General Committee, Eightieth session -- Informal meeting",
           "agenda": [],
-          "id": "cbeec26e-a11f-4d8a-90c8-73bfc380f3ad"
+          "id": "61914d77-0f04-4cdf-a7c6-2f6bb82cef4f"
         },
         {
           "time": "3:00 PM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
+          "title": "General Assembly, Eightieth session -- High-level panel on “The importance of complying with the Venice Principles for Ombudsman institutions to strengthen the institutions’ independence and autonomy and create an enabling environment to perform their mandate nationally and internationally”",
           "agenda": [],
-          "id": "941a90b1-b9b1-4070-aecc-5b52f9c7ab1f"
+          "id": "2709589e-7916-4a0e-acd1-f30d1b21e293"
         }
       ]
     }
   ],
   "meetings": [
-    "Security Council -- 10151st meeting",
-    "Security Council -- Consultations of the whole",
-    "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
-    "General Assembly, Eightieth session -- Informal consultations on the high-level meeting on universal health coverage",
-    "Second Committee, Eightieth session -- Informal dialogue on revitalization",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
-    "Committee on the Exercise of the Inalienable Rights of the Palestinian People -- 428th meeting",
-    "Economic and Social Council, 2026 session -- Special meeting - Safeguarding energy and supply flows: Supporting global development through international cooperation",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 10th meeting",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 11th meeting",
-    "United Nations Forum on Forests, Twenty-first session -- 6th plenary meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee II",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee III",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- Main Committee I",
-    "Division for Inclusive Social Development, Department of Economic and Social Affairs (DESA) -- Event entitled “Families, Inequalities and Child Well-being” (on the occasion of the International Day of Families) (organized by the Division for Inclusive Social Development, Department of Economic and Social Affairs (DESA))",
-    "Group of 77 -- UN80 Initiative matters"
+    "General Committee, Eightieth session -- Informal meeting",
+    "General Assembly, Eightieth session -- Informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
+    "General Assembly, Eightieth session -- High-level panel on “The importance of complying with the Venice Principles for Ombudsman institutions to strengthen the institutions’ independence and autonomy and create an enabling environment to perform their mandate nationally and internationally”",
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 12th meeting",
+    "Committee on Non-Governmental Organizations, 2026 resumed session -- 14th plenary meeting",
+    "Committee on Non-Governmental Organizations, 2026 resumed session -- 15th plenary meeting",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 12th meeting",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 13th meeting",
+    "Permanent Mission of Tajikistan,Permanent Mission of Pakistan,United Nations Environment Programme (UNEP),International Union for Conservation of Nature -- Event entitled “Markhor and Mountain Biodiversity: Strengthening Global Efforts for Ecosystem Conservation and Sustainable Development” (on the occasion of the International Day of the Markhor (24 May)) (co-organized by the Permanent Missions of Pakistan and Tajikistan, the United Nations Environment Programme (UNEP) and the International Union for Conservation of Nature)"
   ]
 }
