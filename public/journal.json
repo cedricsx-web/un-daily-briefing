@@ -1,9 +1,9 @@
 {
-  "date": "2026-05-18",
-  "fetched_at": "2026-05-18T15:00:03.244Z",
-  "ny_date": "2026-05-18",
+  "date": "2026-05-19",
+  "fetched_at": "2026-05-19T14:45:10.906Z",
+  "ny_date": "2026-05-19",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 10 meetings",
+  "note": "Live from journal-api.un.org -- 18 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -11,22 +11,35 @@
     },
     {
       "room": "Security Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "Security Council -- 10152nd meeting",
+          "agenda": [],
+          "id": "7c862fc6-ae65-4963-9ad7-53a4941a7cf1"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Security Council -- 10153rd meeting",
+          "agenda": [],
+          "id": "61ebccd5-d676-4950-9cd4-dd56dec7fffd"
+        }
+      ]
     },
     {
       "room": "Trusteeship Council",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 12th meeting",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 14th meeting",
           "agenda": [],
-          "id": "75fc2c9d-b587-40d8-ad69-704fe7c4def8"
+          "id": "1a6eed71-c89b-421b-8a0d-3bac1b64e380"
         },
         {
           "time": "3:00 PM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 13th meeting",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 15th meeting",
           "agenda": [],
-          "id": "cd6abe10-1f80-4947-a3da-020d1156f6f5"
+          "id": "5f4771ae-74d8-4696-95bd-f0529213c41c"
         }
       ]
     },
@@ -35,29 +48,31 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "General Committee, Eightieth session -- Informal meeting",
+          "title": "General Assembly, Eightieth session -- Informal consultations on the progress declaration of the high-level meeting on improving global road safety",
           "agenda": [],
-          "id": "61914d77-0f04-4cdf-a7c6-2f6bb82cef4f"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- High-level panel on “The importance of complying with the Venice Principles for Ombudsman institutions to strengthen the institutions’ independence and autonomy and create an enabling environment to perform their mandate nationally and internationally”",
-          "agenda": [],
-          "id": "2709589e-7916-4a0e-acd1-f30d1b21e293"
+          "id": "cb01f812-71f7-4ce2-8c38-790594595dc4"
         }
       ]
     }
   ],
   "meetings": [
-    "General Committee, Eightieth session -- Informal meeting",
-    "General Assembly, Eightieth session -- Informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
-    "General Assembly, Eightieth session -- High-level panel on “The importance of complying with the Venice Principles for Ombudsman institutions to strengthen the institutions’ independence and autonomy and create an enabling environment to perform their mandate nationally and internationally”",
+    "Security Council -- 10152nd meeting",
+    "Security Council -- 10153rd meeting",
+    "General Assembly, Eightieth session -- Informal meeting of the plenary on the intergovernmental negotiations on the question of equitable representation on and increase in the membership of the Security Council and other matters related to the Council",
+    "General Assembly, Eightieth session -- Informal consultations on the progress declaration of the high-level meeting on improving global road safety",
+    "Fifth Committee, Second part of the resumed eightieth session -- 31st plenary meeting",
     "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 12th meeting",
-    "Committee on Non-Governmental Organizations, 2026 resumed session -- 14th plenary meeting",
-    "Committee on Non-Governmental Organizations, 2026 resumed session -- 15th plenary meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 12th meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 13th meeting",
-    "Permanent Mission of Tajikistan,Permanent Mission of Pakistan,United Nations Environment Programme (UNEP),International Union for Conservation of Nature -- Event entitled “Markhor and Mountain Biodiversity: Strengthening Global Efforts for Ecosystem Conservation and Sustainable Development” (on the occasion of the International Day of the Markhor (24 May)) (co-organized by the Permanent Missions of Pakistan and Tajikistan, the United Nations Environment Programme (UNEP) and the International Union for Conservation of Nature)"
+    "Peacebuilding Commission -- Expert-level meeting on Disarmament, Demobilization and Reintegration processes",
+    "Executive Board of the United Nations Entity for Gender Equality and the Empowerment of Women -- Informal briefing (to be held remotely without physical presence)",
+    "Military Staff Committee -- 2149th meeting (also with virtual participation)",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 13th meeting",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 14th meeting",
+    "Committee on Non-Governmental Organizations, 2026 resumed session -- 16th plenary meeting",
+    "Committee on Non-Governmental Organizations, 2026 resumed session -- 17th plenary meeting",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 14th meeting",
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 15th meeting",
+    "International Criminal Court -- New York Working Group - Facilitation on the composition of the Bureau, Regional consultations - Western European and other States Group",
+    "International Criminal Court -- New York Working Group - Facilitation on the composition of the Bureau, Regional consultations - Asia-Pacific Group",
+    "Permanent Mission of Austria,Permanent Mission of Bahrain,Permanent Mission of Germany,Permanent Mission of Hungary,Permanent Mission of Italy,Permanent Mission of Libya,Permanent Mission of Portugal,Permanent Mission of Rwanda,Permanent Mission of Tajikistan -- Celebration of World Football Day (25 May) (co-organized by the Permanent Missions of Bahrain, Libya and Tajikistan, in collaboration with the Permanent Missions of Austria, Germany, Hungary, Italy, Portugal and Rwanda)"
   ]
 }
