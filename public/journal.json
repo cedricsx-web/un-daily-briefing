@@ -1,29 +1,34 @@
 {
-  "date": "2026-05-20",
-  "fetched_at": "2026-05-20T14:45:48.614Z",
-  "ny_date": "2026-05-20",
+  "date": "2026-05-21",
+  "fetched_at": "2026-05-21T14:49:53.997Z",
+  "ny_date": "2026-05-21",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 16 meetings",
+  "note": "Live from journal-api.un.org -- 18 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "82nd plenary meeting",
-          "agenda": [],
-          "id": "a15bf39b-f26e-4f0b-9aab-8a5f76cc3e16"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Security Council",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "10154th meeting",
+          "title": "Security Council -- 10155th meeting",
           "agenda": [],
-          "id": "6ad70906-7875-41ba-9ae7-5db92b709e64"
+          "id": "e1e2e5b3-9635-4f51-9783-c1d3651b7998"
+        },
+        {
+          "time": "Followed By",
+          "title": "Security Council -- Consultations of the whole",
+          "agenda": [],
+          "id": "e821f86c-4dd8-4824-b762-bb7dd3d036c2"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Security Council -- 10154th meeting (resumed)",
+          "agenda": [],
+          "id": "858e0a38-83ba-4cdd-86b1-eb6cdeacf9b9"
         }
       ]
     },
@@ -32,39 +37,48 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 16th meeting",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 17th meeting",
           "agenda": [],
-          "id": "87949ea8-2ac3-494c-99dc-b166c9f4a4c6"
+          "id": "2d0ff921-0a4d-401d-8b17-7ab20506ed96"
         },
         {
           "time": "3:00 PM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 17th meeting",
+          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 18th meeting",
           "agenda": [],
-          "id": "cd127f4c-b20b-4745-a8a3-613db99f96a7"
+          "id": "91243afc-584f-48ef-a686-a77a0ad3a0d2"
         }
       ]
     },
     {
       "room": "Economic and Social Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "General Assembly, Eightieth session -- Informal interactive dialogue on commodity markets",
+          "agenda": [],
+          "id": "d74204ad-a03a-443f-897f-bb6a81adaacd"
+        }
+      ]
     }
   ],
   "meetings": [
+    "Security Council -- 10155th meeting",
+    "Security Council -- Consultations of the whole",
+    "Security Council -- 10154th meeting (resumed)",
+    "General Assembly, Eightieth session -- Informal interactive dialogue on commodity markets",
+    "General Assembly, Eightieth session -- Informal consultation on “the political declaration on sea level rise”",
     "Fifth Committee, Second part of the resumed eightieth session -- Informal consultations",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
+    "Fifth Committee, Second part of the resumed eightieth session -- Informal briefing",
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
     "States Parties to the Agreement for the Implementation of the Provisions of the United Nations Convention on the Law of the Sea of 10 December 1982 relating to the Conservation and Management of Straddling Fish Stocks and Highly Migratory Fish Stocks, Nineteenth round -- Informal consultations",
-    "Ad Hoc Working Group on Mandate Implementation Review -- Meeting",
-    "Executive Board of the United Nations Entity for Gender Equality and the Empowerment of Women -- Informal briefing (to be held remotely without physical presence)",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 15th meeting",
-    "Committee on Non-Governmental Organizations, 2026 resumed session -- 18th plenary meeting",
-    "Committee on Non-Governmental Organizations, 2026 resumed session -- 19th plenary meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 16th meeting",
+    "Economic and Social Council, 2026 session -- Informal consultations on ECOSOC HLPF/HLS ministerial declaration",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 16th meeting",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal consultations",
+    "Committee on Non-Governmental Organizations, 2026 resumed session -- 20th plenary meeting",
     "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 17th meeting",
-    "General Assembly -- 82nd plenary meeting",
-    "Security Council -- 10154th meeting",
-    "Group of 77 -- On Fifth Committee and related matters",
-    "International Criminal Court -- New York Working Group - Facilitation on the composition of the Bureau, Regional consultations - Eastern European Group",
-    "International Criminal Court -- New York Working Group - Facilitation on the composition of the Bureau, Regional consultations - African Group",
-    "United Nations Institute for Training and Research (UNITAR),Permanent Mission of Portugal,Department of Political and Peacebuilding Affairs (DPPA) -- Briefing for delegates on the work of the Security Council (organized by the United Nations Institute for Training and Research (UNITAR) in partnership with the Permanent Mission of Portugal and the Department of Political and Peacebuilding Affairs (DPPA))"
+    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 18th meeting",
+    "Arab Group -- Meeting (at the ambassadorial level)",
+    "International Criminal Court -- New York Working Group - Facilitation on the composition of the Bureau, Regional consultations - Group of Latin American and Caribbean States",
+    "Permanent Mission of India -- Event entitled “Tea for Wellness” (on the occasion of International Tea Day) (organized by the Permanent Mission of India)"
   ]
 }
