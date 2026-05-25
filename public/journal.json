@@ -1,49 +1,17 @@
 {
-  "date": "2026-05-22",
-  "fetched_at": "2026-05-22T14:24:58.177Z",
-  "ny_date": "2026-05-22",
+  "date": "2026-05-25",
+  "fetched_at": "2026-05-25T14:41:15.502Z",
+  "ny_date": "2026-05-25",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 16 meetings",
+  "note": "0 meetings parsed",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 16th meeting",
-          "agenda": [],
-          "id": "a375688b-49eb-4d4a-9685-9bbdea4bf5b2"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 17th meeting",
-          "agenda": [],
-          "id": "2ebd2423-a1f2-4b38-b43d-6d107c3c3296"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Security Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Security Council -- 10156th meeting",
-          "agenda": [],
-          "id": "22906835-83c0-428d-a794-0ebbcfd9d901"
-        },
-        {
-          "time": "Followed By",
-          "title": "Security Council -- 10157th meeting",
-          "agenda": [],
-          "id": "70850dea-f01c-4ca3-9400-3c55a92be7c2"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Security Council -- 10158th meeting",
-          "agenda": [],
-          "id": "229dd162-eb1e-46e4-80cc-d68c67382a19"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Trusteeship Council",
@@ -51,38 +19,8 @@
     },
     {
       "room": "Economic and Social Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
-          "agenda": [],
-          "id": "7d7d20a8-97e8-45c4-965e-09d4b89effd7"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
-          "agenda": [],
-          "id": "2ce78b27-5002-4230-9a00-271f1e7c5b6e"
-        }
-      ]
+      "meetings": []
     }
   ],
-  "meetings": [
-    "Security Council -- 10156th meeting",
-    "Security Council -- 10157th meeting",
-    "Security Council -- 10158th meeting",
-    "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
-    "General Assembly, Eightieth session -- Informal consultations on the Human Rights Council review",
-    "Second Committee, Eightieth session -- Informal informal consultations on revitalization of the work of the Second Committee",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
-    "States Parties to the Agreement for the Implementation of the Provisions of the United Nations Convention on the Law of the Sea of 10 December 1982 relating to the Conservation and Management of Straddling Fish Stocks and Highly Migratory Fish Stocks, Nineteenth round -- Informal consultations",
-    "Economic and Social Council, 2026 session -- Informal consultations on ECOSOC HLPF/HLS ministerial declaration",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 17th meeting",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal consultations",
-    "Committee on Non-Governmental Organizations, 2026 resumed session -- 21st plenary meeting",
-    "Committee on Non-Governmental Organizations, 2026 resumed session -- 22nd plenary meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 16th meeting",
-    "Review Conference of the Parties to the Treaty on the Non-Proliferation of Nuclear Weapons, Eleventh Review Conference -- 17th meeting",
-    "United Nations Institute for Training and Research (UNITAR),Permanent Mission of Portugal,Department of Political and Peacebuilding Affairs (DPPA) -- Briefing for delegates on the work of the Security Council (organized by the United Nations Institute for Training and Research (UNITAR) in partnership with the Permanent Mission of Portugal and the Department of Political and Peacebuilding Affairs (DPPA))"
-  ]
+  "meetings": []
 }
