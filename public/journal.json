@@ -1,9 +1,9 @@
 {
-  "date": "2026-05-26",
-  "fetched_at": "2026-05-26T14:52:51.041Z",
-  "ny_date": "2026-05-26",
+  "date": "2026-05-27",
+  "fetched_at": "2026-05-27T15:21:57.689Z",
+  "ny_date": "2026-05-27",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 7 meetings",
+  "note": "0 meetings parsed",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -11,14 +11,7 @@
     },
     {
       "room": "Security Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Security Council -- 10159th meeting",
-          "agenda": [],
-          "id": "868c13f4-eed7-44db-aabf-077925946037"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Trusteeship Council",
@@ -26,23 +19,8 @@
     },
     {
       "room": "Economic and Social Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
-          "agenda": [],
-          "id": "c315930a-6030-4326-aebf-6b4764cce4b8"
-        }
-      ]
+      "meetings": []
     }
   ],
-  "meetings": [
-    "Security Council -- 10159th meeting",
-    "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
-    "Fifth Committee, Second part of the resumed eightieth session -- Informal consultations",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal consultations",
-    "International Criminal Court -- New York Working Group of the Bureau - 3rd meeting",
-    "Permanent Mission of the Philippines,Office of the United Nations High Commissioner for Refugees (UNHCR) -- Panel discussion on the theme “From Protection to Possibility: Advancing Durable Solutions for Refugees” (on the occasion of World Refugee Day) (20 June) (organized by the Permanent Mission of the Philippines, in partnership with the Office of the United Nations High Commissioner for Refugees (UNHCR))"
-  ]
+  "meetings": []
 }
