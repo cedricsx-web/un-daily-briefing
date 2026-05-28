@@ -1,9 +1,9 @@
 {
-  "date": "2026-05-27",
-  "fetched_at": "2026-05-27T15:21:57.689Z",
-  "ny_date": "2026-05-27",
+  "date": "2026-05-28",
+  "fetched_at": "2026-05-28T15:35:03.645Z",
+  "ny_date": "2026-05-28",
   "source": "journal-api.un.org",
-  "note": "0 meetings parsed",
+  "note": "Live from journal-api.un.org -- 15 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -11,7 +11,20 @@
     },
     {
       "room": "Security Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "Security Council -- 10159th meeting (resumed)",
+          "agenda": [],
+          "id": "b08ef764-6987-4516-86da-c53480d9931c"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Security Council -- 10160th meeting",
+          "agenda": [],
+          "id": "68597d60-4d9c-48a7-9bd0-ce298b822122"
+        }
+      ]
     },
     {
       "room": "Trusteeship Council",
@@ -19,8 +32,37 @@
     },
     {
       "room": "Economic and Social Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "General Assembly, Eightieth session -- Informal meeting of the plenary to hear a briefing on the UN80 Initiative",
+          "agenda": [],
+          "id": "0b53274b-9f02-489b-9463-95ce1a4b83ba"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
+          "agenda": [],
+          "id": "b73d1b39-6836-4c8c-a98e-45168b398cd7"
+        }
+      ]
     }
   ],
-  "meetings": []
+  "meetings": [
+    "Security Council -- 10159th meeting (resumed)",
+    "Security Council -- 10160th meeting",
+    "General Assembly, Eightieth session -- Informal consultations on the high-level meeting on universal health coverage",
+    "General Assembly, Eightieth session -- Informal meeting of the plenary to hear a briefing on the UN80 Initiative",
+    "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
+    "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
+    "Fifth Committee, Second part of the resumed eightieth session -- Informal consultations",
+    "Fifth Committee, Second part of the resumed eightieth session -- Informal briefing",
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
+    "Economic and Social Council, 2026 session -- Informal consultations on ECOSOC HLPF/HLS ministerial declaration",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal consultations",
+    "Committee on Non-Governmental Organizations, 2026 resumed session -- 23rd plenary meeting",
+    "Committee on Non-Governmental Organizations, 2026 resumed session -- 24th plenary meeting",
+    "Group of 77 -- UN80 Initiative matters",
+    "International Criminal Court -- Working Group on Amendments - 1st meeting"
+  ]
 }
