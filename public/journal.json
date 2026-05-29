@@ -1,9 +1,9 @@
 {
-  "date": "2026-05-28",
-  "fetched_at": "2026-05-28T15:35:03.645Z",
-  "ny_date": "2026-05-28",
+  "date": "2026-05-29",
+  "fetched_at": "2026-05-29T14:47:39.318Z",
+  "ny_date": "2026-05-29",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 15 meetings",
+  "note": "Live from journal-api.un.org -- 13 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -14,15 +14,15 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Security Council -- 10159th meeting (resumed)",
+          "title": "Security Council -- 10161st meeting",
           "agenda": [],
-          "id": "b08ef764-6987-4516-86da-c53480d9931c"
+          "id": "b9025cea-6d51-4477-b22d-d05ffaa19017"
         },
         {
-          "time": "3:00 PM",
-          "title": "Security Council -- 10160th meeting",
+          "time": "Followed By",
+          "title": "Security Council -- Consultations of the whole",
           "agenda": [],
-          "id": "68597d60-4d9c-48a7-9bd0-ce298b822122"
+          "id": "571f4968-dc2a-455a-a83a-53c555a5c0ff"
         }
       ]
     },
@@ -35,34 +35,32 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal meeting of the plenary to hear a briefing on the UN80 Initiative",
+          "title": "General Assembly, 2026 session -- Informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
           "agenda": [],
-          "id": "0b53274b-9f02-489b-9463-95ce1a4b83ba"
+          "id": "7b30aaa5-48c6-4206-ace0-a33a272f47c0"
         },
         {
           "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
+          "title": "General Assembly, 2026 session -- Informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
           "agenda": [],
-          "id": "b73d1b39-6836-4c8c-a98e-45168b398cd7"
+          "id": "004af923-d95c-4c58-b623-b2abd175cc3b"
         }
       ]
     }
   ],
   "meetings": [
-    "Security Council -- 10159th meeting (resumed)",
-    "Security Council -- 10160th meeting",
-    "General Assembly, Eightieth session -- Informal consultations on the high-level meeting on universal health coverage",
-    "General Assembly, Eightieth session -- Informal meeting of the plenary to hear a briefing on the UN80 Initiative",
-    "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
-    "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
+    "Security Council -- 10161st meeting",
+    "Security Council -- Consultations of the whole",
+    "Security Council -- Wrap-up session",
+    "General Assembly, 2026 session -- Informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
     "Fifth Committee, Second part of the resumed eightieth session -- Informal consultations",
-    "Fifth Committee, Second part of the resumed eightieth session -- Informal briefing",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
-    "Economic and Social Council, 2026 session -- Informal consultations on ECOSOC HLPF/HLS ministerial declaration",
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
+    "Ad hoc working group on the smooth transition for countries graduating from the category of least developed countries, Organizational session -- 5th meeting",
+    "Executive Board of the United Nations Entity for Gender Equality and the Empowerment of Women -- Informal briefing (to be held remotely without physical presence)",
     "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal consultations",
-    "Committee on Non-Governmental Organizations, 2026 resumed session -- 23rd plenary meeting",
-    "Committee on Non-Governmental Organizations, 2026 resumed session -- 24th plenary meeting",
-    "Group of 77 -- UN80 Initiative matters",
-    "International Criminal Court -- Working Group on Amendments - 1st meeting"
+    "Committee on Non-Governmental Organizations, 2026 resumed session -- 25th plenary meeting",
+    "Office of the Special Adviser on Africa (OSAA),Permanent Observer Mission of the African Union -- Africa Dialogue Series 2026 high-level policy dialogue entitled “Water and Sanitation for Life: Harnessing Water Resources for the Africa We Want” (co-organized by the Office of the Special Adviser on Africa (OSAA) and the Permanent Observer Mission of the African Union, in partnership with the United Nations Children’s Fund (UNICEF), the Economic Commission for Africa (ECA), UN-Habitat, the African Union Development Agency, the United Nations Educational, Scientific and Cultural Organization (UNESCO), the African Development Bank and the Institute for Security Studies (ISS))",
+    "Group of 77 -- Meeting (at the ambassadorial level)",
+    "Permanent Mission of Monaco,World Intellectual Property Organization (WIPO),Department of Economic and Social Affairs (DESA) -- Event entitled “Intellectual Property (IP) and Sports: Ready, Set, Innovate! Leveling the Playing Field: Innovation and Intellectual Property in Sport for All” (on the occasion of World Intellectual Property Day) (26 April) (co-organized by the Permanent Mission of Monaco, the World Intellectual Property Organization (WIPO) and the Department of Economic and Social Affairs (DESA))"
   ]
 }
