@@ -1,28 +1,41 @@
 {
-  "date": "2026-05-29",
-  "fetched_at": "2026-05-29T14:47:39.318Z",
-  "ny_date": "2026-05-29",
+  "date": "2026-06-01",
+  "fetched_at": "2026-06-01T17:23:59.627Z",
+  "ny_date": "2026-06-01",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 13 meetings",
+  "note": "Live from journal-api.un.org -- 14 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "84th plenary meeting",
+          "agenda": [],
+          "id": "ffad2040-a8dd-4174-a965-53c36d7b4c19"
+        }
+      ]
     },
     {
       "room": "Security Council",
       "meetings": [
         {
-          "time": "10:00 AM",
-          "title": "Security Council -- 10161st meeting",
+          "time": "11:30 AM",
+          "title": "Consultations of the whole [Closed]",
           "agenda": [],
-          "id": "b9025cea-6d51-4477-b22d-d05ffaa19017"
+          "id": "185b1b5f-c850-4e5e-bd8c-92833f050709"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "10162nd meeting",
+          "agenda": [],
+          "id": "3a742bb7-629a-4f03-ba72-f6e25e1246e7"
         },
         {
           "time": "Followed By",
-          "title": "Security Council -- Consultations of the whole",
+          "title": "10163rd meeting",
           "agenda": [],
-          "id": "571f4968-dc2a-455a-a83a-53c555a5c0ff"
+          "id": "2149adb1-157b-4288-8d34-e135594fa8ee"
         }
       ]
     },
@@ -35,32 +48,33 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "General Assembly, 2026 session -- Informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
+          "title": "Operational activities for development segment, 2026 session -- 17th plenary meeting",
           "agenda": [],
-          "id": "7b30aaa5-48c6-4206-ace0-a33a272f47c0"
+          "id": "35e498ae-c6f8-4ed7-815a-7f71092ca03b"
         },
         {
           "time": "3:00 PM",
-          "title": "General Assembly, 2026 session -- Informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
+          "title": "Operational activities for development segment, 2026 session -- 18th plenary meeting",
           "agenda": [],
-          "id": "004af923-d95c-4c58-b623-b2abd175cc3b"
+          "id": "c408f7eb-7d7b-4d8c-993a-f802ea44888a"
         }
       ]
     }
   ],
   "meetings": [
-    "Security Council -- 10161st meeting",
-    "Security Council -- Consultations of the whole",
-    "Security Council -- Wrap-up session",
-    "General Assembly, 2026 session -- Informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
-    "Fifth Committee, Second part of the resumed eightieth session -- Informal consultations",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
-    "Ad hoc working group on the smooth transition for countries graduating from the category of least developed countries, Organizational session -- 5th meeting",
-    "Executive Board of the United Nations Entity for Gender Equality and the Empowerment of Women -- Informal briefing (to be held remotely without physical presence)",
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
+    "Committee on Contributions, Eighty-sixth session -- Meeting",
+    "Biennial Meeting of States to Consider the Implementation of the Programme of Action to Prevent, Combat and Eradicate the Illicit Trade in Small Arms and Light Weapons in All Its Aspects, Ninth Biennial Meeting -- 1st plenary meeting",
+    "Biennial Meeting of States to Consider the Implementation of the Programme of Action to Prevent, Combat and Eradicate the Illicit Trade in Small Arms and Light Weapons in All Its Aspects, Ninth Biennial Meeting -- 2nd plenary meeting",
+    "Working Group on Discrimination Against Women and Girls, Forty-fourth session -- Meeting",
+    "Operational activities for development segment, 2026 session -- 17th plenary meeting",
+    "Operational activities for development segment, 2026 session -- 18th plenary meeting",
     "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal consultations",
-    "Committee on Non-Governmental Organizations, 2026 resumed session -- 25th plenary meeting",
-    "Office of the Special Adviser on Africa (OSAA),Permanent Observer Mission of the African Union -- Africa Dialogue Series 2026 high-level policy dialogue entitled “Water and Sanitation for Life: Harnessing Water Resources for the Africa We Want” (co-organized by the Office of the Special Adviser on Africa (OSAA) and the Permanent Observer Mission of the African Union, in partnership with the United Nations Children’s Fund (UNICEF), the Economic Commission for Africa (ECA), UN-Habitat, the African Union Development Agency, the United Nations Educational, Scientific and Cultural Organization (UNESCO), the African Development Bank and the Institute for Security Studies (ISS))",
-    "Group of 77 -- Meeting (at the ambassadorial level)",
-    "Permanent Mission of Monaco,World Intellectual Property Organization (WIPO),Department of Economic and Social Affairs (DESA) -- Event entitled “Intellectual Property (IP) and Sports: Ready, Set, Innovate! Leveling the Playing Field: Innovation and Intellectual Property in Sport for All” (on the occasion of World Intellectual Property Day) (26 April) (co-organized by the Permanent Mission of Monaco, the World Intellectual Property Organization (WIPO) and the Department of Economic and Social Affairs (DESA))"
+    "Executive Board of the United Nations Children’s Fund -- Pre-session meeting in advance of the annual session",
+    "General Assembly -- 84th plenary meeting",
+    "Security Council -- Consultations of the whole [Closed]",
+    "Security Council -- 10162nd meeting",
+    "Security Council -- 10163rd meeting",
+    "Office of Counter-Terrorism (UNOCT) -- Briefing to Member States on overview of preparations for the Fourth Counter-Terrorism Week at the United Nations (organized by the Office of Counter-Terrorism (UNOCT)) All permanent representatives and permanent observers are invited to attend."
   ]
 }
