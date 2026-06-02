@@ -1,18 +1,18 @@
 {
-  "date": "2026-06-01",
-  "fetched_at": "2026-06-01T17:23:59.627Z",
-  "ny_date": "2026-06-01",
+  "date": "2026-06-02",
+  "fetched_at": "2026-06-02T16:08:37.279Z",
+  "ny_date": "2026-06-02",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 14 meetings",
+  "note": "Live from journal-api.un.org -- 10 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "84th plenary meeting",
+          "title": "85th plenary meeting",
           "agenda": [],
-          "id": "ffad2040-a8dd-4174-a965-53c36d7b4c19"
+          "id": "34960fde-4282-4958-b18e-de624196297c"
         }
       ]
     },
@@ -20,61 +20,52 @@
       "room": "Security Council",
       "meetings": [
         {
-          "time": "11:30 AM",
-          "title": "Consultations of the whole [Closed]",
+          "time": "10:00 AM",
+          "title": "Briefing to non-Council members",
           "agenda": [],
-          "id": "185b1b5f-c850-4e5e-bd8c-92833f050709"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "10162nd meeting",
-          "agenda": [],
-          "id": "3a742bb7-629a-4f03-ba72-f6e25e1246e7"
-        },
-        {
-          "time": "Followed By",
-          "title": "10163rd meeting",
-          "agenda": [],
-          "id": "2149adb1-157b-4288-8d34-e135594fa8ee"
+          "id": "2ca96cf7-baaf-4226-b28c-73e2d907be53"
         }
       ]
     },
     {
       "room": "Trusteeship Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "3:00 PM",
+          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration to renew commitment and accelerate the implementation of the New Urban Agenda",
+          "agenda": [],
+          "id": "0ea33190-74d3-4024-947b-eca5b79f852c"
+        }
+      ]
     },
     {
       "room": "Economic and Social Council",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Operational activities for development segment, 2026 session -- 17th plenary meeting",
+          "title": "Operational activities for development segment, 2026 session -- 19th plenary meeting",
           "agenda": [],
-          "id": "35e498ae-c6f8-4ed7-815a-7f71092ca03b"
+          "id": "6e01091e-338f-4daa-8141-336181158450"
         },
         {
           "time": "3:00 PM",
-          "title": "Operational activities for development segment, 2026 session -- 18th plenary meeting",
+          "title": "Operational activities for development segment, 2026 session -- 20th plenary meeting",
           "agenda": [],
-          "id": "c408f7eb-7d7b-4d8c-993a-f802ea44888a"
+          "id": "0d325c84-4e78-443e-9a70-35f55c002a29"
         }
       ]
     }
   ],
   "meetings": [
+    "Ad Hoc Working Group on Mandate Implementation Review -- Meeting",
+    "General Assembly, Eightieth session -- Informal consultations on the political declaration to renew commitment and accelerate the implementation of the New Urban Agenda",
     "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
     "Committee on Contributions, Eighty-sixth session -- Meeting",
-    "Biennial Meeting of States to Consider the Implementation of the Programme of Action to Prevent, Combat and Eradicate the Illicit Trade in Small Arms and Light Weapons in All Its Aspects, Ninth Biennial Meeting -- 1st plenary meeting",
-    "Biennial Meeting of States to Consider the Implementation of the Programme of Action to Prevent, Combat and Eradicate the Illicit Trade in Small Arms and Light Weapons in All Its Aspects, Ninth Biennial Meeting -- 2nd plenary meeting",
     "Working Group on Discrimination Against Women and Girls, Forty-fourth session -- Meeting",
-    "Operational activities for development segment, 2026 session -- 17th plenary meeting",
-    "Operational activities for development segment, 2026 session -- 18th plenary meeting",
+    "Operational activities for development segment, 2026 session -- 19th plenary meeting",
+    "Operational activities for development segment, 2026 session -- 20th plenary meeting",
     "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal consultations",
-    "Executive Board of the United Nations Children’s Fund -- Pre-session meeting in advance of the annual session",
-    "General Assembly -- 84th plenary meeting",
-    "Security Council -- Consultations of the whole [Closed]",
-    "Security Council -- 10162nd meeting",
-    "Security Council -- 10163rd meeting",
-    "Office of Counter-Terrorism (UNOCT) -- Briefing to Member States on overview of preparations for the Fourth Counter-Terrorism Week at the United Nations (organized by the Office of Counter-Terrorism (UNOCT)) All permanent representatives and permanent observers are invited to attend."
+    "General Assembly -- 85th plenary meeting",
+    "Security Council -- Briefing to non-Council members"
   ]
 }
