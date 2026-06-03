@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TC Lateness Tracker</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f0f2f5;
+    padding: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+    color: #333;
+  }
+  h1 { text-align: center; margin-bottom: 5px; font-size: 22px; }
+  .subtitle { text-align: center; color: #888; font-size: 13px; margin-bottom: 20px; }
+
+  .person-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+  }
+  .person-header {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 10px;
+  }
+  .person-header .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px; color: white;
+    flex-shrink: 0;
+  }
+  .person-header .name-input {
+    font-size: 16px; font-weight: 600;
+    border: none; border-bottom: 2px solid transparent;
+    background: transparent;
+    padding: 4px 6px;
+    border-radius: 4px;
+    flex: 1;
+    min-width: 0;
+    -webkit-appearance: none;
+  }
+  .person-header .name-input:focus {
+    outline: none;
+    border-bottom-color: #4A90D9;
+    background: #f8faff;
+  }
+  .person-header .summary {
+    font-size: 12px;
+    color: #666;
+    text-align: right;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .person-header .summary strong { font-size: 15px; }
+  .collapse-icon {
+    margin-left: 4px;
+    transition: transform 0.3s;
+    font-size: 14px;
+    color: #999;
+    flex-shrink: 0;
+  }
+  .person-card.collapsed .collapse-icon { transform: rotate(-90deg); }
+  .person-card.collapsed .person-body { display: none; }
+
+  .person-body {
+    padding: 0 14px 18px 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 900px) {
+    .person-body { grid-template-columns: 1fr; }
+  }
+
+  .mini-section {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .mini-section h4 {
+    background: #fafafa;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #555;
+    border-bottom: 1px solid #eee;
+  }
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mini-section table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    min-width: 260px;
+  }
+  .mini-section th {
+    background: #f5f5f5;
+    padding: 5px 6px;
+    text-align: left;
+    font-size: 11px;
+    border-bottom: 1px solid #ddd;
+    color: #666;
+  }
+  .mini-section td {
+    padding: 3px 6px;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  .mini-section input[type="date"],
+  .mini-section input[type="text"],
+  .mini-section select {
+    width: 100%;
+    padding: 4px 4px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 16px;
+    -webkit-appearance: none;
+    background: white;
+    color: #333;
+  }
+  .mini-section input:focus, .mini-section select:focus {
+    outline: none;
+    border-color: #4A90D9;
+  }
+  .stat-label { font-weight: 600; color: #555; font-size: 12px; }
+  .stat-value {
+    background: #f9f9f9;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 12px;
+    color: #2a2a2a;
+  }
+  .note { color: #999; font-size: 11px; font-style: italic; }
+  button {
+    background: #4A90D9;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    min-height: 36px;
+  }
+  button:hover { background: #357ABD; }
+  .delete-btn {
+    background: none;
+    color: #e74c3c;
+    padding: 4px 8px;
+    font-size: 13px;
+    min-height: 36px;
+    min-width: 36px;
+  }
+  .add-btn { margin-top: 8px; font-size: 13px; }
+  .color-hint {
+    background: #fffde7;
+    border-left: 3px solid #ffc107;
+    padding: 4px 8px;
+    font-size: 11px;
+    color: #888;
+    margin-top: 6px;
+  }
+  .stats-table { margin-top: 8px; width: 100%; }
+  .stats-table td { padding: 3px 6px; font-size: 12px; }
+  .avatar-0 { background: #E74C3C; }
+  .avatar-1 { background: #3498DB; }
+  .avatar-2 { background: #2ECC71; }
+  .avatar-3 { background: #F39C12; }
+  .header-0 { border-left: 4px solid #E74C3C; border-radius: 10px; }
+  .header-1 { border-left: 4px solid #3498DB; border-radius: 10px; }
+  .header-2 { border-left: 4px solid #2ECC71; border-radius: 10px; }
+  .header-3 { border-left: 4px solid #F39C12; border-radius: 10px; }
+
+  /* error banner */
+  #errorBanner {
+    background: #fde8e8;
+    border: 1px solid #e74c3c;
+    color: #c0392b;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<h1>📋 TC Lateness Tracker</h1>
+<p class="subtitle">Each person has their own independent log. Data saved automatically in your browser.</p>
+<div id="errorBanner"></div>
+<div id="peopleContainer"></div>
+
+<script>
+// ── Safe storage wrapper (fixes crash when localStorage blocked on file:// in iOS) ──
+const store = {
+  get: function(key) {
+    try { return localStorage.getItem(key); } catch(e) { return null; }
+  },
+  set: function(key, val) {
+    try { localStorage.setItem(key, val); } catch(e) {
+      // fall back to in-memory
+      store._mem = store._mem || {};
+      store._mem[key] = val;
+    }
+  }
+};
+
+const PERSON_ICONS = ['🟥', '🟦', '🟩', '🟨'];
+const DEFAULT_NAMES = ['Person A', 'Person B', 'Person C', 'Person D'];
+const WORKDAYS_PER_MONTH = 22;
+
+function getDefaultData() {
+  return { names: [...DEFAULT_NAMES], method2: [[],[],[],[]], method1: [[],[],[],[]] };
+}
+
+function loadData() {
+  var raw = store.get('latenessTracker4p');
+  if (!raw) return getDefaultData();
+  try {
+    var data = JSON.parse(raw);
+    if (!data.names) data.names = [...DEFAULT_NAMES];
+    if (!data.method2) data.method2 = [[],[],[],[]];
+    if (!data.method1) data.method1 = [[],[],[],[]];
+    return data;
+  } catch(e) { return getDefaultData(); }
+}
+
+function saveData(data) {
+  store.set('latenessTracker4p', JSON.stringify(data));
+}
+
+function getWorkdaysBetween(startStr, endStr) {
+  if (!startStr || !endStr) return null;
+  var start = new Date(startStr + 'T00:00:00');
+  var end = new Date(endStr + 'T00:00:00');
+  if (start >= end) return 0;
+  start.setDate(start.getDate() + 1);
+  var count = 0;
+  while (start <= end) {
+    var day = start.getDay();
+    if (day !== 0 && day !== 6) count++;
+    start.setDate(start.getDate() + 1);
+  }
+  return count;
+}
+
+function escapeHTML(str) {
+  var div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function buildAll(data) {
+  var container = document.getElementById('peopleContainer');
+  container.innerHTML = '';
+  for (var p = 0; p < 4; p++) {
+    var card = document.createElement('div');
+    card.className = 'person-card';
+    card.setAttribute('data-p', p);
+    card.innerHTML = buildPersonHTML(p, data);
+    container.appendChild(card);
+  }
+  for (var p2 = 0; p2 < 4; p2++) {
+    attachPersonEvents(p2);
+  }
+  updateAllStats(data);
+}
+
+function buildPersonHTML(p, data) {
+  var name = data.names[p];
+  var m2Dates = data.method2[p] || [];
+  var m1Entries = data.method1[p] || [];
+
+  var m2Rows = '';
+  var maxM2 = Math.max(6, m2Dates.length + 1);
+  for (var i = 0; i < maxM2; i++) {
+    var val = m2Dates[i] || '';
+    var interval = (i > 0 && m2Dates[i] && m2Dates[i-1])
+      ? getWorkdaysBetween(m2Dates[i-1], m2Dates[i]) : null;
+    var iText = (i === 0) ? '—' : (interval !== null ? interval + 'd' : '—');
+    m2Rows += '<tr data-p="' + p + '" data-type="m2" data-idx="' + i + '">'
+      + '<td style="width:24px;text-align:center;color:#999;font-size:11px;">' + (i+1) + '</td>'
+      + '<td><input type="date" class="m2-date" data-p="' + p + '" data-idx="' + i + '" value="' + val + '"></td>'
+      + '<td style="width:44px;font-size:11px;color:#666;" class="m2-interval">' + iText + '</td>'
+      + '<td style="width:36px;"><button class="delete-btn m2-delete" data-p="' + p + '" data-idx="' + i + '">✕</button></td>'
+      + '</tr>';
+  }
+
+  var m1Rows = '';
+  var maxM1 = Math.max(6, m1Entries.length + 1);
+  for (var j = 0; j < maxM1; j++) {
+    var entry = m1Entries[j] || { date: '', check: 'Yes', late: '' };
+    m1Rows += '<tr data-p="' + p + '" data-type="m1" data-idx="' + j + '">'
+      + '<td><input type="date" class="m1-date" data-p="' + p + '" data-idx="' + j + '" value="' + entry.date + '"></td>'
+      + '<td style="width:60px;"><select class="m1-check" data-p="' + p + '" data-idx="' + j + '">'
+      + '<option value="Yes"' + (entry.check==='Yes'?' selected':'') + '>Yes</option>'
+      + '<option value="No"' + (entry.check==='No'?' selected':'') + '>No</option>'
+      + '</select></td>'
+      + '<td style="width:60px;"><input type="text" class="m1-late" data-p="' + p + '" data-idx="' + j + '" value="' + escapeHTML(entry.late) + '" placeholder="Yes/No"></td>'
+      + '<td style="width:36px;"><button class="delete-btn m1-delete" data-p="' + p + '" data-idx="' + j + '">✕</button></td>'
+      + '</tr>';
+  }
+
+  return ''
+    + '<div class="person-header header-' + p + '" data-toggle="' + p + '">'
+    + '<div class="avatar avatar-' + p + '">' + PERSON_ICONS[p] + '</div>'
+    + '<input class="name-input" data-p="' + p + '" value="' + escapeHTML(name) + '" placeholder="Enter name...">'
+    + '<div class="summary">'
+    + '<span class="m2-summary-' + p + '" style="margin-right:8px;">M2: <strong>—</strong></span>'
+    + '<span class="m1-summary-' + p + '">M1: <strong>—</strong></span>'
+    + '</div>'
+    + '<span class="collapse-icon">▼</span>'
+    + '</div>'
+    + '<div class="person-body">'
+    + '<div class="mini-section">'
+    + '<h4>🔴 Method 2: Lateness Log</h4>'
+    + '<div class="table-scroll"><table>'
+    + '<thead><tr><th style="width:24px;">#</th><th>Date</th><th style="width:44px;">Δd</th><th style="width:36px;"></th></tr></thead>'
+    + '<tbody>' + m2Rows + '</tbody>'
+    + '</table></div>'
+    + '<button class="add-btn m2-add" data-p="' + p + '">+ Add Row</button>'
+    + '<div class="color-hint">💡 Only fill in dates when late.</div>'
+    + '<table class="stats-table"><tr><td class="stat-label">Total Late:</td><td><span class="stat-value m2-count-' + p + '">—</span></td></tr>'
+    + '<tr><td class="stat-label">Avg Interval:</td><td><span class="stat-value m2-interval-' + p + '">—</span></td></tr>'
+    + '<tr><td class="stat-label">Est. Monthly:</td><td><span class="stat-value m2-est-' + p + '">—</span> <span class="note">days</span></td></tr></table>'
+    + '</div>'
+    + '<div class="mini-section">'
+    + '<h4>🔵 Method 1: Spot Check</h4>'
+    + '<div class="table-scroll"><table>'
+    + '<thead><tr><th>Date</th><th style="width:60px;">Check?</th><th style="width:60px;">Late?</th><th style="width:36px;"></th></tr></thead>'
+    + '<tbody>' + m1Rows + '</tbody>'
+    + '</table></div>'
+    + '<button class="add-btn m1-add" data-p="' + p + '">+ Add Row</button>'
+    + '<div class="color-hint">💡 Set Check?=Yes on random days. Fill Late? at day end.</div>'
+    + '<table class="stats-table">'
+    + '<tr><td class="stat-label">Checked:</td><td><span class="stat-value m1-checked-' + p + '">—</span> days</td></tr>'
+    + '<tr><td class="stat-label">Late:</td><td><span class="stat-value m1-latecount-' + p + '">—</span> days</td></tr>'
+    + '<tr><td class="stat-label">Ratio:</td><td><span class="stat-value m1-ratio-' + p + '">—</span></td></tr>'
+    + '<tr><td class="stat-label">Est. Monthly:</td><td><span class="stat-value m1-est-' + p + '">—</span> days</td></tr>'
+    + '<tr><td class="stat-label">95% CI:</td><td><span class="stat-value m1-ci-' + p + '">—</span></td></tr>'
+    + '</table>'
+    + '</div>'
+    + '</div>';
+}
+
+// ── Single delegated event listener — avoids any inline onclick issues on iOS ──
+document.getElementById('peopleContainer').addEventListener('click', function(e) {
+  var target = e.target;
+
+  // Collapse toggle — only when clicking the header itself, not inputs/buttons inside it
+  var header = target.closest('[data-toggle]');
+  if (header && target.tagName !== 'INPUT' && target.tagName !== 'BUTTON' && target.tagName !== 'SELECT') {
+    var p = parseInt(header.getAttribute('data-toggle'));
+    var card = header.closest('.person-card');
+    if (card) card.classList.toggle('collapsed');
+    return;
+  }
+
+  // Delete M2
+  if (target.classList.contains('m2-delete')) {
+    e.stopPropagation();
+    var p = parseInt(target.dataset.p);
+    var idx = parseInt(target.dataset.idx);
+    var data = loadData();
+    data.method2[p].splice(idx, 1);
+    saveData(data);
+    buildAll(data);
+    return;
+  }
+
+  // Delete M1
+  if (target.classList.contains('m1-delete')) {
+    e.stopPropagation();
+    var p = parseInt(target.dataset.p);
+    var idx = parseInt(target.dataset.idx);
+    var data = loadData();
+    data.method1[p].splice(idx, 1);
+    saveData(data);
+    buildAll(data);
+    return;
+  }
+
+  // Add M2 row
+  if (target.classList.contains('m2-add')) {
+    e.stopPropagation();
+    var p = parseInt(target.dataset.p);
+    var data = loadData();
+    data.method2[p].push('');
+    saveData(data);
+    buildAll(data);
+    return;
+  }
+
+  // Add M1 row
+  if (target.classList.contains('m1-add')) {
+    e.stopPropagation();
+    var p = parseInt(target.dataset.p);
+    var data = loadData();
+    data.method1[p].push({ date: '', check: 'Yes', late: '' });
+    saveData(data);
+    buildAll(data);
+    return;
+  }
+});
+
+document.getElementById('peopleContainer').addEventListener('change', function(e) {
+  var target = e.target;
+  var p = parseInt(target.dataset.p);
+  if (isNaN(p)) return;
+  var data = loadData();
+
+  if (target.classList.contains('m2-date')) {
+    collectM2Dates(p, data);
+    saveData(data);
+    updateAllStats(data);
+  } else if (target.classList.contains('m1-date') || target.classList.contains('m1-check') || target.classList.contains('m1-late')) {
+    collectM1Entries(p, data);
+    saveData(data);
+    updateAllStats(data);
+  } else if (target.classList.contains('name-input')) {
+    data.names[p] = target.value || DEFAULT_NAMES[p];
+    saveData(data);
+  }
+});
+
+document.getElementById('peopleContainer').addEventListener('input', function(e) {
+  var target = e.target;
+  if (target.classList.contains('name-input')) {
+    var p = parseInt(target.dataset.p);
+    if (!isNaN(p)) {
+      var data = loadData();
+      data.names[p] = target.value || DEFAULT_NAMES[p];
+      saveData(data);
+    }
+  }
+});
+
+function attachPersonEvents(p) {
+  // Now handled by delegated listeners above — nothing needed here
+}
+
+function collectM2Dates(p, data) {
+  var inputs = document.querySelectorAll('.m2-date[data-p="' + p + '"]');
+  data.method2[p] = [];
+  inputs.forEach(function(inp) { if (inp.value) data.method2[p].push(inp.value); });
+}
+
+function collectM1Entries(p, data) {
+  var rows = document.querySelectorAll('tr[data-p="' + p + '"][data-type="m1"]');
+  data.method1[p] = [];
+  rows.forEach(function(row) {
+    var dateInp = row.querySelector('.m1-date');
+    var checkSel = row.querySelector('.m1-check');
+    var lateInp  = row.querySelector('.m1-late');
+    if (dateInp && dateInp.value) {
+      data.method1[p].push({
+        date: dateInp.value,
+        check: checkSel ? checkSel.value : 'Yes',
+        late: lateInp ? lateInp.value : ''
+      });
+    }
+  });
+}
+
+function updateAllStats(data) {
+  for (var p = 0; p < 4; p++) {
+    updateM2Stats(p, data);
+    updateM1Stats(p, data);
+  }
+}
+
+function updateM2Stats(p, data) {
+  var dates = (data.method2[p] || []).filter(function(d){ return d; });
+  var count = dates.length;
+  var countEl    = document.querySelector('.m2-count-' + p);
+  var intervalEl = document.querySelector('.m2-interval-' + p);
+  var estEl      = document.querySelector('.m2-est-' + p);
+  var summaryEl  = document.querySelector('.m2-summary-' + p + ' strong');
+  if (countEl) countEl.textContent = count + ' times';
+  if (summaryEl) summaryEl.textContent = count + 'x';
+  if (count < 2) { if (intervalEl) intervalEl.textContent = 'Need ≥2'; if (estEl) estEl.textContent = '—'; return; }
+  var intervals = [];
+  for (var i = 1; i < dates.length; i++) {
+    var wd = getWorkdaysBetween(dates[i-1], dates[i]);
+    if (wd !== null && wd >= 0) intervals.push(wd);
+  }
+  if (intervals.length === 0) { if (intervalEl) intervalEl.textContent = '—'; if (estEl) estEl.textContent = '—'; return; }
+  var avg = intervals.reduce(function(a,b){return a+b;},0) / intervals.length;
+  if (intervalEl) intervalEl.textContent = avg.toFixed(1) + ' days';
+  if (estEl) estEl.textContent = (WORKDAYS_PER_MONTH / avg).toFixed(1);
+}
+
+function updateM1Stats(p, data) {
+  var entries = (data.method1[p] || []).filter(function(e){ return e.date; });
+  var checked = 0, late = 0;
+  entries.forEach(function(e) {
+    if (e.check === 'Yes') {
+      checked++;
+      var lv = (e.late || '').trim().toLowerCase();
+      if (lv === 'yes' || lv === 'y') late++;
+    }
+  });
+  var checkedEl = document.querySelector('.m1-checked-' + p);
+  var lateEl    = document.querySelector('.m1-latecount-' + p);
+  var ratioEl   = document.querySelector('.m1-ratio-' + p);
+  var estEl     = document.querySelector('.m1-est-' + p);
+  var ciEl      = document.querySelector('.m1-ci-' + p);
+  var summaryEl = document.querySelector('.m1-summary-' + p + ' strong');
+  if (checkedEl) checkedEl.textContent = checked;
+  if (lateEl) lateEl.textContent = late;
+  if (checked === 0) {
+    if (ratioEl) ratioEl.textContent = '—';
+    if (estEl) estEl.textContent = '—';
+    if (ciEl) ciEl.textContent = '—';
+    if (summaryEl) summaryEl.textContent = '—';
+    return;
+  }
+  var ratio = late / checked;
+  if (ratioEl) ratioEl.textContent = (ratio * 100).toFixed(1) + '%';
+  var est = ratio * WORKDAYS_PER_MONTH;
+  if (estEl) estEl.textContent = est.toFixed(1) + ' days';
+  if (summaryEl) summaryEl.textContent = est.toFixed(1) + 'd';
+  var se = Math.sqrt(ratio * (1 - ratio) / checked);
+  var lower = Math.max(0, ratio - 1.96 * se);
+  var upper = Math.min(1, ratio + 1.96 * se);
+  if (ciEl) ciEl.textContent = (lower * WORKDAYS_PER_MONTH).toFixed(1) + ' – ' + (upper * WORKDAYS_PER_MONTH).toFixed(1) + ' days';
+}
+
+// ── Init with full error catch ──
+try {
+  var initialData = loadData();
+  buildAll(initialData);
+} catch(err) {
+  document.getElementById('errorBanner').style.display = 'block';
+  document.getElementById('errorBanner').textContent = 'Error loading tracker: ' + err.message + '. Try refreshing.';
+}
+</script>
+</body>
+</html>
