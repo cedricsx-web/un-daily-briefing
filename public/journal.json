@@ -1,40 +1,39 @@
 {
-  "date": "2026-06-02",
-  "fetched_at": "2026-06-02T16:08:37.279Z",
-  "ny_date": "2026-06-02",
+  "date": "2026-06-03",
+  "fetched_at": "2026-06-03T16:23:35.415Z",
+  "ny_date": "2026-06-03",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 10 meetings",
+  "note": "Live from journal-api.un.org -- 14 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "85th plenary meeting",
+          "title": "General Assembly, Eightieth session -- 86th plenary meeting",
           "agenda": [],
-          "id": "34960fde-4282-4958-b18e-de624196297c"
+          "id": "6a8e4095-e128-40f7-af8f-d31fde8e201e"
         }
       ]
     },
     {
       "room": "Security Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Briefing to non-Council members",
-          "agenda": [],
-          "id": "2ca96cf7-baaf-4226-b28c-73e2d907be53"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Trusteeship Council",
       "meetings": [
         {
-          "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration to renew commitment and accelerate the implementation of the New Urban Agenda",
+          "time": "10:00 AM",
+          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
           "agenda": [],
-          "id": "0ea33190-74d3-4024-947b-eca5b79f852c"
+          "id": "dbe11cdd-b809-46e9-b373-582e93cfa744"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
+          "agenda": [],
+          "id": "3c189ac2-cc65-43a5-b4bb-9a3f0fa2bd50"
         }
       ]
     },
@@ -43,29 +42,33 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Operational activities for development segment, 2026 session -- 19th plenary meeting",
+          "title": "Operational activities for development segment, 2026 session -- 21st plenary meeting",
           "agenda": [],
-          "id": "6e01091e-338f-4daa-8141-336181158450"
+          "id": "88617486-a912-4cb3-952f-a99335617914"
         },
         {
           "time": "3:00 PM",
-          "title": "Operational activities for development segment, 2026 session -- 20th plenary meeting",
+          "title": "Operational activities for development segment, 2026 session -- 22nd plenary meeting",
           "agenda": [],
-          "id": "0d325c84-4e78-443e-9a70-35f55c002a29"
+          "id": "d01c15a8-72d3-47e9-b8b8-0b3ac70add18"
         }
       ]
     }
   ],
   "meetings": [
-    "Ad Hoc Working Group on Mandate Implementation Review -- Meeting",
-    "General Assembly, Eightieth session -- Informal consultations on the political declaration to renew commitment and accelerate the implementation of the New Urban Agenda",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
+    "General Assembly, Eightieth session -- 86th plenary meeting",
+    "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
+    "General Assembly, Eightieth session -- Informal consultations on the ninth biennial review of the United Nations Global Counter-Terrorism Strategy",
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
+    "Biennial Meeting of States to Consider the Implementation of the Programme of Action to Prevent, Combat and Eradicate the Illicit Trade in Small Arms and Light Weapons in All Its Aspects, Ninth Biennial Meeting -- 3rd plenary meeting",
+    "Biennial Meeting of States to Consider the Implementation of the Programme of Action to Prevent, Combat and Eradicate the Illicit Trade in Small Arms and Light Weapons in All Its Aspects, Ninth Biennial Meeting -- 4th plenary meeting",
     "Committee on Contributions, Eighty-sixth session -- Meeting",
     "Working Group on Discrimination Against Women and Girls, Forty-fourth session -- Meeting",
-    "Operational activities for development segment, 2026 session -- 19th plenary meeting",
-    "Operational activities for development segment, 2026 session -- 20th plenary meeting",
+    "Executive Board of the United Nations Entity for Gender Equality and the Empowerment of Women -- Pre-session and informal briefing (to be held remotely without physical presence)",
+    "Operational activities for development segment, 2026 session -- 21st plenary meeting",
+    "Operational activities for development segment, 2026 session -- 22nd plenary meeting",
     "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal consultations",
-    "General Assembly -- 85th plenary meeting",
-    "Security Council -- Briefing to non-Council members"
+    "Arab Group -- Meeting (at the ambassadorial level)",
+    "International Criminal Court -- Subgroup of the Working Group on Amendments - 3rd meeting"
   ]
 }
