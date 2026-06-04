@@ -1,39 +1,58 @@
 {
-  "date": "2026-06-03",
-  "fetched_at": "2026-06-03T16:23:35.415Z",
-  "ny_date": "2026-06-03",
+  "date": "2026-06-04",
+  "fetched_at": "2026-06-04T14:42:39.178Z",
+  "ny_date": "2026-06-04",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 14 meetings",
+  "note": "Live from journal-api.un.org -- 17 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- 86th plenary meeting",
+          "title": "87th plenary meeting",
           "agenda": [],
-          "id": "6a8e4095-e128-40f7-af8f-d31fde8e201e"
+          "id": "2ff8d365-f32b-49d2-a241-48f610b39891"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "88th plenary meeting",
+          "agenda": [],
+          "id": "fc926bbb-8200-4d43-9a41-cafdb0585657"
         }
       ]
     },
     {
       "room": "Security Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "10164th meeting",
+          "agenda": [],
+          "id": "d3cba755-0fcd-49ba-9e98-95f6b4512c9d"
+        },
+        {
+          "time": "Followed By",
+          "title": "Consultations of the whole [Closed]",
+          "agenda": [],
+          "id": "ae1a0326-e666-4e14-9bd7-a5db858730cd"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Consultations of the whole [Closed]",
+          "agenda": [],
+          "id": "6c8300b0-59f9-49c4-8e30-a1539d290f90"
+        }
+      ]
     },
     {
       "room": "Trusteeship Council",
       "meetings": [
         {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
-          "agenda": [],
-          "id": "dbe11cdd-b809-46e9-b373-582e93cfa744"
-        },
-        {
           "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
+          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration to renew commitment and accelerate the implementation of the New Urban Agenda",
           "agenda": [],
-          "id": "3c189ac2-cc65-43a5-b4bb-9a3f0fa2bd50"
+          "id": "17038024-53b8-462b-b869-cb5d105b14f8"
         }
       ]
     },
@@ -41,34 +60,37 @@
       "room": "Economic and Social Council",
       "meetings": [
         {
-          "time": "10:00 AM",
-          "title": "Operational activities for development segment, 2026 session -- 21st plenary meeting",
+          "time": "3:00 PM",
+          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
           "agenda": [],
-          "id": "88617486-a912-4cb3-952f-a99335617914"
+          "id": "202024db-4e33-4ba8-b733-d34166378e23"
         },
         {
-          "time": "3:00 PM",
-          "title": "Operational activities for development segment, 2026 session -- 22nd plenary meeting",
+          "time": "10:00 AM",
+          "title": "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
           "agenda": [],
-          "id": "d01c15a8-72d3-47e9-b8b8-0b3ac70add18"
+          "id": "b864f910-ceee-46ef-8732-33e3febb2fe8"
         }
       ]
     }
   ],
   "meetings": [
-    "General Assembly, Eightieth session -- 86th plenary meeting",
-    "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
     "General Assembly, Eightieth session -- Informal consultations on the ninth biennial review of the United Nations Global Counter-Terrorism Strategy",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
-    "Biennial Meeting of States to Consider the Implementation of the Programme of Action to Prevent, Combat and Eradicate the Illicit Trade in Small Arms and Light Weapons in All Its Aspects, Ninth Biennial Meeting -- 3rd plenary meeting",
-    "Biennial Meeting of States to Consider the Implementation of the Programme of Action to Prevent, Combat and Eradicate the Illicit Trade in Small Arms and Light Weapons in All Its Aspects, Ninth Biennial Meeting -- 4th plenary meeting",
+    "General Assembly, Eightieth session -- Informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
+    "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
+    "General Assembly, Eightieth session -- Informal consultations on the political declaration to renew commitment and accelerate the implementation of the New Urban Agenda",
+    "Second Committee, Eightieth session -- Informal dialogue on revitalization",
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
     "Committee on Contributions, Eighty-sixth session -- Meeting",
     "Working Group on Discrimination Against Women and Girls, Forty-fourth session -- Meeting",
-    "Executive Board of the United Nations Entity for Gender Equality and the Empowerment of Women -- Pre-session and informal briefing (to be held remotely without physical presence)",
-    "Operational activities for development segment, 2026 session -- 21st plenary meeting",
-    "Operational activities for development segment, 2026 session -- 22nd plenary meeting",
+    "Peacebuilding Commission -- Expert-level meeting to debrief the Chair of the Liberia Configuration’s visit",
+    "Military Staff Committee -- 2150th meeting",
     "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal consultations",
-    "Arab Group -- Meeting (at the ambassadorial level)",
-    "International Criminal Court -- Subgroup of the Working Group on Amendments - 3rd meeting"
+    "Open-ended Technical Expert Group on developments in the manufacturing, technology and design of small arms and light weapons under the United Nations Programme of Action and the International Tracing Instrument, Ninth Biennial Meeting -- 1st meeting of the OETEG",
+    "Open-ended Technical Expert Group on developments in the manufacturing, technology and design of small arms and light weapons under the United Nations Programme of Action and the International Tracing Instrument, Ninth Biennial Meeting -- 2nd meeting of the OETEG",
+    "General Assembly -- 87th plenary meeting",
+    "General Assembly -- 88th plenary meeting",
+    "Security Council -- 10164th meeting",
+    "Security Council -- Consultations of the whole [Closed]"
   ]
 }
