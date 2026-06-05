@@ -44,7 +44,7 @@ const UN_OBSERVANCES = [
   {date:"06-05",name:"World Environment Day",url:"https://www.un.org/en/observances/environment-day"},
   {date:"06-08",name:"World Oceans Day",url:"https://www.un.org/en/observances/oceans-day"},
   {date:"06-12",name:"World Day Against Child Labour",url:"https://www.un.org/en/observances/world-day-against-child-labour"},
-  {date:"06-17",name:"World Day to Combat Desertification and Drought",url:"https://www.un.org/en/observances/desertification-day"},
+  {date:"06-17",name:"World Day to Combat Desertification",url:"https://www.un.org/en/observances/desertification-day"},
   {date:"06-20",name:"World Refugee Day",url:"https://www.un.org/en/observances/refugee-day"},
   {date:"06-21",name:"International Day of Yoga",url:"https://www.un.org/en/observances/yoga-day"},
   {date:"07-11",name:"World Population Day",url:"https://www.un.org/en/observances/world-population-day"},
@@ -80,94 +80,68 @@ const UN_OBSERVANCES = [
   {date:"12-18",name:"International Migrants Day",url:"https://www.un.org/en/observances/migrants-day"},
 ];
 
-function todayNY() {
-  const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
-  const o={}; p.forEach(function(x){o[x.type]=x.value;});
-  return o.year+"-"+o.month+"-"+o.day;
-}
-function mmddNY() {
-  const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
-  const o={}; p.forEach(function(x){o[x.type]=x.value;});
-  return o.month+"-"+o.day;
-}
-function getTodayObservance() { return UN_OBSERVANCES.find(function(o){return o.date===mmddNY();})||null; }
-function getWeekendObservances() {
+function todayNY(){const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());const o={};p.forEach(function(x){o[x.type]=x.value;});return o.year+"-"+o.month+"-"+o.day;}
+function mmddNY(){const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",month:"2-digit",day:"2-digit"}).formatToParts(new Date());const o={};p.forEach(function(x){o[x.type]=x.value;});return o.month+"-"+o.day;}
+function getTodayObservance(){return UN_OBSERVANCES.find(function(o){return o.date===mmddNY();})||null;}
+function getWeekendObservances(){
   const now=new Date(new Date().toLocaleString("en-US",{timeZone:"America/New_York"}));
-  const dow=now.getDay(); const results=[];
-  const offsets = dow===5?[1,2]:dow===1?[-2,-1]:[];
-  const labels  = dow===5?["Saturday","Sunday"]:["Last Saturday","Last Sunday"];
+  const dow=now.getDay();const results=[];
+  const offsets=dow===5?[1,2]:dow===1?[-2,-1]:[];
+  const labels=dow===5?["Saturday","Sunday"]:["Last Saturday","Last Sunday"];
   offsets.forEach(function(d,i){
-    const dt=new Date(now); dt.setDate(dt.getDate()+d);
-    const m=String(dt.getMonth()+1).padStart(2,"0"), day=String(dt.getDate()).padStart(2,"0");
+    const dt=new Date(now);dt.setDate(dt.getDate()+d);
+    const m=String(dt.getMonth()+1).padStart(2,"0"),day=String(dt.getDate()).padStart(2,"0");
     const obs=UN_OBSERVANCES.find(function(o){return o.date===m+"-"+day;});
-    if (obs) results.push(Object.assign({},obs,{weekday:labels[i],past:dow===1}));
+    if(obs)results.push(Object.assign({},obs,{weekday:labels[i],past:dow===1}));
   });
   return results;
 }
-function formatDate(d) {
-  return d.toLocaleDateString("en-US",{timeZone:"America/New_York",weekday:"long",year:"numeric",month:"long",day:"numeric"});
-}
+function formatDate(d){return d.toLocaleDateString("en-US",{timeZone:"America/New_York",weekday:"long",year:"numeric",month:"long",day:"numeric"});}
 
 const CHAMBER_ICONS={"General Assembly Hall":"GA","Security Council":"SC","Trusteeship Council":"TC","Economic and Social Council":"ECOSOC"};
 const ROOM_TO_CHAMBER={"general assembly hall":"General Assembly Hall","security council chamber":"Security Council","security council consultations room":"Security Council","trusteeship council chamber":"Trusteeship Council","economic and social council chamber":"Economic and Social Council"};
 const ORGAN_TO_CHAMBER={"general assembly":"General Assembly Hall","security council":"Security Council","trusteeship council":"Trusteeship Council","economic and social council":"Economic and Social Council"};
 const ROOM_DISPLAY={"General Assembly Hall":"General Assembly Hall","Security Council Chamber":"Security Council","Trusteeship Council Chamber":"Trusteeship Council","Economic and Social Council Chamber":"Economic and Social Council"};
 
-// -- Meeting Row (tappable to show agenda, with cancel/adjourn buttons) --
+// -- Meeting Row --
 function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,adjournedTitles}) {
-  const [open,setOpen]=useState(false);
+  const [agendaOpen,setAgendaOpen]=useState(false);
   const [showActions,setShowActions]=useState(false);
-  // Compute adjourned live from parent state so it updates immediately
   const adjourned=(adjournedTitles||[]).some(function(at){return at===m.title||m.title.includes(at)||at.includes(m.title);});
   const hasAgenda=m.agenda&&m.agenda.length>0;
   const cancelKey=m.title;
-
   return (
     <div style={{opacity:adjourned?0.6:1}}>
       <div style={{display:"flex",gap:"6px",alignItems:"flex-start"}}>
-        {/* Time + title - tappable for agenda or actions */}
+        <span style={{fontSize:"10px",color:adjourned?"rgba(255,200,0,0.5)":"#FCC30B",fontWeight:"700",whiteSpace:"nowrap",marginTop:"3px",flexShrink:0}}>{m.time}</span>
         <div
-          onClick={function(){if(hasAgenda)setOpen(function(o){return !o;});else setShowActions(function(s){return !s;});}}
-          style={{flex:1,display:"flex",gap:"8px",alignItems:"flex-start",cursor:"pointer",padding:"3px 0"}}
+          onClick={hasAgenda?function(){setAgendaOpen(function(o){return !o;});}:undefined}
+          style={{flex:1,cursor:hasAgenda?"pointer":"default",padding:"1px 0"}}
         >
-          <span style={{fontSize:"10px",color:adjourned?"rgba(255,200,0,0.5)":"#FCC30B",fontWeight:"700",whiteSpace:"nowrap",marginTop:"1px",flexShrink:0}}>{m.time}</span>
-          <span style={{flex:1,fontSize:"12px",lineHeight:"1.35",fontWeight:"600",
+          <span style={{fontSize:"12px",lineHeight:"1.35",fontWeight:"600",
             color:adjourned?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.9)",
             textDecoration:adjourned?"line-through":"none"}}>
             {m.title}
-            {adjourned&&<span style={{marginLeft:"5px",fontSize:"8px",color:"rgba(255,200,0,0.7)",fontWeight:"700",textDecoration:"none",display:"inline-block"}}>ADJOURNED</span>}
           </span>
-          {hasAgenda&&<span style={{fontSize:"9px",color:"rgba(0,160,220,0.5)",flexShrink:0,marginTop:"3px"}}>{open?"&#9650;":"&#9660;"}</span>}
+          {adjourned&&<span style={{marginLeft:"5px",fontSize:"8px",color:"rgba(255,200,0,0.7)",fontWeight:"700",verticalAlign:"middle"}}>ADJOURNED</span>}
+          {hasAgenda&&!adjourned&&<span style={{marginLeft:"5px",fontSize:"9px",color:"rgba(0,160,220,0.45)",verticalAlign:"middle"}}>{agendaOpen?"&#9650;":"&#9660;"}</span>}
         </div>
-        {/* Action button */}
         {!adjourned?(
-          <button onClick={function(){setShowActions(function(s){return !s;});}} style={{flexShrink:0,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.3)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"11px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8942;</button>
+          <button onClick={function(e){e.stopPropagation();setShowActions(function(s){return !s;});}} style={{flexShrink:0,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.3)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"12px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8942;</button>
         ):(
-          <button onClick={function(){onUnadjourn&&onUnadjourn(cancelKey);}} title="Mark as active" style={{flexShrink:0,background:"rgba(255,200,0,0.1)",border:"1px solid rgba(255,200,0,0.3)",color:"rgba(255,200,0,0.7)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8617;</button>
+          <button onClick={function(){onUnadjourn&&onUnadjourn(cancelKey);}} title="Restore" style={{flexShrink:0,background:"rgba(255,200,0,0.1)",border:"1px solid rgba(255,200,0,0.3)",color:"rgba(255,200,0,0.7)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8617;</button>
         )}
       </div>
-
-      {/* Action menu */}
-      {showActions&&!adjourned&&(
-        <div style={{marginTop:"6px",marginLeft:"40px",display:"flex",gap:"6px",animation:"fadeSlideIn 0.15s ease"}}>
-          <button onClick={function(){onAdjourn&&onAdjourn(cancelKey);setShowActions(false);}} style={{background:"rgba(252,195,11,0.12)",border:"1px solid rgba(252,195,11,0.3)",color:"#FCC30B",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>
-            &#10003; Adjourned
-          </button>
-          <button onClick={function(){onCancel&&onCancel(cancelKey);setShowActions(false);}} style={{background:"rgba(220,50,50,0.12)",border:"1px solid rgba(220,50,50,0.3)",color:"#ff8080",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>
-            &#x2715; Cancel
-          </button>
-          <button onClick={function(){setShowActions(false);}} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.4)",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",cursor:"pointer",fontFamily:"inherit"}}>
-            Close
-          </button>
+      {hasAgenda&&agendaOpen&&(
+        <div style={{marginTop:"6px",marginLeft:"46px",paddingLeft:"10px",borderLeft:"2px solid rgba(0,150,214,0.3)",display:"flex",flexDirection:"column",gap:"4px",animation:"fadeSlideIn 0.2s ease"}}>
+          {m.agenda.map(function(item,j){return(<span key={j} style={{fontSize:"11px",color:"rgba(255,255,255,0.75)",lineHeight:"1.5"}}>{item}</span>);})}
         </div>
       )}
-
-      {/* Agenda */}
-      {hasAgenda&&open&&(
-        <div style={{marginTop:"6px",marginLeft:"40px",paddingLeft:"10px",borderLeft:"2px solid rgba(0,150,214,0.3)",display:"flex",flexDirection:"column",gap:"4px",animation:"fadeSlideIn 0.2s ease"}}>
-          {m.agenda.map(function(item,j){return(
-            <span key={j} style={{fontSize:"11px",color:"rgba(255,255,255,0.7)",lineHeight:"1.5"}}>{item}</span>
-          );})}
+      {showActions&&!adjourned&&(
+        <div style={{marginTop:"6px",marginLeft:"46px",display:"flex",gap:"6px",flexWrap:"wrap",animation:"fadeSlideIn 0.15s ease"}}>
+          <button onClick={function(){onAdjourn&&onAdjourn(cancelKey);setShowActions(false);}} style={{background:"rgba(252,195,11,0.12)",border:"1px solid rgba(252,195,11,0.3)",color:"#FCC30B",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>&#10003; Adjourned</button>
+          <button onClick={function(){onCancel&&onCancel(cancelKey);setShowActions(false);}} style={{background:"rgba(220,50,50,0.12)",border:"1px solid rgba(220,50,50,0.3)",color:"#ff8080",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>&#x2715; Cancel</button>
+          <button onClick={function(){setShowActions(false);}} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.4)",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",cursor:"pointer",fontFamily:"inherit"}}>Close</button>
         </div>
       )}
     </div>
@@ -189,7 +163,7 @@ function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,adjournedTitl
         )}
       </div>
       {hasSession?(
-        <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
+        <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
           {(chamber.meetings||[]).map(function(m,i){return <MeetingRow key={i} m={m} onCancel={onCancel} onAdjourn={onAdjourn} onUnadjourn={onUnadjourn} adjournedTitles={adjournedTitles}/>;} )}
         </div>
       ):(
@@ -269,6 +243,7 @@ export default function App() {
   useEffect(function(){
     setDateLabel(formatDate(new Date()));
     setCancelledTitles([]);
+    setAdjournedTitles([]);
     setDeletedExtraIds([]);
     fetchExtraMeetings();
     fetchCancelledMeetings();
@@ -283,47 +258,36 @@ export default function App() {
     return function(){clearInterval(msgI);clearInterval(dotI);};
   },[loading]);
 
-  async function fetchExtraMeetings(){
-    if(!SB_URL||!SB_KEY)return;
-    try{const res=await fetch(SB_URL+"/rest/v1/extra_meetings?date=eq."+todayNY()+"&order=time_start.asc",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setExtraMeetings(rows||[]);}}catch(e){}
-  }
-  async function fetchCancelledMeetings(){
-    if(!SB_URL||!SB_KEY)return;
-    try{const res=await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setCancelledTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}
-  }
-  async function fetchAdjournedMeetings(){
-    if(!SB_URL||!SB_KEY)return;
-    try{const res=await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setAdjournedTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}
-  }
+  async function fetchExtraMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/extra_meetings?date=eq."+todayNY()+"&order=time_start.asc",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setExtraMeetings(rows||[]);}}catch(e){}}
+  async function fetchCancelledMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setCancelledTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
+  async function fetchAdjournedMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setAdjournedTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
+
   async function adjournMeeting(key){
-    if(!SB_URL||!SB_KEY)return;
     setAdjournedTitles(function(p){return [...p,key];});
-    try{await fetch(SB_URL+"/rest/v1/adjourned_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify({date:todayNY(),meeting_title:key})});}
-    catch(e){setAdjournedTitles(function(p){return p.filter(function(t){return t!==key;});});}
+    if(!SB_URL||!SB_KEY)return;
+    try{await fetch(SB_URL+"/rest/v1/adjourned_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify({date:todayNY(),meeting_title:key})});}catch(e){}
   }
   async function unadjournMeeting(key){
-    if(!SB_URL||!SB_KEY)return;
     setAdjournedTitles(function(p){return p.filter(function(t){return t!==key;});});
-    try{await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY()+"&meeting_title=eq."+encodeURIComponent(key),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}
-    catch(e){setAdjournedTitles(function(p){return [...p,key];});}
+    if(!SB_URL||!SB_KEY)return;
+    try{await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY()+"&meeting_title=eq."+encodeURIComponent(key),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}catch(e){}
   }
   async function cancelMeeting(key){
-    if(!SB_URL||!SB_KEY)return;
     setCancelledTitles(function(p){return [...p,key];});
+    if(!SB_URL||!SB_KEY)return;
     try{await fetch(SB_URL+"/rest/v1/cancelled_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify({date:todayNY(),meeting_title:key})});}
     catch(e){setCancelledTitles(function(p){return p.filter(function(t){return t!==key;});});}
   }
   async function uncancelMeeting(key){
-    if(!SB_URL||!SB_KEY)return;
     setCancelledTitles(function(p){return p.filter(function(t){return t!==key;});});
+    if(!SB_URL||!SB_KEY)return;
     try{await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY()+"&meeting_title=eq."+encodeURIComponent(key),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}
     catch(e){setCancelledTitles(function(p){return [...p,key];});}
   }
   async function deleteExtraMeeting(id){
-    if(!SB_URL||!SB_KEY)return;
     setDeletedExtraIds(function(p){return [...p,id];});
-    try{await fetch(SB_URL+"/rest/v1/extra_meetings?id=eq."+id,{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}
-    catch(e){setDeletedExtraIds(function(p){return p.filter(function(i2){return i2!==id;});});}
+    if(!SB_URL||!SB_KEY)return;
+    try{await fetch(SB_URL+"/rest/v1/extra_meetings?id=eq."+id,{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}catch(e){}
   }
   async function saveExtraMeeting(){
     if(!SB_URL||!SB_KEY){setFormErr("Supabase not configured");return;}
@@ -349,7 +313,6 @@ export default function App() {
     function add(ch,e){if(!chamberMap[ch])chamberMap[ch]=[];chamberMap[ch].push(e);}
     function chamberRoom(raw){const l=(raw||"").toLowerCase();for(const [k,v] of Object.entries(ROOM_TO_CHAMBER)){if(l.includes(k))return v;}return null;}
     function chamberOrgan(name){const l=(name||"").toLowerCase();for(const [k,v] of Object.entries(ORGAN_TO_CHAMBER)){if(l.includes(k))return v;}return null;}
-
     function processSubsidiary(groups){
       if(!Array.isArray(groups))return;
       groups.forEach(function(group){
@@ -373,7 +336,6 @@ export default function App() {
         });
       });
     }
-
     function processOrgans(specialGroups){
       if(!Array.isArray(specialGroups))return;
       specialGroups.forEach(function(group){
@@ -394,7 +356,6 @@ export default function App() {
         });
       });
     }
-
     function processOther(section){
       if(!section)return;
       const groups=Array.isArray(section)?section:(section.groups||[]);
@@ -415,13 +376,11 @@ export default function App() {
         });
       });
     }
-
     const om=jdata.officialMeetings||{};
     processSubsidiary(om.groups||[]);
     processOrgans(om.specialGroups||[]);
     processOther(jdata.informalMeetings||jdata.informalConsultations);
     processOther(jdata.otherMeetings);
-
     const chambers=["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"]
       .map(function(name){return {room:name,meetings:(chamberMap[name]||[])};});
     const seen={},titles=[];
@@ -472,7 +431,6 @@ export default function App() {
         option{background:#0d2044;}
       `}</style>
 
-      {/* Header */}
       <div style={{background:"linear-gradient(180deg,rgba(0,80,160,0.45) 0%,transparent 100%)",padding:"calc(env(safe-area-inset-top,0px) + 28px) 24px 22px",borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
         <div style={{maxWidth:"520px",margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
@@ -491,7 +449,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* International Day Banner */}
       {todayObservance&&(
         <a href={todayObservance.url} target="_blank" rel="noopener noreferrer" style={{display:"block",background:"linear-gradient(90deg,rgba(0,96,214,0.35),rgba(0,150,220,0.18))",borderBottom:"1px solid rgba(0,160,220,0.25)",padding:"12px 24px",textDecoration:"none"}}>
           <div style={{maxWidth:"520px",margin:"0 auto",display:"flex",alignItems:"center",gap:"10px"}}>
@@ -517,10 +474,7 @@ export default function App() {
         </a>
       );})}
 
-      {/* Main content */}
       <div style={{maxWidth:"520px",margin:"0 auto",padding:"24px 18px 0"}}>
-
-        {/* Start screen */}
         {!data&&!loading&&!error&&(
           <div style={{textAlign:"center",padding:"48px 24px",animation:"fadeSlideIn 0.5s ease"}}>
             <div style={{fontSize:"52px",marginBottom:"20px"}}>&#127482;&#127475;</div>
@@ -529,27 +483,20 @@ export default function App() {
             <button onClick={fetchBriefing} style={{background:"linear-gradient(135deg,#0096D6,#0050A0)",color:"#fff",border:"none",borderRadius:"50px",padding:"14px 36px",fontSize:"15px",fontWeight:"700",cursor:"pointer",boxShadow:"0 8px 24px rgba(0,100,200,0.4)",fontFamily:"'DM Sans',sans-serif"}}>Load Today's Schedule</button>
           </div>
         )}
-
-        {/* Loading */}
         {loading&&(
           <div style={{textAlign:"center",padding:"60px 24px"}}>
             <div style={{width:"52px",height:"52px",border:"3px solid rgba(0,160,220,0.2)",borderTop:"3px solid #00A0DC",borderRadius:"50%",margin:"0 auto 24px",animation:"spin 0.9s linear infinite"}}/>
             <p style={{color:"rgba(255,255,255,0.65)",fontSize:"14px",fontWeight:"500",animation:"pulse 1.5s ease infinite"}}>{loadingMsg}{dots}</p>
           </div>
         )}
-
-        {/* Error */}
         {error&&!loading&&(
           <div style={{background:"rgba(220,50,50,0.1)",border:"1px solid rgba(220,50,50,0.3)",borderRadius:"12px",padding:"20px",textAlign:"center"}}>
             <p style={{color:"#ff6b6b",margin:"0 0 16px",fontSize:"13px"}}>{error}</p>
             <button onClick={function(){fetchedRef.current=false;fetchBriefing();}} style={{background:"rgba(255,107,107,0.2)",color:"#ff6b6b",border:"1px solid rgba(255,107,107,0.4)",borderRadius:"8px",padding:"8px 20px",cursor:"pointer",fontSize:"13px",fontWeight:"600"}}>Try Again</button>
           </div>
         )}
-
-        {/* Data */}
         {data&&!loading&&(function(){
           const visibleExtras=extraMeetings.filter(function(e){return !deletedExtraIds.includes(e.id);});
-
           const mergedChambers=(data.chambers||[]).map(function(chamber){
             const extras=visibleExtras
               .filter(function(e){return (ROOM_DISPLAY[e.room]||e.room)===chamber.room;})
@@ -557,24 +504,16 @@ export default function App() {
                 const org=e.organizer_type==="un_body"?e.organizer_name:e.organizer_type==="mission"?"Mission of "+e.organizer_name:e.organizer_name;
                 return {time:e.time_start?fmtTime(e.time_start):"TBD",title:org+" -- "+e.title+(e.is_closed?" [Closed]":""),agenda:[],id:e.id||null};
               });
-            const journalMeetings=(chamber.meetings||[]).map(function(m){
-              // cancelKey = full list title e.g. "Security Council -- 10136th meeting"
-            // chamber m.title = short title e.g. "10136th meeting"
-            // match if cancelKey equals or contains the chamber title
-            const cancelled=cancelledTitles.some(function(ct){return ct===m.title||ct.includes(m.title);});
-              return Object.assign({},m,{cancelled});
-            });
+            const journalMeetings=(chamber.meetings||[])
+              .filter(function(m){return !cancelledTitles.some(function(ct){return ct===m.title||ct.includes(m.title);});});
             return Object.assign({},chamber,{meetings:[...journalMeetings,...extras]});
           });
-
           const allMeetings=[
             ...(data.meetings||[]).map(function(title){return {title,isExtra:false,extraId:null,cancelKey:title,cancelled:cancelledTitles.includes(title)};}),
             ...visibleExtras.map(function(e){return {title:extraLabel(e),isExtra:true,extraId:e.id,cancelKey:null,cancelled:false};}),
           ];
-
           return (
             <div>
-              {/* Chambers */}
               <div style={{marginBottom:"28px"}}>
                 <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"14px"}}>
                   <span style={{fontSize:"11px",fontWeight:"700",color:"rgba(255,255,255,0.5)",textTransform:"uppercase",letterSpacing:"1.5px"}}>&#127963;&#65039; Council Chambers</span>
@@ -584,8 +523,6 @@ export default function App() {
                   {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles}/>;} )}
                 </div>
               </div>
-
-              {/* All Meetings */}
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
                 <div>
                   <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
@@ -596,8 +533,6 @@ export default function App() {
                 </div>
                 <button onClick={function(){setShowAddForm(true);}} style={{background:"linear-gradient(135deg,#0096D6,#0050A0)",color:"#fff",border:"none",borderRadius:"50%",width:"36px",height:"36px",fontSize:"22px",fontWeight:"700",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 12px rgba(0,100,200,0.4)",lineHeight:1}}>+</button>
               </div>
-
-              {/* Add form */}
               {showAddForm&&(
                 <div style={{background:"rgba(0,80,160,0.15)",border:"1px solid rgba(0,150,214,0.3)",borderRadius:"12px",padding:"16px",marginBottom:"16px",animation:"fadeSlideIn 0.3s ease"}}>
                   <div style={{fontSize:"12px",fontWeight:"700",color:"#00A0DC",marginBottom:"12px",textTransform:"uppercase",letterSpacing:"1px"}}>Add Meeting</div>
@@ -610,15 +545,12 @@ export default function App() {
                     <input placeholder="Organization name *" value={formOrgName} onChange={function(e){setFormOrgName(e.target.value);}} style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"8px",color:"#fff",padding:"8px 10px",fontSize:"13px",fontFamily:"inherit"}}/>
                     <input placeholder="Meeting title *" value={formTitle} onChange={function(e){setFormTitle(e.target.value);}} style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"8px",color:"#fff",padding:"8px 10px",fontSize:"13px",fontFamily:"inherit"}}/>
                     <select value={formRoom} onChange={function(e){setFormRoom(e.target.value);}} style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"8px",color:"#fff",padding:"8px 10px",fontSize:"13px",fontFamily:"inherit"}}>
-                      <option>General Assembly Hall</option>
-                      <option>Security Council Chamber</option>
-                      <option>Trusteeship Council Chamber</option>
-                      <option>Economic and Social Council Chamber</option>
+                      <option>General Assembly Hall</option><option>Security Council Chamber</option>
+                      <option>Trusteeship Council Chamber</option><option>Economic and Social Council Chamber</option>
                       <option>Conference Room 1</option><option>Conference Room 2</option>
                       <option>Conference Room 3</option><option>Conference Room 4</option>
                       <option>Conference Room 5</option><option>Conference Room 8</option>
-                      <option>Conference Room 10</option><option>Conference Room 11</option>
-                      <option>Conference Room 12</option>
+                      <option>Conference Room 10</option><option>Conference Room 11</option><option>Conference Room 12</option>
                     </select>
                     <div style={{display:"flex",gap:"8px"}}>
                       <input type="time" value={formTimeStart} onChange={function(e){setFormTimeStart(e.target.value);}} style={{flex:1,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"8px",color:"#fff",padding:"8px 10px",fontSize:"13px",fontFamily:"inherit"}}/>
@@ -636,7 +568,6 @@ export default function App() {
                   </div>
                 </div>
               )}
-
               <MeetingsList meetings={allMeetings} onCancel={cancelMeeting} onDelete={deleteExtraMeeting} onUncancel={uncancelMeeting}/>
               <div style={{height:"40px"}}/>
             </div>
