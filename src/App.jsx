@@ -113,6 +113,38 @@ const ROOM_TO_CHAMBER={"general assembly hall":"General Assembly Hall","security
 const ORGAN_TO_CHAMBER={"general assembly":"General Assembly Hall","security council":"Security Council","trusteeship council":"Trusteeship Council","economic and social council":"Economic and Social Council"};
 const ROOM_DISPLAY={"General Assembly Hall":"General Assembly Hall","Security Council Chamber":"Security Council","Trusteeship Council Chamber":"Trusteeship Council","Economic and Social Council Chamber":"Economic and Social Council"};
 
+// -- Meeting Row (tappable to show agenda) --
+function MeetingRow({m}) {
+  const [open,setOpen]=useState(false);
+  const hasAgenda=m.agenda&&m.agenda.length>0&&!m.cancelled;
+  return (
+    <div style={{opacity:m.cancelled?0.45:1}}>
+      <div
+        onClick={hasAgenda?function(){setOpen(function(o){return !o;});}:undefined}
+        style={{display:"flex",gap:"8px",alignItems:"flex-start",cursor:hasAgenda?"pointer":"default",borderRadius:"6px",padding:"3px 0"}}
+      >
+        <span style={{fontSize:"10px",color:"#FCC30B",fontWeight:"700",whiteSpace:"nowrap",marginTop:"1px",flexShrink:0}}>{m.time}</span>
+        <span style={{flex:1,fontSize:"12px",lineHeight:"1.35",fontWeight:"600",color:m.cancelled?"rgba(255,255,255,0.3)":"rgba(255,255,255,0.9)",textDecoration:m.cancelled?"line-through":"none"}}>
+          {m.title}
+          {m.cancelled&&<span style={{marginLeft:"4px",fontSize:"8px",color:"#ff6b6b",fontWeight:"700"}}>CANC.</span>}
+        </span>
+        {hasAgenda&&(
+          <span style={{fontSize:"10px",color:"rgba(0,160,220,0.5)",flexShrink:0,marginTop:"2px"}}>{open?"&#9650;":"&#9660;"}</span>
+        )}
+      </div>
+      {hasAgenda&&open&&(
+        <div style={{marginTop:"6px",marginLeft:"40px",paddingLeft:"10px",borderLeft:"2px solid rgba(0,150,214,0.3)",display:"flex",flexDirection:"column",gap:"4px",animation:"fadeSlideIn 0.2s ease"}}>
+          {m.agenda.map(function(item,j){return(
+            <span key={j} style={{fontSize:"11px",color:"rgba(255,255,255,0.7)",lineHeight:"1.5"}}>
+              {item}
+            </span>
+          );})}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // -- Chamber Card --
 function ChamberCard({chamber,index}) {
   const icon=CHAMBER_ICONS[chamber.room]||"UN";
@@ -129,23 +161,7 @@ function ChamberCard({chamber,index}) {
       </div>
       {hasSession?(
         <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
-          {(chamber.meetings||[]).map(function(m,i){return(
-            <div key={i} style={{opacity:m.cancelled?0.45:1}}>
-              <div style={{display:"flex",gap:"8px",alignItems:"flex-start"}}>
-                <span style={{fontSize:"10px",color:"#FCC30B",fontWeight:"700",whiteSpace:"nowrap",marginTop:"1px",flexShrink:0}}>{m.time}</span>
-                <span style={{fontSize:"12px",lineHeight:"1.35",fontWeight:"600",color:m.cancelled?"rgba(255,255,255,0.3)":"rgba(255,255,255,0.9)",textDecoration:m.cancelled?"line-through":"none"}}>{m.title}{m.cancelled&&<span style={{marginLeft:"4px",fontSize:"8px",color:"#ff6b6b",fontWeight:"700"}}>CANC.</span>}</span>
-              </div>
-              {m.agenda&&m.agenda.length>0&&!m.cancelled&&(
-                <div style={{marginTop:"3px",paddingLeft:"40px",display:"flex",flexDirection:"column",gap:"2px"}}>
-                  {m.agenda.map(function(item,j){return(
-                    <span key={j} style={{fontSize:"10px",color:"rgba(255,255,255,0.45)",lineHeight:"1.4",display:"flex",gap:"5px"}}>
-                      <span style={{color:"rgba(0,160,220,0.4)",flexShrink:0}}>-</span>{item}
-                    </span>
-                  );})}
-                </div>
-              )}
-            </div>
-          );})}
+          {(chamber.meetings||[]).map(function(m,i){return <MeetingRow key={i} m={m}/>;} )}
         </div>
       ):(
         <p style={{margin:0,fontSize:"11px",color:"rgba(255,255,255,0.25)",fontStyle:"italic"}}>No session today</p>
