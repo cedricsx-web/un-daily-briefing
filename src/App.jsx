@@ -114,31 +114,33 @@ const ORGAN_TO_CHAMBER={"general assembly":"General Assembly Hall","security cou
 const ROOM_DISPLAY={"General Assembly Hall":"General Assembly Hall","Security Council Chamber":"Security Council","Trusteeship Council Chamber":"Trusteeship Council","Economic and Social Council Chamber":"Economic and Social Council"};
 
 // -- Meeting Row (tappable to show agenda, with cancel/adjourn buttons) --
-function MeetingRow({m,onCancel,onAdjourn,onUnadjourn}) {
+function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,adjournedTitles}) {
   const [open,setOpen]=useState(false);
   const [showActions,setShowActions]=useState(false);
+  // Compute adjourned live from parent state so it updates immediately
+  const adjourned=(adjournedTitles||[]).some(function(at){return at===m.title||m.title.includes(at)||at.includes(m.title);});
   const hasAgenda=m.agenda&&m.agenda.length>0;
   const cancelKey=m.title;
 
   return (
-    <div style={{opacity:m.adjourned?0.6:1}}>
+    <div style={{opacity:adjourned?0.6:1}}>
       <div style={{display:"flex",gap:"6px",alignItems:"flex-start"}}>
         {/* Time + title - tappable for agenda or actions */}
         <div
           onClick={function(){if(hasAgenda)setOpen(function(o){return !o;});else setShowActions(function(s){return !s;});}}
           style={{flex:1,display:"flex",gap:"8px",alignItems:"flex-start",cursor:"pointer",padding:"3px 0"}}
         >
-          <span style={{fontSize:"10px",color:m.adjourned?"rgba(255,200,0,0.5)":"#FCC30B",fontWeight:"700",whiteSpace:"nowrap",marginTop:"1px",flexShrink:0}}>{m.time}</span>
+          <span style={{fontSize:"10px",color:adjourned?"rgba(255,200,0,0.5)":"#FCC30B",fontWeight:"700",whiteSpace:"nowrap",marginTop:"1px",flexShrink:0}}>{m.time}</span>
           <span style={{flex:1,fontSize:"12px",lineHeight:"1.35",fontWeight:"600",
-            color:m.adjourned?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.9)",
-            textDecoration:m.adjourned?"line-through":"none"}}>
+            color:adjourned?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.9)",
+            textDecoration:adjourned?"line-through":"none"}}>
             {m.title}
-            {m.adjourned&&<span style={{marginLeft:"5px",fontSize:"8px",color:"rgba(255,200,0,0.7)",fontWeight:"700",textDecoration:"none",display:"inline-block"}}>ADJOURNED</span>}
+            {adjourned&&<span style={{marginLeft:"5px",fontSize:"8px",color:"rgba(255,200,0,0.7)",fontWeight:"700",textDecoration:"none",display:"inline-block"}}>ADJOURNED</span>}
           </span>
           {hasAgenda&&<span style={{fontSize:"9px",color:"rgba(0,160,220,0.5)",flexShrink:0,marginTop:"3px"}}>{open?"&#9650;":"&#9660;"}</span>}
         </div>
         {/* Action button */}
-        {!m.adjourned?(
+        {!adjourned?(
           <button onClick={function(){setShowActions(function(s){return !s;});}} style={{flexShrink:0,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.3)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"11px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8942;</button>
         ):(
           <button onClick={function(){onUnadjourn&&onUnadjourn(cancelKey);}} title="Mark as active" style={{flexShrink:0,background:"rgba(255,200,0,0.1)",border:"1px solid rgba(255,200,0,0.3)",color:"rgba(255,200,0,0.7)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8617;</button>
@@ -146,7 +148,7 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn}) {
       </div>
 
       {/* Action menu */}
-      {showActions&&!m.adjourned&&(
+      {showActions&&!adjourned&&(
         <div style={{marginTop:"6px",marginLeft:"40px",display:"flex",gap:"6px",animation:"fadeSlideIn 0.15s ease"}}>
           <button onClick={function(){onAdjourn&&onAdjourn(cancelKey);setShowActions(false);}} style={{background:"rgba(252,195,11,0.12)",border:"1px solid rgba(252,195,11,0.3)",color:"#FCC30B",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>
             &#10003; Adjourned
@@ -173,7 +175,7 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn}) {
 }
 
 // -- Chamber Card --
-function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn}) {
+function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,adjournedTitles,cancelledTitles}) {
   const icon=CHAMBER_ICONS[chamber.room]||"UN";
   const hasSession=chamber.meetings&&chamber.meetings.some(function(m){return !m.cancelled;});
   const isSC=chamber.room==="Security Council";
@@ -188,7 +190,7 @@ function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn}) {
       </div>
       {hasSession?(
         <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
-          {(chamber.meetings||[]).map(function(m,i){return <MeetingRow key={i} m={m} onCancel={onCancel} onAdjourn={onAdjourn} onUnadjourn={onUnadjourn}/>;} )}
+          {(chamber.meetings||[]).map(function(m,i){return <MeetingRow key={i} m={m} onCancel={onCancel} onAdjourn={onAdjourn} onUnadjourn={onUnadjourn} adjournedTitles={adjournedTitles}/>;} )}
         </div>
       ):(
         <p style={{margin:0,fontSize:"11px",color:"rgba(255,255,255,0.25)",fontStyle:"italic"}}>No session today</p>
@@ -579,7 +581,7 @@ export default function App() {
                   {journalSource==="live"&&<span style={{background:"rgba(76,159,56,0.15)",color:"#56C02B",fontSize:"9px",fontWeight:"700",padding:"2px 6px",borderRadius:"10px"}}>LIVE</span>}
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
-                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting}/>;} )}
+                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles}/>;} )}
                 </div>
               </div>
 
