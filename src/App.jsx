@@ -113,31 +113,58 @@ const ROOM_TO_CHAMBER={"general assembly hall":"General Assembly Hall","security
 const ORGAN_TO_CHAMBER={"general assembly":"General Assembly Hall","security council":"Security Council","trusteeship council":"Trusteeship Council","economic and social council":"Economic and Social Council"};
 const ROOM_DISPLAY={"General Assembly Hall":"General Assembly Hall","Security Council Chamber":"Security Council","Trusteeship Council Chamber":"Trusteeship Council","Economic and Social Council Chamber":"Economic and Social Council"};
 
-// -- Meeting Row (tappable to show agenda) --
-function MeetingRow({m}) {
+// -- Meeting Row (tappable to show agenda, with cancel/adjourn buttons) --
+function MeetingRow({m,onCancel,onAdjourn,onUnadjourn}) {
   const [open,setOpen]=useState(false);
-  const hasAgenda=m.agenda&&m.agenda.length>0&&!m.cancelled;
+  const [showActions,setShowActions]=useState(false);
+  const hasAgenda=m.agenda&&m.agenda.length>0;
+  const cancelKey=m.title;
+
   return (
-    <div style={{opacity:m.cancelled?0.45:1}}>
-      <div
-        onClick={hasAgenda?function(){setOpen(function(o){return !o;});}:undefined}
-        style={{display:"flex",gap:"8px",alignItems:"flex-start",cursor:hasAgenda?"pointer":"default",borderRadius:"6px",padding:"3px 0"}}
-      >
-        <span style={{fontSize:"10px",color:"#FCC30B",fontWeight:"700",whiteSpace:"nowrap",marginTop:"1px",flexShrink:0}}>{m.time}</span>
-        <span style={{flex:1,fontSize:"12px",lineHeight:"1.35",fontWeight:"600",color:m.cancelled?"rgba(255,255,255,0.3)":"rgba(255,255,255,0.9)",textDecoration:m.cancelled?"line-through":"none"}}>
-          {m.title}
-          {m.cancelled&&<span style={{marginLeft:"4px",fontSize:"8px",color:"#ff6b6b",fontWeight:"700"}}>CANC.</span>}
-        </span>
-        {hasAgenda&&(
-          <span style={{fontSize:"10px",color:"rgba(0,160,220,0.5)",flexShrink:0,marginTop:"2px"}}>{open?"&#9650;":"&#9660;"}</span>
+    <div style={{opacity:m.adjourned?0.6:1}}>
+      <div style={{display:"flex",gap:"6px",alignItems:"flex-start"}}>
+        {/* Time + title - tappable for agenda or actions */}
+        <div
+          onClick={function(){if(hasAgenda)setOpen(function(o){return !o;});else setShowActions(function(s){return !s;});}}
+          style={{flex:1,display:"flex",gap:"8px",alignItems:"flex-start",cursor:"pointer",padding:"3px 0"}}
+        >
+          <span style={{fontSize:"10px",color:m.adjourned?"rgba(255,200,0,0.5)":"#FCC30B",fontWeight:"700",whiteSpace:"nowrap",marginTop:"1px",flexShrink:0}}>{m.time}</span>
+          <span style={{flex:1,fontSize:"12px",lineHeight:"1.35",fontWeight:"600",
+            color:m.adjourned?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.9)",
+            textDecoration:m.adjourned?"line-through":"none"}}>
+            {m.title}
+            {m.adjourned&&<span style={{marginLeft:"5px",fontSize:"8px",color:"rgba(255,200,0,0.7)",fontWeight:"700",textDecoration:"none",display:"inline-block"}}>ADJOURNED</span>}
+          </span>
+          {hasAgenda&&<span style={{fontSize:"9px",color:"rgba(0,160,220,0.5)",flexShrink:0,marginTop:"3px"}}>{open?"&#9650;":"&#9660;"}</span>}
+        </div>
+        {/* Action button */}
+        {!m.adjourned?(
+          <button onClick={function(){setShowActions(function(s){return !s;});}} style={{flexShrink:0,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.3)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"11px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8942;</button>
+        ):(
+          <button onClick={function(){onUnadjourn&&onUnadjourn(cancelKey);}} title="Mark as active" style={{flexShrink:0,background:"rgba(255,200,0,0.1)",border:"1px solid rgba(255,200,0,0.3)",color:"rgba(255,200,0,0.7)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8617;</button>
         )}
       </div>
+
+      {/* Action menu */}
+      {showActions&&!m.adjourned&&(
+        <div style={{marginTop:"6px",marginLeft:"40px",display:"flex",gap:"6px",animation:"fadeSlideIn 0.15s ease"}}>
+          <button onClick={function(){onAdjourn&&onAdjourn(cancelKey);setShowActions(false);}} style={{background:"rgba(252,195,11,0.12)",border:"1px solid rgba(252,195,11,0.3)",color:"#FCC30B",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>
+            &#10003; Adjourned
+          </button>
+          <button onClick={function(){onCancel&&onCancel(cancelKey);setShowActions(false);}} style={{background:"rgba(220,50,50,0.12)",border:"1px solid rgba(220,50,50,0.3)",color:"#ff8080",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>
+            &#x2715; Cancel
+          </button>
+          <button onClick={function(){setShowActions(false);}} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.4)",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",cursor:"pointer",fontFamily:"inherit"}}>
+            Close
+          </button>
+        </div>
+      )}
+
+      {/* Agenda */}
       {hasAgenda&&open&&(
         <div style={{marginTop:"6px",marginLeft:"40px",paddingLeft:"10px",borderLeft:"2px solid rgba(0,150,214,0.3)",display:"flex",flexDirection:"column",gap:"4px",animation:"fadeSlideIn 0.2s ease"}}>
           {m.agenda.map(function(item,j){return(
-            <span key={j} style={{fontSize:"11px",color:"rgba(255,255,255,0.7)",lineHeight:"1.5"}}>
-              {item}
-            </span>
+            <span key={j} style={{fontSize:"11px",color:"rgba(255,255,255,0.7)",lineHeight:"1.5"}}>{item}</span>
           );})}
         </div>
       )}
@@ -146,7 +173,7 @@ function MeetingRow({m}) {
 }
 
 // -- Chamber Card --
-function ChamberCard({chamber,index}) {
+function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn}) {
   const icon=CHAMBER_ICONS[chamber.room]||"UN";
   const hasSession=chamber.meetings&&chamber.meetings.some(function(m){return !m.cancelled;});
   const isSC=chamber.room==="Security Council";
@@ -161,7 +188,7 @@ function ChamberCard({chamber,index}) {
       </div>
       {hasSession?(
         <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
-          {(chamber.meetings||[]).map(function(m,i){return <MeetingRow key={i} m={m}/>;} )}
+          {(chamber.meetings||[]).map(function(m,i){return <MeetingRow key={i} m={m} onCancel={onCancel} onAdjourn={onAdjourn} onUnadjourn={onUnadjourn}/>;} )}
         </div>
       ):(
         <p style={{margin:0,fontSize:"11px",color:"rgba(255,255,255,0.25)",fontStyle:"italic"}}>No session today</p>
@@ -221,6 +248,7 @@ export default function App() {
   const [extraMeetings,setExtraMeetings]=useState([]);
   const [deletedExtraIds,setDeletedExtraIds]=useState([]);
   const [cancelledTitles,setCancelledTitles]=useState([]);
+  const [adjournedTitles,setAdjournedTitles]=useState([]);
   const [formOrgType,setFormOrgType]=useState("mission");
   const [formOrgName,setFormOrgName]=useState("");
   const [formTitle,setFormTitle]=useState("");
@@ -242,6 +270,7 @@ export default function App() {
     setDeletedExtraIds([]);
     fetchExtraMeetings();
     fetchCancelledMeetings();
+    fetchAdjournedMeetings();
   },[]);
 
   useEffect(function(){
@@ -259,6 +288,22 @@ export default function App() {
   async function fetchCancelledMeetings(){
     if(!SB_URL||!SB_KEY)return;
     try{const res=await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setCancelledTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}
+  }
+  async function fetchAdjournedMeetings(){
+    if(!SB_URL||!SB_KEY)return;
+    try{const res=await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setAdjournedTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}
+  }
+  async function adjournMeeting(key){
+    if(!SB_URL||!SB_KEY)return;
+    setAdjournedTitles(function(p){return [...p,key];});
+    try{await fetch(SB_URL+"/rest/v1/adjourned_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify({date:todayNY(),meeting_title:key})});}
+    catch(e){setAdjournedTitles(function(p){return p.filter(function(t){return t!==key;});});}
+  }
+  async function unadjournMeeting(key){
+    if(!SB_URL||!SB_KEY)return;
+    setAdjournedTitles(function(p){return p.filter(function(t){return t!==key;});});
+    try{await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY()+"&meeting_title=eq."+encodeURIComponent(key),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}
+    catch(e){setAdjournedTitles(function(p){return [...p,key];});}
   }
   async function cancelMeeting(key){
     if(!SB_URL||!SB_KEY)return;
@@ -534,7 +579,7 @@ export default function App() {
                   {journalSource==="live"&&<span style={{background:"rgba(76,159,56,0.15)",color:"#56C02B",fontSize:"9px",fontWeight:"700",padding:"2px 6px",borderRadius:"10px"}}>LIVE</span>}
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
-                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i}/>;} )}
+                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting}/>;} )}
                 </div>
               </div>
 
