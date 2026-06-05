@@ -511,7 +511,10 @@ export default function App() {
                 return {time:e.time_start?fmtTime(e.time_start):"TBD",title:org+" -- "+e.title+(e.is_closed?" [Closed]":""),agenda:[],id:e.id||null};
               });
             const journalMeetings=(chamber.meetings||[]).map(function(m){
-              const cancelled=cancelledTitles.some(function(ct){return ct.includes(m.title)&&(m.time?ct.includes(m.time):true);});
+              // cancelKey = full list title e.g. "Security Council -- 10136th meeting"
+            // chamber m.title = short title e.g. "10136th meeting"
+            // match if cancelKey equals or contains the chamber title
+            const cancelled=cancelledTitles.some(function(ct){return ct===m.title||ct.includes(m.title);});
               return Object.assign({},m,{cancelled});
             });
             return Object.assign({},chamber,{meetings:[...journalMeetings,...extras]});
