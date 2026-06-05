@@ -359,25 +359,28 @@ async function main() {
     await page.goto(url,{waitUntil:"networkidle2",timeout:45000});
     await new Promise(function(r){setTimeout(r,5000);});
 
-    // Navigate to first SC meeting to capture agenda
+    // Navigate to main organ meeting pages (SC + GA) to capture agenda
     if (journalData) {
       const sg=(journalData.officialMeetings||{}).specialGroups||[];
-      for (const group of sg) {
-        if ((group.groupNameTitle||"").toLowerCase().includes("security council")) {
-          for (const session of (group.sessions||[])) {
-            for (const m of (session.meetings||[])) {
-              if (m.id&&!m.isCancelled) {
-                try {
-                  const mUrl="https://journal.un.org/en/meeting/Officials/"+m.id+"/"+dateStr;
-                  await page.goto(mUrl,{waitUntil:"networkidle2",timeout:20000});
-                  await new Promise(function(r){setTimeout(r,3000);});
-                } catch(e){}
-                break;
+      for (const organKey of ["security council","general assembly"]) {
+        for (const group of sg) {
+          if ((group.groupNameTitle||"").toLowerCase().includes(organKey)) {
+            for (const session of (group.sessions||[])) {
+              for (const m of (session.meetings||[])) {
+                if (m.id&&!m.isCancelled) {
+                  try {
+                    const mUrl="https://journal.un.org/en/meeting/Officials/"+m.id+"/"+dateStr;
+                    console.log("Navigating to "+organKey+": "+mUrl);
+                    await page.goto(mUrl,{waitUntil:"networkidle2",timeout:20000});
+                    await new Promise(function(r){setTimeout(r,3000);});
+                  } catch(e){ console.log("Nav error: "+e.message); }
+                  break;
+                }
               }
+              break;
             }
             break;
           }
-          break;
         }
       }
     }
