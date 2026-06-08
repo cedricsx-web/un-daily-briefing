@@ -153,7 +153,7 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles})
 }
 
 // -- Chamber Card --
-function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,cancelledTitles,override,onCycleStatus,chamberStatus}) {
+function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,cancelledTitles,override,onCycleStatus,chamberStatus,adjournedTitlesForStatus}) {
   const icon=CHAMBER_ICONS[chamber.room]||"UN";
   const hasSession=chamber.meetings&&chamber.meetings.some(function(m){return !m.cancelled;});
   const isSC=chamber.room==="Security Council";
@@ -166,7 +166,7 @@ function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjo
           <a href="https://press.un.org/en/security-council" target="_blank" rel="noopener noreferrer" style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(0,150,214,0.3)",color:"#00A0DC",borderRadius:"6px",padding:"2px 7px",fontSize:"9px",fontWeight:"700",letterSpacing:"0.5px",flexShrink:0,textDecoration:"none"}}>PRESS &#8599;</a>
         )}
         {(function(){
-          const st=chamberStatus?chamberStatus(chamber,override):"OPEN";
+          const st=chamberStatus?chamberStatus(chamber,override,adjournedTitlesForStatus):"OPEN";
           const stColors={"OPEN":["rgba(76,159,56,0.15)","#56C02B"],"CLOSED":["rgba(220,50,50,0.15)","#ff6b6b"],"WT":["rgba(252,195,11,0.15)","#FCC30B"]};
           const [bg,color]=stColors[st]||stColors["OPEN"];
           return (
@@ -532,7 +532,7 @@ export default function App() {
     if(ap==="AM"&&h===12)h=0;
     return h*60+min;
   }
-  function chamberStatus(chamber,override){
+  function chamberStatus(chamber,override,adjTitles){
     // Manual override takes precedence
     if(override==="wt")return "WT";
     if(override==="open")return "OPEN";
@@ -540,8 +540,12 @@ export default function App() {
     // Auto-compute from meeting times
     const now=currentNYTime();
     const meetings=chamber.meetings||[];
+    const adj=adjTitles||[];
     const hasActive=meetings.some(function(m){
       if(m.cancelled)return false;
+      // If meeting is adjourned, treat it as finished -> not active
+      const isAdjourned=adj.some(function(at){return at===m.title||m.title.includes(at)||at.includes(m.title);});
+      if(isAdjourned)return false;
       const start=parseMeetingTime(m.time);
       if(start===null)return false;
       return now>=start-10&&now<start+180;
@@ -665,7 +669,7 @@ export default function App() {
                   {journalSource==="live"&&<span style={{background:"rgba(76,159,56,0.15)",color:"#56C02B",fontSize:"9px",fontWeight:"700",padding:"2px 6px",borderRadius:"10px"}}>LIVE</span>}
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
-                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles} override={chamberOverrides[c.room]||null} onCycleStatus={cycleChamberStatus} chamberStatus={chamberStatus}/>;} )}
+                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles} override={chamberOverrides[c.room]||null} onCycleStatus={cycleChamberStatus} chamberStatus={chamberStatus} adjournedTitlesForStatus={adjournedTitles}/>;} )}
                 </div>
               </div>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
