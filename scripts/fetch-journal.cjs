@@ -157,7 +157,14 @@ function parseJournalData(data,agendaById) {
           const rawTitle=num||ttl; if (!rawTitle) return;
           const fullTitle=bodyLabel?bodyLabel+" -- "+rawTitle:rawTitle;
           const time=fmtTime((m.timeFrom||m.startTime||sTime||"").toString());
-          allMeetings.push({title:fullTitle,time,room:getRoom(m)||null});
+          const rawRoom=getRoom(m);
+          allMeetings.push({title:fullTitle,time,room:rawRoom||null});
+          // Map to chamber by room name (e.g. Trusteeship meetings in otherMeetings)
+          const chamber=chamberForRoom(rawRoom);
+          if (chamber) {
+            if (!chamberMap[chamber]) chamberMap[chamber]=[];
+            chamberMap[chamber].push({time,title:fullTitle,agenda:[],id:m.id||null});
+          }
         });
       });
     });
