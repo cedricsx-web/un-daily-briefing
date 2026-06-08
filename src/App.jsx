@@ -153,7 +153,7 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles})
 }
 
 // -- Chamber Card --
-function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,cancelledTitles}) {
+function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,cancelledTitles,isWT,onToggleWT,chamberStatus}) {
   const icon=CHAMBER_ICONS[chamber.room]||"UN";
   const hasSession=chamber.meetings&&chamber.meetings.some(function(m){return !m.cancelled;});
   const isSC=chamber.room==="Security Council";
@@ -165,6 +165,19 @@ function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjo
         {isSC&&hasSession&&(
           <a href="https://press.un.org/en/security-council" target="_blank" rel="noopener noreferrer" style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(0,150,214,0.3)",color:"#00A0DC",borderRadius:"6px",padding:"2px 7px",fontSize:"9px",fontWeight:"700",letterSpacing:"0.5px",flexShrink:0,textDecoration:"none"}}>PRESS &#8599;</a>
         )}
+        {(function(){
+          const st=chamberStatus?chamberStatus(chamber,isWT):"OPEN";
+          const stColors={"OPEN":["rgba(76,159,56,0.15)","#56C02B"],"CLOSED":["rgba(220,50,50,0.15)","#ff6b6b"],"WT":["rgba(252,195,11,0.15)","#FCC30B"]};
+          const [bg,color]=stColors[st]||stColors["OPEN"];
+          const canToggle=st==="CLOSED"||st==="WT";
+          return (
+            <span
+              onClick={canToggle?function(){onToggleWT&&onToggleWT(chamber.room);}:undefined}
+              title={st==="CLOSED"?"Tap to set Walk-Through":st==="WT"?"Tap to set Closed":undefined}
+              style={{fontSize:"8px",fontWeight:"800",background:bg,color:color,borderRadius:"4px",padding:"2px 6px",letterSpacing:"0.5px",flexShrink:0,cursor:canToggle?"pointer":"default",userSelect:"none"}}
+            >{st}</span>
+          );
+        })()}
       </div>
       {hasSession?(
         <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
@@ -177,8 +190,42 @@ function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjo
   );
 }
 
+// -- Edit Meeting Form --
+function EditMeetingForm({meeting,onSave,onClose}) {
+  const [title,setTitle]=useState(meeting.rawTitle||meeting.title||"");
+  const [notes,setNotes]=useState(meeting.extra_notes||meeting.note||"");
+  const [timeStart,setTimeStart]=useState(meeting.time_start||"");
+  const [timeEnd,setTimeEnd]=useState(meeting.time_end||"");
+  const [isClosed,setIsClosed]=useState(!!meeting.is_closed);
+  const [saving,setSaving]=useState(false);
+  return (
+    <div style={{background:"rgba(0,80,160,0.15)",border:"1px solid rgba(0,150,214,0.3)",borderRadius:"10px",padding:"14px",marginBottom:"8px",animation:"fadeSlideIn 0.2s ease"}}>
+      <div style={{fontSize:"11px",fontWeight:"700",color:"#00A0DC",marginBottom:"10px",textTransform:"uppercase",letterSpacing:"1px"}}>Edit Meeting</div>
+      <div style={{display:"flex",flexDirection:"column",gap:"7px"}}>
+        <input value={title} onChange={function(e){setTitle(e.target.value);}} placeholder="Meeting title" style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"7px",color:"#fff",padding:"7px 10px",fontSize:"13px",fontFamily:"inherit"}}/>
+        <textarea value={notes} onChange={function(e){setNotes(e.target.value);}} placeholder="Notes: subject, special guest, context..." rows={3} style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"7px",color:"#fff",padding:"7px 10px",fontSize:"13px",fontFamily:"inherit",resize:"vertical"}}/>
+        <div style={{display:"flex",gap:"8px"}}>
+          <input type="time" value={timeStart} onChange={function(e){setTimeStart(e.target.value);}} style={{flex:1,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"7px",color:"#fff",padding:"7px 10px",fontSize:"13px",fontFamily:"inherit"}}/>
+          <input type="time" value={timeEnd} onChange={function(e){setTimeEnd(e.target.value);}} style={{flex:1,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"7px",color:"#fff",padding:"7px 10px",fontSize:"13px",fontFamily:"inherit"}}/>
+        </div>
+        <label style={{display:"flex",alignItems:"center",gap:"8px",fontSize:"12px",color:"rgba(255,255,255,0.7)",cursor:"pointer"}}>
+          <input type="checkbox" checked={isClosed} onChange={function(e){setIsClosed(e.target.checked);}} style={{width:"15px",height:"15px"}}/>Closed meeting
+        </label>
+        <div style={{display:"flex",gap:"8px",marginTop:"4px"}}>
+          <button
+            onClick={async function(){setSaving(true);await onSave(meeting.extraId||meeting.id,{title:title.trim(),extra_notes:notes.trim(),time_start:timeStart||null,time_end:timeEnd||null,is_closed:isClosed});setSaving(false);}}
+            disabled={saving}
+            style={{flex:1,background:"linear-gradient(135deg,#0096D6,#0050A0)",color:"#fff",border:"none",borderRadius:"7px",padding:"9px",fontSize:"13px",fontWeight:"700",cursor:saving?"not-allowed":"pointer",fontFamily:"inherit"}}
+          >{saving?"Saving...":"Save"}</button>
+          <button onClick={onClose} style={{background:"rgba(255,255,255,0.08)",color:"rgba(255,255,255,0.6)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"7px",padding:"9px 14px",fontSize:"13px",cursor:"pointer",fontFamily:"inherit"}}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // -- Meetings List --
-function MeetingsList({meetings,onCancel,onDelete,onUncancel}) {
+function MeetingsList({meetings,onCancel,onDelete,onUncancel,onEdit,editingId,onSaveEdit,onCloseEdit}) {
   const [expanded,setExpanded]=useState(false);
   const visible=[...meetings.slice(0,5),...(expanded?meetings.slice(5):[])];
   return (
@@ -189,19 +236,34 @@ function MeetingsList({meetings,onCancel,onDelete,onUncancel}) {
         const extraId=typeof m==="string"?null:m.extraId;
         const cancelKey=typeof m==="string"?m:(m.cancelKey||m.title||m);
         const cancelled=typeof m==="string"?false:!!m.cancelled;
+        const notes=typeof m==="string"?"":(m.extra_notes||m.note||"");
+        const isEditing=isExtra&&editingId===extraId;
         return(
-          <div key={i} style={{display:"flex",alignItems:"center",gap:"8px",paddingBottom:i<visible.length-1?"10px":"0",marginBottom:i<visible.length-1?"10px":"0",borderBottom:i<visible.length-1?"1px solid rgba(255,255,255,0.05)":"none"}}>
-            <span style={{color:cancelled?"rgba(255,100,100,0.4)":"rgba(0,160,220,0.5)",fontSize:"9px",flexShrink:0}}>&#9679;</span>
-            <span style={{flex:1,fontSize:"13px",lineHeight:"1.45",color:cancelled?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.8)",textDecoration:cancelled?"line-through":"none"}}>
-              {title}
-              {isExtra&&!cancelled&&<span style={{marginLeft:"6px",fontSize:"9px",color:"#FCC30B",fontWeight:"700",verticalAlign:"middle"}}>ADDED</span>}
-              {cancelled&&<span style={{marginLeft:"6px",fontSize:"9px",color:"#ff6b6b",fontWeight:"700",verticalAlign:"middle"}}>CANCELLED</span>}
-            </span>
-            {!cancelled?(
-              <button onClick={function(e){e.stopPropagation();isExtra?onDelete(extraId):onCancel(cancelKey);}} style={{flexShrink:0,background:"rgba(220,50,50,0.15)",border:"1px solid rgba(220,50,50,0.35)",color:"#ff8080",borderRadius:"6px",width:"24px",height:"24px",fontSize:"13px",fontWeight:"700",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,fontFamily:"inherit",padding:0}}>&#x2715;</button>
-            ):!isExtra&&(
-              <button onClick={function(e){e.stopPropagation();onUncancel(cancelKey);}} style={{flexShrink:0,background:"rgba(76,159,56,0.15)",border:"1px solid rgba(76,159,56,0.35)",color:"#56C02B",borderRadius:"6px",width:"24px",height:"24px",fontSize:"13px",fontWeight:"700",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,fontFamily:"inherit",padding:0}}>&#8617;</button>
+          <div key={i}>
+            {isEditing&&(
+              <EditMeetingForm meeting={m} onSave={onSaveEdit} onClose={onCloseEdit}/>
             )}
+            <div style={{display:"flex",alignItems:"flex-start",gap:"8px",paddingBottom:i<visible.length-1?"10px":"0",marginBottom:i<visible.length-1?"10px":"0",borderBottom:i<visible.length-1&&!isEditing?"1px solid rgba(255,255,255,0.05)":"none"}}>
+              <span style={{color:cancelled?"rgba(255,100,100,0.4)":"rgba(0,160,220,0.5)",fontSize:"9px",flexShrink:0,marginTop:"4px"}}>&#9679;</span>
+              <div style={{flex:1}}>
+                <span style={{fontSize:"13px",lineHeight:"1.45",color:cancelled?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.8)",textDecoration:cancelled?"line-through":"none"}}>
+                  {title}
+                  {isExtra&&!cancelled&&<span style={{marginLeft:"6px",fontSize:"9px",color:"#FCC30B",fontWeight:"700",verticalAlign:"middle"}}>ADDED</span>}
+                  {cancelled&&<span style={{marginLeft:"6px",fontSize:"9px",color:"#ff6b6b",fontWeight:"700",verticalAlign:"middle"}}>CANCELLED</span>}
+                </span>
+                {notes&&!cancelled&&<div style={{fontSize:"11px",color:"rgba(255,255,255,0.45)",marginTop:"2px",lineHeight:"1.4",fontStyle:"italic"}}>{notes}</div>}
+              </div>
+              <div style={{display:"flex",gap:"4px",flexShrink:0}}>
+                {isExtra&&!cancelled&&(
+                  <button onClick={function(e){e.stopPropagation();onEdit(m);}} style={{background:"rgba(0,150,214,0.12)",border:"1px solid rgba(0,150,214,0.25)",color:"#00A0DC",borderRadius:"6px",width:"24px",height:"24px",fontSize:"12px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>&#9998;</button>
+                )}
+                {!cancelled?(
+                  <button onClick={function(e){e.stopPropagation();isExtra?onDelete(extraId):onCancel(cancelKey);}} style={{flexShrink:0,background:"rgba(220,50,50,0.15)",border:"1px solid rgba(220,50,50,0.35)",color:"#ff8080",borderRadius:"6px",width:"24px",height:"24px",fontSize:"13px",fontWeight:"700",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,fontFamily:"inherit",padding:0}}>&#x2715;</button>
+                ):!isExtra&&(
+                  <button onClick={function(e){e.stopPropagation();onUncancel(cancelKey);}} style={{flexShrink:0,background:"rgba(76,159,56,0.15)",border:"1px solid rgba(76,159,56,0.35)",color:"#56C02B",borderRadius:"6px",width:"24px",height:"24px",fontSize:"13px",fontWeight:"700",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,fontFamily:"inherit",padding:0}}>&#8617;</button>
+                )}
+              </div>
+            </div>
           </div>
         );
       })}
@@ -229,6 +291,8 @@ export default function App() {
   const [deletedExtraIds,setDeletedExtraIds]=useState([]);
   const [cancelledTitles,setCancelledTitles]=useState([]);
   const [adjournedTitles,setAdjournedTitles]=useState([]);
+  const [chamberWTs,setChamberWTs]=useState([]);
+  const [editingMeeting,setEditingMeeting]=useState(null);
   const [formOrgType,setFormOrgType]=useState("mission");
   const [formOrgName,setFormOrgName]=useState("");
   const [formTitle,setFormTitle]=useState("");
@@ -252,6 +316,7 @@ export default function App() {
     fetchExtraMeetings();
     fetchCancelledMeetings();
     fetchAdjournedMeetings();
+    fetchChamberStatuses();
   },[]);
 
   useEffect(function(){
@@ -266,6 +331,35 @@ export default function App() {
   async function fetchCancelledMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setCancelledTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
   async function fetchAdjournedMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setAdjournedTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
 
+  async function fetchChamberStatuses(){
+    if(!SB_URL||!SB_KEY)return;
+    try{
+      const res=await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+      if(res.ok){const rows=await res.json();setChamberWTs((rows||[]).map(function(r){return r.chamber;}));}
+    }catch(e){}
+  }
+  async function toggleChamberWT(chamber){
+    const isWT=chamberWTs.includes(chamber);
+    if(isWT){
+      // Remove WT
+      setChamberWTs(function(p){return p.filter(function(c){return c!==chamber;});});
+      if(!SB_URL||!SB_KEY)return;
+      try{await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY()+"&chamber=eq."+encodeURIComponent(chamber),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}catch(e){}
+    } else {
+      // Set WT
+      setChamberWTs(function(p){return [...p,chamber];});
+      if(!SB_URL||!SB_KEY)return;
+      try{await fetch(SB_URL+"/rest/v1/chamber_status",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"resolution=merge-duplicates"},body:JSON.stringify({date:todayNY(),chamber:chamber,status:"wt"})});}catch(e){}
+    }
+  }
+  async function updateExtraMeeting(id,updates){
+    if(!SB_URL||!SB_KEY)return;
+    setExtraMeetings(function(p){return p.map(function(e){return e.id===id?Object.assign({},e,updates):e;});});
+    try{
+      await fetch(SB_URL+"/rest/v1/extra_meetings?id=eq."+id,{method:"PATCH",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify(updates)});
+    }catch(e){}
+    setEditingMeeting(null);
+  }
   async function adjournMeeting(key){
     setAdjournedTitles(function(p){return [...p,key];});
     if(!SB_URL||!SB_KEY)return;
@@ -419,6 +513,35 @@ export default function App() {
     finally{setLoading(false);}
   }
 
+  function currentNYTime(){
+    const now=new Date();
+    const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(now);
+    const o={};parts.forEach(function(x){o[x.type]=x.value;});
+    return parseInt(o.hour)*60+parseInt(o.minute); // minutes since midnight
+  }
+  function parseMeetingTime(timeStr){
+    if(!timeStr||timeStr==="TBD")return null;
+    const m=timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+    if(!m)return null;
+    let h=parseInt(m[1]);const min=parseInt(m[2]);const ap=m[3].toUpperCase();
+    if(ap==="PM"&&h!==12)h+=12;
+    if(ap==="AM"&&h===12)h=0;
+    return h*60+min;
+  }
+  function chamberStatus(chamber,isWT){
+    // Check if any meeting is currently active (started in last 3h, or starts in next 10min)
+    const now=currentNYTime();
+    const meetings=chamber.meetings||[];
+    const hasActive=meetings.some(function(m){
+      if(m.cancelled)return false;
+      const start=parseMeetingTime(m.time);
+      if(start===null)return false;
+      return now>=start-10&&now<start+180; // active window: -10min to +3h
+    });
+    if(isWT)return "WT";
+    if(hasActive)return "CLOSED";
+    return "OPEN";
+  }
   function extraLabel(e){
     const org=e.organizer_type==="un_body"?e.organizer_name:e.organizer_type==="mission"?"Mission of "+e.organizer_name:e.organizer_name;
     return org+" -- "+e.title+(e.is_closed?" [Closed]":"");
@@ -526,7 +649,7 @@ export default function App() {
           });
           const allMeetings=[
             ...(data.meetings||[]).map(function(title){return {title,isExtra:false,extraId:null,cancelKey:title,cancelled:cancelledTitles.includes(title)};}),
-            ...visibleExtras.map(function(e){return {title:extraLabel(e),isExtra:true,extraId:e.id,cancelKey:null,cancelled:false};}),
+            ...visibleExtras.map(function(e){return {title:extraLabel(e),isExtra:true,extraId:e.id,cancelKey:null,cancelled:false,extra_notes:e.extra_notes||e.note||"",rawTitle:e.title,id:e.id,time_start:e.time_start,time_end:e.time_end,is_closed:e.is_closed};}),
           ];
           return (
             <div>
@@ -536,7 +659,7 @@ export default function App() {
                   {journalSource==="live"&&<span style={{background:"rgba(76,159,56,0.15)",color:"#56C02B",fontSize:"9px",fontWeight:"700",padding:"2px 6px",borderRadius:"10px"}}>LIVE</span>}
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
-                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles}/>;} )}
+                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles} isWT={chamberWTs.includes(c.room)} onToggleWT={toggleChamberWT} chamberStatus={chamberStatus}/>;} )}
                 </div>
               </div>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
@@ -584,7 +707,7 @@ export default function App() {
                   </div>
                 </div>
               )}
-              <MeetingsList meetings={allMeetings} onCancel={cancelMeeting} onDelete={deleteExtraMeeting} onUncancel={uncancelMeeting}/>
+              <MeetingsList meetings={allMeetings} onCancel={cancelMeeting} onDelete={deleteExtraMeeting} onUncancel={uncancelMeeting} onEdit={function(m){setEditingMeeting(m.extraId);}} editingId={editingMeeting} onSaveEdit={updateExtraMeeting} onCloseEdit={function(){setEditingMeeting(null);}}/>
               <div style={{height:"40px"}}/>
             </div>
           );
