@@ -153,7 +153,7 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles})
 }
 
 // -- Chamber Card --
-function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,cancelledTitles,isWT,onToggleWT,chamberStatus}) {
+function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,cancelledTitles,override,onCycleStatus,chamberStatus}) {
   const icon=CHAMBER_ICONS[chamber.room]||"UN";
   const hasSession=chamber.meetings&&chamber.meetings.some(function(m){return !m.cancelled;});
   const isSC=chamber.room==="Security Council";
@@ -166,15 +166,14 @@ function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjo
           <a href="https://press.un.org/en/security-council" target="_blank" rel="noopener noreferrer" style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(0,150,214,0.3)",color:"#00A0DC",borderRadius:"6px",padding:"2px 7px",fontSize:"9px",fontWeight:"700",letterSpacing:"0.5px",flexShrink:0,textDecoration:"none"}}>PRESS &#8599;</a>
         )}
         {(function(){
-          const st=chamberStatus?chamberStatus(chamber,isWT):"OPEN";
+          const st=chamberStatus?chamberStatus(chamber,override):"OPEN";
           const stColors={"OPEN":["rgba(76,159,56,0.15)","#56C02B"],"CLOSED":["rgba(220,50,50,0.15)","#ff6b6b"],"WT":["rgba(252,195,11,0.15)","#FCC30B"]};
           const [bg,color]=stColors[st]||stColors["OPEN"];
-          const canToggle=st==="CLOSED"||st==="WT";
           return (
             <span
-              onClick={canToggle?function(){onToggleWT&&onToggleWT(chamber.room);}:undefined}
-              title={st==="CLOSED"?"Tap to set Walk-Through":st==="WT"?"Tap to set Closed":undefined}
-              style={{fontSize:"8px",fontWeight:"800",background:bg,color:color,borderRadius:"4px",padding:"2px 6px",letterSpacing:"0.5px",flexShrink:0,cursor:canToggle?"pointer":"default",userSelect:"none"}}
+              onClick={function(){onCycleStatus&&onCycleStatus(chamber.room,st);}}
+              title="Tap to change status: OPEN -> CLOSED -> WT"
+              style={{fontSize:"8px",fontWeight:"800",background:bg,color:color,borderRadius:"4px",padding:"2px 6px",letterSpacing:"0.5px",flexShrink:0,cursor:"pointer",userSelect:"none"}}
             >{st}</span>
           );
         })()}
@@ -291,7 +290,7 @@ export default function App() {
   const [deletedExtraIds,setDeletedExtraIds]=useState([]);
   const [cancelledTitles,setCancelledTitles]=useState([]);
   const [adjournedTitles,setAdjournedTitles]=useState([]);
-  const [chamberWTs,setChamberWTs]=useState([]);
+  const [chamberOverrides,setChamberOverrides]=useState({});
   const [editingMeeting,setEditingMeeting]=useState(null);
   const [formOrgType,setFormOrgType]=useState("mission");
   const [formOrgName,setFormOrgName]=useState("");
@@ -335,22 +334,27 @@ export default function App() {
     if(!SB_URL||!SB_KEY)return;
     try{
       const res=await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
-      if(res.ok){const rows=await res.json();setChamberWTs((rows||[]).map(function(r){return r.chamber;}));}
+      if(res.ok){
+        const rows=await res.json();
+        const map={};
+        (rows||[]).forEach(function(r){map[r.chamber]=r.status;});
+        setChamberOverrides(map);
+      }
     }catch(e){}
   }
-  async function toggleChamberWT(chamber){
-    const isWT=chamberWTs.includes(chamber);
-    if(isWT){
-      // Remove WT
-      setChamberWTs(function(p){return p.filter(function(c){return c!==chamber;});});
-      if(!SB_URL||!SB_KEY)return;
-      try{await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY()+"&chamber=eq."+encodeURIComponent(chamber),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}catch(e){}
-    } else {
-      // Set WT
-      setChamberWTs(function(p){return [...p,chamber];});
-      if(!SB_URL||!SB_KEY)return;
-      try{await fetch(SB_URL+"/rest/v1/chamber_status",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"resolution=merge-duplicates"},body:JSON.stringify({date:todayNY(),chamber:chamber,status:"wt"})});}catch(e){}
-    }
+  async function cycleChamberStatus(chamber,currentStatus){
+    // Cycle: OPEN -> CLOSED -> WT -> OPEN (removes override -> auto)
+    const next=currentStatus==="OPEN"?"closed":currentStatus==="CLOSED"?"wt":"open";
+    // Update local state
+    setChamberOverrides(function(prev){return Object.assign({},prev,{[chamber]:next});});
+    if(!SB_URL||!SB_KEY)return;
+    try{
+      await fetch(SB_URL+"/rest/v1/chamber_status",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"resolution=merge-duplicates"},
+        body:JSON.stringify({date:todayNY(),chamber:chamber,status:next})
+      });
+    }catch(e){}
   }
   async function updateExtraMeeting(id,updates){
     if(!SB_URL||!SB_KEY)return;
@@ -528,19 +532,21 @@ export default function App() {
     if(ap==="AM"&&h===12)h=0;
     return h*60+min;
   }
-  function chamberStatus(chamber,isWT){
-    // Check if any meeting is currently active (started in last 3h, or starts in next 10min)
+  function chamberStatus(chamber,override){
+    // Manual override takes precedence
+    if(override==="wt")return "WT";
+    if(override==="open")return "OPEN";
+    if(override==="closed")return "CLOSED";
+    // Auto-compute from meeting times
     const now=currentNYTime();
     const meetings=chamber.meetings||[];
     const hasActive=meetings.some(function(m){
       if(m.cancelled)return false;
       const start=parseMeetingTime(m.time);
       if(start===null)return false;
-      return now>=start-10&&now<start+180; // active window: -10min to +3h
+      return now>=start-10&&now<start+180;
     });
-    if(isWT)return "WT";
-    if(hasActive)return "CLOSED";
-    return "OPEN";
+    return hasActive?"CLOSED":"OPEN";
   }
   function extraLabel(e){
     const org=e.organizer_type==="un_body"?e.organizer_name:e.organizer_type==="mission"?"Mission of "+e.organizer_name:e.organizer_name;
@@ -659,7 +665,7 @@ export default function App() {
                   {journalSource==="live"&&<span style={{background:"rgba(76,159,56,0.15)",color:"#56C02B",fontSize:"9px",fontWeight:"700",padding:"2px 6px",borderRadius:"10px"}}>LIVE</span>}
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
-                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles} isWT={chamberWTs.includes(c.room)} onToggleWT={toggleChamberWT} chamberStatus={chamberStatus}/>;} )}
+                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles} override={chamberOverrides[c.room]||null} onCycleStatus={cycleChamberStatus} chamberStatus={chamberStatus}/>;} )}
                 </div>
               </div>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
