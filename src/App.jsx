@@ -189,6 +189,28 @@ function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjo
   );
 }
 
+// -- Inline Note Editor --
+function NoteEditor({title,initialNote,onSave,onClose}) {
+  const [text,setText]=useState(initialNote||"");
+  return (
+    <div style={{background:"rgba(0,60,120,0.2)",border:"1px solid rgba(0,150,214,0.25)",borderRadius:"8px",padding:"10px",marginTop:"4px",animation:"fadeSlideIn 0.15s ease"}}>
+      <textarea
+        value={text}
+        onChange={function(e){setText(e.target.value);}}
+        placeholder="Add note: subject, context, special guest..."
+        autoFocus
+        rows={2}
+        style={{width:"100%",background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"6px",color:"#fff",padding:"7px 9px",fontSize:"12px",fontFamily:"inherit",resize:"vertical",display:"block"}}
+      />
+      <div style={{display:"flex",gap:"6px",marginTop:"7px"}}>
+        <button onClick={function(){onSave(title,text);}} style={{flex:1,background:"linear-gradient(135deg,#0096D6,#0050A0)",color:"#fff",border:"none",borderRadius:"6px",padding:"6px",fontSize:"12px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>Save</button>
+        {initialNote&&<button onClick={function(){onSave(title,"");}} style={{background:"rgba(220,50,50,0.15)",color:"#ff8080",border:"1px solid rgba(220,50,50,0.3)",borderRadius:"6px",padding:"6px 10px",fontSize:"12px",cursor:"pointer",fontFamily:"inherit"}}>Clear</button>}
+        <button onClick={onClose} style={{background:"rgba(255,255,255,0.07)",color:"rgba(255,255,255,0.5)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"6px",padding:"6px 10px",fontSize:"12px",cursor:"pointer",fontFamily:"inherit"}}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
 // -- Edit Meeting Form --
 function EditMeetingForm({meeting,onSave,onClose}) {
   const [title,setTitle]=useState(meeting.rawTitle||meeting.title||"");
@@ -224,7 +246,7 @@ function EditMeetingForm({meeting,onSave,onClose}) {
 }
 
 // -- Meetings List --
-function MeetingsList({meetings,onCancel,onDelete,onUncancel,onEdit,editingId,onSaveEdit,onCloseEdit}) {
+function MeetingsList({meetings,onCancel,onDelete,onUncancel,onEdit,editingId,onSaveEdit,onCloseEdit,meetingNotes,editingNote,onEditNote,onSaveNote,onCloseNote}) {
   const [expanded,setExpanded]=useState(false);
   const visible=[...meetings.slice(0,5),...(expanded?meetings.slice(5):[])];
   return (
@@ -251,10 +273,16 @@ function MeetingsList({meetings,onCancel,onDelete,onUncancel,onEdit,editingId,on
                   {cancelled&&<span style={{marginLeft:"6px",fontSize:"9px",color:"#ff6b6b",fontWeight:"700",verticalAlign:"middle"}}>CANCELLED</span>}
                 </span>
                 {notes&&!cancelled&&<div style={{fontSize:"11px",color:"rgba(255,255,255,0.45)",marginTop:"2px",lineHeight:"1.4",fontStyle:"italic"}}>{notes}</div>}
+                {!isExtra&&!cancelled&&meetingNotes&&meetingNotes[cancelKey]&&(
+                  <div style={{fontSize:"11px",color:"rgba(255,220,100,0.8)",marginTop:"3px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {meetingNotes[cancelKey]}</div>
+                )}
+                {editingNote===cancelKey&&!isExtra&&(
+                  <NoteEditor title={cancelKey} initialNote={meetingNotes&&meetingNotes[cancelKey]} onSave={onSaveNote} onClose={onCloseNote}/>
+                )}
               </div>
               <div style={{display:"flex",gap:"4px",flexShrink:0}}>
-                {isExtra&&!cancelled&&(
-                  <button onClick={function(e){e.stopPropagation();onEdit(m);}} style={{background:"rgba(0,150,214,0.12)",border:"1px solid rgba(0,150,214,0.25)",color:"#00A0DC",borderRadius:"6px",width:"24px",height:"24px",fontSize:"12px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>&#9998;</button>
+                {!cancelled&&(
+                  <button onClick={function(e){e.stopPropagation();isExtra?onEdit(m):onEditNote(cancelKey);}} style={{background:"rgba(0,150,214,0.12)",border:"1px solid rgba(0,150,214,0.25)",color:"#00A0DC",borderRadius:"6px",width:"24px",height:"24px",fontSize:"12px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>&#9998;</button>
                 )}
                 {!cancelled?(
                   <button onClick={function(e){e.stopPropagation();isExtra?onDelete(extraId):onCancel(cancelKey);}} style={{flexShrink:0,background:"rgba(220,50,50,0.15)",border:"1px solid rgba(220,50,50,0.35)",color:"#ff8080",borderRadius:"6px",width:"24px",height:"24px",fontSize:"13px",fontWeight:"700",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,fontFamily:"inherit",padding:0}}>&#x2715;</button>
@@ -292,6 +320,8 @@ export default function App() {
   const [adjournedTitles,setAdjournedTitles]=useState([]);
   const [chamberOverrides,setChamberOverrides]=useState({});
   const [editingMeeting,setEditingMeeting]=useState(null);
+  const [meetingNotes,setMeetingNotes]=useState({});
+  const [editingNote,setEditingNote]=useState(null);
   const [formOrgType,setFormOrgType]=useState("mission");
   const [formOrgName,setFormOrgName]=useState("");
   const [formTitle,setFormTitle]=useState("");
@@ -316,6 +346,7 @@ export default function App() {
     fetchCancelledMeetings();
     fetchAdjournedMeetings();
     fetchChamberStatuses();
+    fetchMeetingNotes();
   },[]);
 
   useEffect(function(){
@@ -355,6 +386,34 @@ export default function App() {
         body:JSON.stringify({date:todayNY(),chamber:chamber,status:next})
       });
     }catch(e){}
+  }
+  async function fetchMeetingNotes(){
+    if(!SB_URL||!SB_KEY)return;
+    try{
+      const res=await fetch(SB_URL+"/rest/v1/meeting_notes?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+      if(res.ok){
+        const rows=await res.json();
+        const map={};
+        (rows||[]).forEach(function(r){map[r.meeting_title]=r.note;});
+        setMeetingNotes(map);
+      }
+    }catch(e){}
+  }
+  async function saveMeetingNote(title,note){
+    const trimmed=note.trim();
+    // Optimistic update
+    setMeetingNotes(function(p){
+      const next=Object.assign({},p);
+      if(trimmed)next[title]=trimmed; else delete next[title];
+      return next;
+    });
+    setEditingNote(null);
+    if(!SB_URL||!SB_KEY)return;
+    if(!trimmed){
+      try{await fetch(SB_URL+"/rest/v1/meeting_notes?date=eq."+todayNY()+"&meeting_title=eq."+encodeURIComponent(title),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}catch(e){}
+    } else {
+      try{await fetch(SB_URL+"/rest/v1/meeting_notes",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"resolution=merge-duplicates"},body:JSON.stringify({date:todayNY(),meeting_title:title,note:trimmed})});}catch(e){}
+    }
   }
   async function updateExtraMeeting(id,updates){
     if(!SB_URL||!SB_KEY)return;
@@ -717,7 +776,7 @@ export default function App() {
                   </div>
                 </div>
               )}
-              <MeetingsList meetings={allMeetings} onCancel={cancelMeeting} onDelete={deleteExtraMeeting} onUncancel={uncancelMeeting} onEdit={function(m){setEditingMeeting(m.extraId);}} editingId={editingMeeting} onSaveEdit={updateExtraMeeting} onCloseEdit={function(){setEditingMeeting(null);}}/>
+              <MeetingsList meetings={allMeetings} onCancel={cancelMeeting} onDelete={deleteExtraMeeting} onUncancel={uncancelMeeting} onEdit={function(m){setEditingMeeting(m.extraId);}} editingId={editingMeeting} onSaveEdit={updateExtraMeeting} onCloseEdit={function(){setEditingMeeting(null);}} meetingNotes={meetingNotes} editingNote={editingNote} onEditNote={function(title){setEditingNote(title);}} onSaveNote={saveMeetingNote} onCloseNote={function(){setEditingNote(null);}}/>
               <div style={{height:"40px"}}/>
             </div>
           );
