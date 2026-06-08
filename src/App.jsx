@@ -1,107 +1,107 @@
 import { useState, useEffect, useRef } from "react";
 
-const BASE   = import.meta.env.BASE_URL || "/”;
-const SB_URL = import.meta.env.VITE_SUPABASE_URL || "”;
-const SB_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "”;
+const BASE   = import.meta.env.BASE_URL || "/";
+const SB_URL = import.meta.env.VITE_SUPABASE_URL || "";
+const SB_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
 const SDG_COLORS = {
-1:”#E5243B”,2:”#DDA63A”,3:”#4C9F38”,4:”#C5192D”,5:”#FF3A21”,
-6:”#26BDE2”,7:”#FCC30B”,8:”#A21942”,9:”#FD6925”,10:”#DD1367”,
-11:”#FD9D24”,12:”#BF8B2E”,13:”#3F7E44”,14:”#0A97D9”,15:”#56C02B”,
-16:”#00689D”,17:”#19486A”,
+1:"#E5243B",2:"#DDA63A",3:"#4C9F38",4:"#C5192D",5:"#FF3A21",
+6:"#26BDE2",7:"#FCC30B",8:"#A21942",9:"#FD6925",10:"#DD1367",
+11:"#FD9D24",12:"#BF8B2E",13:"#3F7E44",14:"#0A97D9",15:"#56C02B",
+16:"#00689D",17:"#19486A",
 };
 
 const UN_OBSERVANCES = [
-{date:"01-04”,name:"World Braille Day”,url:"https://www.un.org/en/observances/braille-day”},
-{date:"01-24”,name:"International Day of Education”,url:"https://www.un.org/en/observances/education-day”},
-{date:"01-26”,name:"International Day of Clean Energy”,url:"https://www.un.org/en/observances/clean-energy-day”},
-{date:"01-27”,name:"International Holocaust Remembrance Day”,url:"https://www.un.org/en/observances/holocaust-remembrance-day”},
-{date:"02-02”,name:"World Wetlands Day”,url:"https://www.un.org/en/observances/wetlands-day”},
-{date:"02-04”,name:"World Cancer Day”,url:"https://www.un.org/en/observances/cancer-day”},
-{date:"02-13”,name:"World Radio Day”,url:"https://www.un.org/en/observances/radio-day”},
-{date:"02-20”,name:"World Day of Social Justice”,url:"https://www.un.org/en/observances/social-justice-day”},
-{date:"02-21”,name:"International Mother Language Day”,url:"https://www.un.org/en/observances/mother-language-day”},
-{date:"03-03”,name:"World Wildlife Day”,url:"https://www.un.org/en/observances/world-wildlife-day”},
-{date:"03-08”,name:"International Women’s Day”,url:"https://www.un.org/en/observances/international-womens-day”},
-{date:"03-20”,name:"International Day of Happiness”,url:"https://www.un.org/en/observances/happiness-day”},
-{date:"03-21”,name:"International Day for the Elimination of Racial Discrimination”,url:"https://www.un.org/en/observances/end-racism-day”},
-{date:"03-22”,name:"World Water Day”,url:"https://www.un.org/en/observances/water-day”},
-{date:"03-24”,name:"World Tuberculosis Day”,url:"https://www.un.org/en/observances/tuberculosis-day”},
-{date:"04-02”,name:"World Autism Awareness Day”,url:"https://www.un.org/en/observances/autism-day”},
-{date:"04-05”,name:"International Day of Conscience”,url:"https://www.un.org/en/observances/conscience-day”},
-{date:"04-06”,name:"International Day of Sport for Development and Peace”,url:"https://www.un.org/en/observances/sport-day”},
-{date:"04-07”,name:"World Health Day”,url:"https://www.un.org/en/observances/world-health-day”},
-{date:"04-22”,name:"International Mother Earth Day”,url:"https://www.un.org/en/observances/earth-day”},
-{date:"04-23”,name:"World Book and Copyright Day”,url:"https://www.un.org/en/observances/book-and-copyright-day”},
-{date:"04-25”,name:"World Malaria Day”,url:"https://www.un.org/en/observances/malaria-day”},
-{date:"04-28”,name:"World Day for Safety and Health at Work”,url:"https://www.un.org/en/observances/work-safety-day”},
-{date:"05-03”,name:"World Press Freedom Day”,url:"https://www.un.org/en/observances/press-freedom-day”},
-{date:"05-15”,name:"International Day of Families”,url:"https://www.un.org/en/observances/international-day-of-families”},
-{date:"05-17”,name:"World Telecommunication and Information Society Day”,url:"https://www.un.org/en/observances/telecommunication-day”},
-{date:"05-22”,name:"International Day for Biological Diversity”,url:"https://www.un.org/en/observances/biological-diversity-day”},
-{date:"05-29”,name:"International Day of UN Peacekeepers”,url:"https://www.un.org/en/observances/peacekeepers-day”},
-{date:"05-31”,name:"World No-Tobacco Day”,url:"https://www.un.org/en/observances/no-tobacco-day”},
-{date:"06-05”,name:"World Environment Day”,url:"https://www.un.org/en/observances/environment-day”},
-{date:"06-08”,name:"World Oceans Day”,url:"https://www.un.org/en/observances/oceans-day”},
-{date:"06-12”,name:"World Day Against Child Labour”,url:"https://www.un.org/en/observances/world-day-against-child-labour”},
-{date:"06-17”,name:"World Day to Combat Desertification”,url:"https://www.un.org/en/observances/desertification-day”},
-{date:"06-20”,name:"World Refugee Day”,url:"https://www.un.org/en/observances/refugee-day”},
-{date:"06-21”,name:"International Day of Yoga”,url:"https://www.un.org/en/observances/yoga-day”},
-{date:"07-11”,name:"World Population Day”,url:"https://www.un.org/en/observances/world-population-day”},
-{date:"07-18”,name:"Nelson Mandela International Day”,url:"https://www.un.org/en/observances/mandela-day”},
-{date:"07-30”,name:"World Day Against Trafficking in Persons”,url:"https://www.un.org/en/observances/end-human-trafficking-day”},
-{date:"08-12”,name:"International Youth Day”,url:"https://www.un.org/en/observances/youth-day”},
-{date:"08-19”,name:"World Humanitarian Day”,url:"https://www.un.org/en/observances/humanitarian-day”},
-{date:"09-05”,name:"International Day of Charity”,url:"https://www.un.org/en/observances/charity-day”},
-{date:"09-08”,name:"International Literacy Day”,url:"https://www.un.org/en/observances/literacy-day”},
-{date:"09-15”,name:"International Day of Democracy”,url:"https://www.un.org/en/observances/democracy-day”},
-{date:"09-16”,name:"International Day for the Preservation of the Ozone Layer”,url:"https://www.un.org/en/observances/ozone-day”},
-{date:"09-21”,name:"International Day of Peace”,url:"https://www.un.org/en/observances/international-day-of-peace”},
-{date:"09-27”,name:"World Tourism Day”,url:"https://www.un.org/en/observances/world-tourism-day”},
-{date:"10-01”,name:"International Day of Older Persons”,url:"https://www.un.org/en/observances/older-persons-day”},
-{date:"10-02”,name:"International Day of Non-Violence”,url:"https://www.un.org/en/observances/non-violence-day”},
-{date:"10-05”,name:"World Teachers Day”,url:"https://www.un.org/en/observances/world-teachers-day”},
-{date:"10-10”,name:"World Mental Health Day”,url:"https://www.un.org/en/observances/world-mental-health-day”},
-{date:"10-11”,name:"International Day of the Girl Child”,url:"https://www.un.org/en/observances/girl-child-day”},
-{date:"10-13”,name:"International Day for Disaster Risk Reduction”,url:"https://www.un.org/en/observances/disaster-reduction-day”},
-{date:"10-16”,name:"World Food Day”,url:"https://www.un.org/en/observances/food-day”},
-{date:"10-17”,name:"International Day for the Eradication of Poverty”,url:"https://www.un.org/en/observances/day-for-eradicating-poverty”},
-{date:"10-24”,name:"United Nations Day”,url:"https://www.un.org/en/observances/united-nations-day”},
-{date:"11-06”,name:"International Day for Preventing the Exploitation of the Environment in War”,url:"https://www.un.org/en/observances/environment-in-war-day”},
-{date:"11-16”,name:"International Day for Tolerance”,url:"https://www.un.org/en/observances/tolerance-day”},
-{date:"11-19”,name:"World Toilet Day”,url:"https://www.un.org/en/observances/toilet-day”},
-{date:"11-20”,name:"World Children’s Day”,url:"https://www.un.org/en/observances/world-childrens-day”},
-{date:"11-25”,name:"International Day for the Elimination of Violence against Women”,url:"https://www.un.org/en/observances/ending-violence-against-women-day”},
-{date:"12-01”,name:"World AIDS Day”,url:"https://www.un.org/en/observances/world-aids-day”},
-{date:"12-03”,name:"International Day of Persons with Disabilities”,url:"https://www.un.org/en/observances/day-of-persons-with-disabilities”},
-{date:"12-05”,name:"World Soil Day”,url:"https://www.un.org/en/observances/world-soil-day”},
-{date:"12-10”,name:"Human Rights Day”,url:"https://www.un.org/en/observances/human-rights-day”},
-{date:"12-11”,name:"International Mountain Day”,url:"https://www.un.org/en/observances/mountain-day”},
-{date:"12-18”,name:"International Migrants Day”,url:"https://www.un.org/en/observances/migrants-day”},
+{date:"01-04",name:"World Braille Day",url:"https://www.un.org/en/observances/braille-day"},
+{date:"01-24",name:"International Day of Education",url:"https://www.un.org/en/observances/education-day"},
+{date:"01-26",name:"International Day of Clean Energy",url:"https://www.un.org/en/observances/clean-energy-day"},
+{date:"01-27",name:"International Holocaust Remembrance Day",url:"https://www.un.org/en/observances/holocaust-remembrance-day"},
+{date:"02-02",name:"World Wetlands Day",url:"https://www.un.org/en/observances/wetlands-day"},
+{date:"02-04",name:"World Cancer Day",url:"https://www.un.org/en/observances/cancer-day"},
+{date:"02-13",name:"World Radio Day",url:"https://www.un.org/en/observances/radio-day"},
+{date:"02-20",name:"World Day of Social Justice",url:"https://www.un.org/en/observances/social-justice-day"},
+{date:"02-21",name:"International Mother Language Day",url:"https://www.un.org/en/observances/mother-language-day"},
+{date:"03-03",name:"World Wildlife Day",url:"https://www.un.org/en/observances/world-wildlife-day"},
+{date:"03-08",name:"International Women’s Day",url:"https://www.un.org/en/observances/international-womens-day"},
+{date:"03-20",name:"International Day of Happiness",url:"https://www.un.org/en/observances/happiness-day"},
+{date:"03-21",name:"International Day for the Elimination of Racial Discrimination",url:"https://www.un.org/en/observances/end-racism-day"},
+{date:"03-22",name:"World Water Day",url:"https://www.un.org/en/observances/water-day"},
+{date:"03-24",name:"World Tuberculosis Day",url:"https://www.un.org/en/observances/tuberculosis-day"},
+{date:"04-02",name:"World Autism Awareness Day",url:"https://www.un.org/en/observances/autism-day"},
+{date:"04-05",name:"International Day of Conscience",url:"https://www.un.org/en/observances/conscience-day"},
+{date:"04-06",name:"International Day of Sport for Development and Peace",url:"https://www.un.org/en/observances/sport-day"},
+{date:"04-07",name:"World Health Day",url:"https://www.un.org/en/observances/world-health-day"},
+{date:"04-22",name:"International Mother Earth Day",url:"https://www.un.org/en/observances/earth-day"},
+{date:"04-23",name:"World Book and Copyright Day",url:"https://www.un.org/en/observances/book-and-copyright-day"},
+{date:"04-25",name:"World Malaria Day",url:"https://www.un.org/en/observances/malaria-day"},
+{date:"04-28",name:"World Day for Safety and Health at Work",url:"https://www.un.org/en/observances/work-safety-day"},
+{date:"05-03",name:"World Press Freedom Day",url:"https://www.un.org/en/observances/press-freedom-day"},
+{date:"05-15",name:"International Day of Families",url:"https://www.un.org/en/observances/international-day-of-families"},
+{date:"05-17",name:"World Telecommunication and Information Society Day",url:"https://www.un.org/en/observances/telecommunication-day"},
+{date:"05-22",name:"International Day for Biological Diversity",url:"https://www.un.org/en/observances/biological-diversity-day"},
+{date:"05-29",name:"International Day of UN Peacekeepers",url:"https://www.un.org/en/observances/peacekeepers-day"},
+{date:"05-31",name:"World No-Tobacco Day",url:"https://www.un.org/en/observances/no-tobacco-day"},
+{date:"06-05",name:"World Environment Day",url:"https://www.un.org/en/observances/environment-day"},
+{date:"06-08",name:"World Oceans Day",url:"https://www.un.org/en/observances/oceans-day"},
+{date:"06-12",name:"World Day Against Child Labour",url:"https://www.un.org/en/observances/world-day-against-child-labour"},
+{date:"06-17",name:"World Day to Combat Desertification",url:"https://www.un.org/en/observances/desertification-day"},
+{date:"06-20",name:"World Refugee Day",url:"https://www.un.org/en/observances/refugee-day"},
+{date:"06-21",name:"International Day of Yoga",url:"https://www.un.org/en/observances/yoga-day"},
+{date:"07-11",name:"World Population Day",url:"https://www.un.org/en/observances/world-population-day"},
+{date:"07-18",name:"Nelson Mandela International Day",url:"https://www.un.org/en/observances/mandela-day"},
+{date:"07-30",name:"World Day Against Trafficking in Persons",url:"https://www.un.org/en/observances/end-human-trafficking-day"},
+{date:"08-12",name:"International Youth Day",url:"https://www.un.org/en/observances/youth-day"},
+{date:"08-19",name:"World Humanitarian Day",url:"https://www.un.org/en/observances/humanitarian-day"},
+{date:"09-05",name:"International Day of Charity",url:"https://www.un.org/en/observances/charity-day"},
+{date:"09-08",name:"International Literacy Day",url:"https://www.un.org/en/observances/literacy-day"},
+{date:"09-15",name:"International Day of Democracy",url:"https://www.un.org/en/observances/democracy-day"},
+{date:"09-16",name:"International Day for the Preservation of the Ozone Layer",url:"https://www.un.org/en/observances/ozone-day"},
+{date:"09-21",name:"International Day of Peace",url:"https://www.un.org/en/observances/international-day-of-peace"},
+{date:"09-27",name:"World Tourism Day",url:"https://www.un.org/en/observances/world-tourism-day"},
+{date:"10-01",name:"International Day of Older Persons",url:"https://www.un.org/en/observances/older-persons-day"},
+{date:"10-02",name:"International Day of Non-Violence",url:"https://www.un.org/en/observances/non-violence-day"},
+{date:"10-05",name:"World Teachers Day",url:"https://www.un.org/en/observances/world-teachers-day"},
+{date:"10-10",name:"World Mental Health Day",url:"https://www.un.org/en/observances/world-mental-health-day"},
+{date:"10-11",name:"International Day of the Girl Child",url:"https://www.un.org/en/observances/girl-child-day"},
+{date:"10-13",name:"International Day for Disaster Risk Reduction",url:"https://www.un.org/en/observances/disaster-reduction-day"},
+{date:"10-16",name:"World Food Day",url:"https://www.un.org/en/observances/food-day"},
+{date:"10-17",name:"International Day for the Eradication of Poverty",url:"https://www.un.org/en/observances/day-for-eradicating-poverty"},
+{date:"10-24",name:"United Nations Day",url:"https://www.un.org/en/observances/united-nations-day"},
+{date:"11-06",name:"International Day for Preventing the Exploitation of the Environment in War",url:"https://www.un.org/en/observances/environment-in-war-day"},
+{date:"11-16",name:"International Day for Tolerance",url:"https://www.un.org/en/observances/tolerance-day"},
+{date:"11-19",name:"World Toilet Day",url:"https://www.un.org/en/observances/toilet-day"},
+{date:"11-20",name:"World Children’s Day",url:"https://www.un.org/en/observances/world-childrens-day"},
+{date:"11-25",name:"International Day for the Elimination of Violence against Women",url:"https://www.un.org/en/observances/ending-violence-against-women-day"},
+{date:"12-01",name:"World AIDS Day",url:"https://www.un.org/en/observances/world-aids-day"},
+{date:"12-03",name:"International Day of Persons with Disabilities",url:"https://www.un.org/en/observances/day-of-persons-with-disabilities"},
+{date:"12-05",name:"World Soil Day",url:"https://www.un.org/en/observances/world-soil-day"},
+{date:"12-10",name:"Human Rights Day",url:"https://www.un.org/en/observances/human-rights-day"},
+{date:"12-11",name:"International Mountain Day",url:"https://www.un.org/en/observances/mountain-day"},
+{date:"12-18",name:"International Migrants Day",url:"https://www.un.org/en/observances/migrants-day"},
 ];
 
-function todayNY(){const p=new Intl.DateTimeFormat("en-US”,{timeZone:"America/New_York”,year:"numeric”,month:"2-digit”,day:"2-digit”}).formatToParts(new Date());const o={};p.forEach(function(x){o[x.type]=x.value;});return o.year+”-”+o.month+”-”+o.day;}
-function mmddNY(){const p=new Intl.DateTimeFormat("en-US”,{timeZone:"America/New_York”,month:"2-digit”,day:"2-digit”}).formatToParts(new Date());const o={};p.forEach(function(x){o[x.type]=x.value;});return o.month+”-”+o.day;}
+function todayNY(){const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());const o={};p.forEach(function(x){o[x.type]=x.value;});return o.year+"-"+o.month+"-"+o.day;}
+function mmddNY(){const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",month:"2-digit",day:"2-digit"}).formatToParts(new Date());const o={};p.forEach(function(x){o[x.type]=x.value;});return o.month+"-"+o.day;}
 function getTodayObservance(){return UN_OBSERVANCES.find(function(o){return o.date===mmddNY();})||null;}
 function getWeekendObservances(){
-const now=new Date(new Date().toLocaleString("en-US”,{timeZone:"America/New_York”}));
+const now=new Date(new Date().toLocaleString("en-US",{timeZone:"America/New_York"}));
 const dow=now.getDay();const results=[];
 const offsets=dow===5?[1,2]:dow===1?[-2,-1]:[];
-const labels=dow===5?["Saturday”,"Sunday”]:["Last Saturday”,"Last Sunday”];
+const labels=dow===5?["Saturday","Sunday"]:["Last Saturday","Last Sunday"];
 offsets.forEach(function(d,i){
 const dt=new Date(now);dt.setDate(dt.getDate()+d);
-const m=String(dt.getMonth()+1).padStart(2,"0”),day=String(dt.getDate()).padStart(2,"0”);
-const obs=UN_OBSERVANCES.find(function(o){return o.date===m+”-”+day;});
+const m=String(dt.getMonth()+1).padStart(2,"0"),day=String(dt.getDate()).padStart(2,"0");
+const obs=UN_OBSERVANCES.find(function(o){return o.date===m+"-"+day;});
 if(obs)results.push(Object.assign({},obs,{weekday:labels[i],past:dow===1}));
 });
 return results;
 }
-function formatDate(d){return d.toLocaleDateString("en-US”,{timeZone:"America/New_York”,weekday:"long”,year:"numeric”,month:"long”,day:"numeric”});}
+function formatDate(d){return d.toLocaleDateString("en-US",{timeZone:"America/New_York",weekday:"long",year:"numeric",month:"long",day:"numeric"});}
 
-const CHAMBER_ICONS={"General Assembly Hall”:"GA”,"Security Council”:"SC”,"Trusteeship Council”:"TC”,"Economic and Social Council”:"ECOSOC”};
-const ROOM_TO_CHAMBER={"general assembly hall”:"General Assembly Hall”,"security council chamber”:"Security Council”,"security council consultations room”:"Security Council”,"trusteeship council chamber”:"Trusteeship Council”,"economic and social council chamber”:"Economic and Social Council”};
-const ORGAN_TO_CHAMBER={"general assembly”:"General Assembly Hall”,"security council”:"Security Council”,"trusteeship council”:"Trusteeship Council”,"economic and social council”:"Economic and Social Council”};
-const ROOM_DISPLAY={"General Assembly Hall”:"General Assembly Hall”,"Security Council Chamber”:"Security Council”,"Trusteeship Council Chamber”:"Trusteeship Council”,"Economic and Social Council Chamber”:"Economic and Social Council”};
+const CHAMBER_ICONS={"General Assembly Hall":"GA","Security Council":"SC","Trusteeship Council":"TC","Economic and Social Council":"ECOSOC"};
+const ROOM_TO_CHAMBER={"general assembly hall":"General Assembly Hall","security council chamber":"Security Council","security council consultations room":"Security Council","trusteeship council chamber":"Trusteeship Council","economic and social council chamber":"Economic and Social Council"};
+const ORGAN_TO_CHAMBER={"general assembly":"General Assembly Hall","security council":"Security Council","trusteeship council":"Trusteeship Council","economic and social council":"Economic and Social Council"};
+const ROOM_DISPLAY={"General Assembly Hall":"General Assembly Hall","Security Council Chamber":"Security Council","Trusteeship Council Chamber":"Trusteeship Council","Economic and Social Council Chamber":"Economic and Social Council"};
 
 // – Meeting Row –
 function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,adjournedTitles}) {
@@ -112,36 +112,36 @@ const hasAgenda=m.agenda&&m.agenda.length>0;
 const cancelKey=m.title;
 return (
 <div style={{opacity:adjourned?0.6:1}}>
-<div style={{display:"flex”,gap:"6px”,alignItems:"flex-start”}}>
-<span style={{fontSize:"10px”,color:adjourned?"rgba(255,200,0,0.5)”:”#FCC30B”,fontWeight:"700”,whiteSpace:"nowrap”,marginTop:"3px”,flexShrink:0}}>{m.time}</span>
+<div style={{display:"flex",gap:"6px",alignItems:"flex-start"}}>
+<span style={{fontSize:"10px",color:adjourned?"rgba(255,200,0,0.5)":"#FCC30B",fontWeight:"700",whiteSpace:"nowrap",marginTop:"3px",flexShrink:0}}>{m.time}</span>
 <div
 onClick={hasAgenda?function(){setAgendaOpen(function(o){return !o;});}:undefined}
-style={{flex:1,cursor:hasAgenda?"pointer”:"default”,padding:"1px 0”}}
+style={{flex:1,cursor:hasAgenda?"pointer":"default",padding:"1px 0"}}
 >
-<span style={{fontSize:"12px”,lineHeight:"1.35”,fontWeight:"600”,
-color:adjourned?"rgba(255,255,255,0.35)”:"rgba(255,255,255,0.9)”,
-textDecoration:adjourned?"line-through”:"none”}}>
+<span style={{fontSize:"12px",lineHeight:"1.35",fontWeight:"600",
+color:adjourned?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.9)",
+textDecoration:adjourned?"line-through":"none"}}>
 {m.title}
 </span>
-{adjourned&&<span style={{marginLeft:"5px”,fontSize:"8px”,color:"rgba(255,200,0,0.7)”,fontWeight:"700”,verticalAlign:"middle”}}>ADJOURNED</span>}
-{hasAgenda&&!adjourned&&<span style={{marginLeft:"5px”,fontSize:"9px”,color:"rgba(0,160,220,0.45)”,verticalAlign:"middle”}}>{agendaOpen?”▲”:”▼”}</span>}
+{adjourned&&<span style={{marginLeft:"5px",fontSize:"8px",color:"rgba(255,200,0,0.7)",fontWeight:"700",verticalAlign:"middle"}}>ADJOURNED</span>}
+{hasAgenda&&!adjourned&&<span style={{marginLeft:"5px",fontSize:"9px",color:"rgba(0,160,220,0.45)",verticalAlign:"middle"}}>{agendaOpen?"▲":"▼"}</span>}
 </div>
 {!adjourned?(
-<button onClick={function(e){e.stopPropagation();setShowActions(function(s){return !s;});}} style={{flexShrink:0,background:"rgba(255,255,255,0.05)”,border:"1px solid rgba(255,255,255,0.1)”,color:"rgba(255,255,255,0.3)”,borderRadius:"5px”,width:"20px”,height:"20px”,fontSize:"12px”,cursor:"pointer”,display:"flex”,alignItems:"center”,justifyContent:"center”,padding:0,lineHeight:1}}>⋮</button>
+<button onClick={function(e){e.stopPropagation();setShowActions(function(s){return !s;});}} style={{flexShrink:0,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.3)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"12px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>⋮</button>
 ):(
-<button onClick={function(){onUnadjourn&&onUnadjourn(cancelKey);}} title="Restore” style={{flexShrink:0,background:"rgba(255,200,0,0.1)”,border:"1px solid rgba(255,200,0,0.3)”,color:"rgba(255,200,0,0.7)”,borderRadius:"5px”,width:"20px”,height:"20px”,fontSize:"10px”,cursor:"pointer”,display:"flex”,alignItems:"center”,justifyContent:"center”,padding:0,lineHeight:1}}>↩</button>
+<button onClick={function(){onUnadjourn&&onUnadjourn(cancelKey);}} title="Restore" style={{flexShrink:0,background:"rgba(255,200,0,0.1)",border:"1px solid rgba(255,200,0,0.3)",color:"rgba(255,200,0,0.7)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>↩</button>
 )}
 </div>
 {hasAgenda&&agendaOpen&&(
-<div style={{marginTop:"6px”,marginLeft:"46px”,paddingLeft:"10px”,borderLeft:"2px solid rgba(0,150,214,0.3)”,display:"flex”,flexDirection:"column”,gap:"4px”,animation:"fadeSlideIn 0.2s ease”}}>
-{m.agenda.map(function(item,j){return(<span key={j} style={{fontSize:"11px”,color:"rgba(255,255,255,0.75)”,lineHeight:"1.5”}}>{item}</span>);})}
+<div style={{marginTop:"6px",marginLeft:"46px",paddingLeft:"10px",borderLeft:"2px solid rgba(0,150,214,0.3)",display:"flex",flexDirection:"column",gap:"4px",animation:"fadeSlideIn 0.2s ease"}}>
+{m.agenda.map(function(item,j){return(<span key={j} style={{fontSize:"11px",color:"rgba(255,255,255,0.75)",lineHeight:"1.5"}}>{item}</span>);})}
 </div>
 )}
 {showActions&&!adjourned&&(
-<div style={{marginTop:"6px”,marginLeft:"46px”,display:"flex”,gap:"6px”,flexWrap:"wrap”,animation:"fadeSlideIn 0.15s ease”}}>
-<button onClick={function(){onAdjourn&&onAdjourn(cancelKey);setShowActions(false);}} style={{background:"rgba(252,195,11,0.12)”,border:"1px solid rgba(252,195,11,0.3)”,color:”#FCC30B”,borderRadius:"6px”,padding:"4px 10px”,fontSize:"10px”,fontWeight:"700”,cursor:"pointer”,fontFamily:"inherit”}}>✓ Adjourned</button>
-<button onClick={function(){onCancel&&onCancel(cancelKey);setShowActions(false);}} style={{background:"rgba(220,50,50,0.12)”,border:"1px solid rgba(220,50,50,0.3)”,color:”#ff8080”,borderRadius:"6px”,padding:"4px 10px”,fontSize:"10px”,fontWeight:"700”,cursor:"pointer”,fontFamily:"inherit”}}>✕ Cancel</button>
-<button onClick={function(){setShowActions(false);}} style={{background:"rgba(255,255,255,0.05)”,border:"1px solid rgba(255,255,255,0.1)”,color:"rgba(255,255,255,0.4)”,borderRadius:"6px”,padding:"4px 10px”,fontSize:"10px”,cursor:"pointer”,fontFamily:"inherit”}}>Close</button>
+<div style={{marginTop:"6px",marginLeft:"46px",display:"flex",gap:"6px",flexWrap:"wrap",animation:"fadeSlideIn 0.15s ease"}}>
+<button onClick={function(){onAdjourn&&onAdjourn(cancelKey);setShowActions(false);}} style={{background:"rgba(252,195,11,0.12)",border:"1px solid rgba(252,195,11,0.3)",color:"#FCC30B",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>✓ Adjourned</button>
+<button onClick={function(){onCancel&&onCancel(cancelKey);setShowActions(false);}} style={{background:"rgba(220,50,50,0.12)",border:"1px solid rgba(220,50,50,0.3)",color:"#ff8080",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>✕ Cancel</button>
+<button onClick={function(){setShowActions(false);}} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.4)",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",cursor:"pointer",fontFamily:"inherit"}}>Close</button>
 </div>
 )}
 </div>
@@ -150,24 +150,24 @@ textDecoration:adjourned?"line-through”:"none”}}>
 
 // – Chamber Card –
 function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,adjournedTitles,cancelledTitles}) {
-const icon=CHAMBER_ICONS[chamber.room]||"UN”;
+const icon=CHAMBER_ICONS[chamber.room]||"UN";
 const hasSession=chamber.meetings&&chamber.meetings.some(function(m){return !m.cancelled;});
-const isSC=chamber.room==="Security Council”;
+const isSC=chamber.room==="Security Council";
 return (
-<div style={{background:hasSession?"rgba(0,150,214,0.08)”:"rgba(255,255,255,0.02)”,border:hasSession?"1px solid rgba(0,150,214,0.25)”:"1px solid rgba(255,255,255,0.06)”,borderRadius:"10px”,padding:"14px 16px”,animation:"fadeSlideIn 0.4s ease both”,animationDelay:(index*0.08)+"s”}}>
-<div style={{display:"flex”,alignItems:"center”,gap:"8px”,marginBottom:hasSession?"10px”:"0”}}>
-<span style={{fontSize:"9px”,fontWeight:"800”,color:hasSession?”#00A0DC”:"rgba(255,255,255,0.3)”,background:hasSession?"rgba(0,150,214,0.15)”:"rgba(255,255,255,0.06)”,borderRadius:"5px”,padding:"2px 5px”,letterSpacing:"0.5px”,flexShrink:0}}>{icon}</span>
-<span style={{flex:1,fontSize:"10px”,fontWeight:"700”,color:hasSession?”#00A0DC”:"rgba(255,255,255,0.3)”,textTransform:"uppercase”,letterSpacing:"0.6px”,lineHeight:"1.3”}}>{chamber.room}</span>
+<div style={{background:hasSession?"rgba(0,150,214,0.08)":"rgba(255,255,255,0.02)",border:hasSession?"1px solid rgba(0,150,214,0.25)":"1px solid rgba(255,255,255,0.06)",borderRadius:"10px",padding:"14px 16px",animation:"fadeSlideIn 0.4s ease both",animationDelay:(index*0.08)+"s"}}>
+<div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:hasSession?"10px":"0"}}>
+<span style={{fontSize:"9px",fontWeight:"800",color:hasSession?"#00A0DC":"rgba(255,255,255,0.3)",background:hasSession?"rgba(0,150,214,0.15)":"rgba(255,255,255,0.06)",borderRadius:"5px",padding:"2px 5px",letterSpacing:"0.5px",flexShrink:0}}>{icon}</span>
+<span style={{flex:1,fontSize:"10px",fontWeight:"700",color:hasSession?"#00A0DC":"rgba(255,255,255,0.3)",textTransform:"uppercase",letterSpacing:"0.6px",lineHeight:"1.3"}}>{chamber.room}</span>
 {isSC&&hasSession&&(
-<a href="https://press.un.org/en/security-council” target=”_blank” rel="noopener noreferrer” style={{background:"rgba(255,255,255,0.06)”,border:"1px solid rgba(0,150,214,0.3)”,color:”#00A0DC”,borderRadius:"6px”,padding:"2px 7px”,fontSize:"9px”,fontWeight:"700”,letterSpacing:"0.5px”,flexShrink:0,textDecoration:"none”}}>PRESS ↗</a>
+<a href="https://press.un.org/en/security-council" target="_blank" rel="noopener noreferrer" style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(0,150,214,0.3)",color:"#00A0DC",borderRadius:"6px",padding:"2px 7px",fontSize:"9px",fontWeight:"700",letterSpacing:"0.5px",flexShrink:0,textDecoration:"none"}}>PRESS ↗</a>
 )}
 </div>
 {hasSession?(
-<div style={{display:"flex”,flexDirection:"column”,gap:"10px”}}>
+<div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
 {(chamber.meetings||[]).map(function(m,i){return <MeetingRow key={i} m={m} onCancel={onCancel} onAdjourn={onAdjourn} onUnadjourn={onUnadjourn} adjournedTitles={adjournedTitles}/>;} )}
 </div>
 ):(
-<p style={{margin:0,fontSize:"11px”,color:"rgba(255,255,255,0.25)”,fontStyle:"italic”}}>No session today</p>
+<p style={{margin:0,fontSize:"11px",color:"rgba(255,255,255,0.25)",fontStyle:"italic"}}>No session today</p>
 )}
 </div>
 );
@@ -178,32 +178,32 @@ function MeetingsList({meetings,onCancel,onDelete,onUncancel}) {
 const [expanded,setExpanded]=useState(false);
 const visible=[…meetings.slice(0,5),…(expanded?meetings.slice(5):[])];
 return (
-<div style={{background:"rgba(255,255,255,0.03)”,border:"1px solid rgba(255,255,255,0.08)”,borderRadius:"10px”,padding:"16px”,animation:"fadeSlideIn 0.4s ease both”,animationDelay:"0.35s”}}>
+<div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:"10px",padding:"16px",animation:"fadeSlideIn 0.4s ease both",animationDelay:"0.35s"}}>
 {visible.map(function(m,i){
-const title=typeof m==="string”?m:(m.title||””);
-const isExtra=typeof m==="string”?false:!!m.isExtra;
-const extraId=typeof m==="string”?null:m.extraId;
-const cancelKey=typeof m==="string”?m:(m.cancelKey||m.title||m);
-const cancelled=typeof m==="string”?false:!!m.cancelled;
+const title=typeof m==="string"?m:(m.title||"");
+const isExtra=typeof m==="string"?false:!!m.isExtra;
+const extraId=typeof m==="string"?null:m.extraId;
+const cancelKey=typeof m==="string"?m:(m.cancelKey||m.title||m);
+const cancelled=typeof m==="string"?false:!!m.cancelled;
 return(
-<div key={i} style={{display:"flex”,alignItems:"center”,gap:"8px”,paddingBottom:i<visible.length-1?"10px”:"0”,marginBottom:i<visible.length-1?"10px”:"0”,borderBottom:i<visible.length-1?"1px solid rgba(255,255,255,0.05)”:"none”}}>
-<span style={{color:cancelled?"rgba(255,100,100,0.4)”:"rgba(0,160,220,0.5)”,fontSize:"9px”,flexShrink:0}}>●</span>
-<span style={{flex:1,fontSize:"13px”,lineHeight:"1.45”,color:cancelled?"rgba(255,255,255,0.35)”:"rgba(255,255,255,0.8)”,textDecoration:cancelled?"line-through”:"none”}}>
+<div key={i} style={{display:"flex",alignItems:"center",gap:"8px",paddingBottom:i<visible.length-1?"10px":"0",marginBottom:i<visible.length-1?"10px":"0",borderBottom:i<visible.length-1?"1px solid rgba(255,255,255,0.05)":"none"}}>
+<span style={{color:cancelled?"rgba(255,100,100,0.4)":"rgba(0,160,220,0.5)",fontSize:"9px",flexShrink:0}}>●</span>
+<span style={{flex:1,fontSize:"13px",lineHeight:"1.45",color:cancelled?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.8)",textDecoration:cancelled?"line-through":"none"}}>
 {title}
-{isExtra&&!cancelled&&<span style={{marginLeft:"6px”,fontSize:"9px”,color:”#FCC30B”,fontWeight:"700”,verticalAlign:"middle”}}>ADDED</span>}
-{cancelled&&<span style={{marginLeft:"6px”,fontSize:"9px”,color:”#ff6b6b”,fontWeight:"700”,verticalAlign:"middle”}}>CANCELLED</span>}
+{isExtra&&!cancelled&&<span style={{marginLeft:"6px",fontSize:"9px",color:"#FCC30B",fontWeight:"700",verticalAlign:"middle"}}>ADDED</span>}
+{cancelled&&<span style={{marginLeft:"6px",fontSize:"9px",color:"#ff6b6b",fontWeight:"700",verticalAlign:"middle"}}>CANCELLED</span>}
 </span>
 {!cancelled?(
-<button onClick={function(e){e.stopPropagation();isExtra?onDelete(extraId):onCancel(cancelKey);}} style={{flexShrink:0,background:"rgba(220,50,50,0.15)”,border:"1px solid rgba(220,50,50,0.35)”,color:”#ff8080”,borderRadius:"6px”,width:"24px”,height:"24px”,fontSize:"13px”,fontWeight:"700”,cursor:"pointer”,display:"flex”,alignItems:"center”,justifyContent:"center”,lineHeight:1,fontFamily:"inherit”,padding:0}}>✕</button>
+<button onClick={function(e){e.stopPropagation();isExtra?onDelete(extraId):onCancel(cancelKey);}} style={{flexShrink:0,background:"rgba(220,50,50,0.15)",border:"1px solid rgba(220,50,50,0.35)",color:"#ff8080",borderRadius:"6px",width:"24px",height:"24px",fontSize:"13px",fontWeight:"700",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,fontFamily:"inherit",padding:0}}>✕</button>
 ):!isExtra&&(
-<button onClick={function(e){e.stopPropagation();onUncancel(cancelKey);}} style={{flexShrink:0,background:"rgba(76,159,56,0.15)”,border:"1px solid rgba(76,159,56,0.35)”,color:”#56C02B”,borderRadius:"6px”,width:"24px”,height:"24px”,fontSize:"13px”,fontWeight:"700”,cursor:"pointer”,display:"flex”,alignItems:"center”,justifyContent:"center”,lineHeight:1,fontFamily:"inherit”,padding:0}}>↩</button>
+<button onClick={function(e){e.stopPropagation();onUncancel(cancelKey);}} style={{flexShrink:0,background:"rgba(76,159,56,0.15)",border:"1px solid rgba(76,159,56,0.35)",color:"#56C02B",borderRadius:"6px",width:"24px",height:"24px",fontSize:"13px",fontWeight:"700",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,fontFamily:"inherit",padding:0}}>↩</button>
 )}
 </div>
 );
 })}
 {meetings.length>5&&(
-<button onClick={function(){setExpanded(function(e){return !e;});}} style={{background:"transparent”,border:"none”,color:”#00A0DC”,fontSize:"12px”,fontWeight:"600”,cursor:"pointer”,padding:"8px 0 0”,fontFamily:”‘DM Sans’,sans-serif”}}>
-{expanded?"Show less”:"Show "+(meetings.length-5)+” more meetings”}
+<button onClick={function(){setExpanded(function(e){return !e;});}} style={{background:"transparent",border:"none",color:"#00A0DC",fontSize:"12px",fontWeight:"600",cursor:"pointer",padding:"8px 0 0",fontFamily:"‘DM Sans’,sans-serif"}}>
+{expanded?"Show less":"Show "+(meetings.length-5)+" more meetings"}
 </button>
 )}
 </div>
@@ -215,30 +215,30 @@ export default function App() {
 const [data,setData]=useState(null);
 const [loading,setLoading]=useState(false);
 const [error,setError]=useState(null);
-const [dateLabel,setDateLabel]=useState(””);
-const [journalSource,setJournalSource]=useState("live”);
-const [dots,setDots]=useState(”.”);
-const [loadingMsg,setLoadingMsg]=useState("Fetching UN Journal”);
+const [dateLabel,setDateLabel]=useState("");
+const [journalSource,setJournalSource]=useState("live");
+const [dots,setDots]=useState(".");
+const [loadingMsg,setLoadingMsg]=useState("Fetching UN Journal");
 const fetchedRef=useRef(false);
 const [showAddForm,setShowAddForm]=useState(false);
 const [extraMeetings,setExtraMeetings]=useState([]);
 const [deletedExtraIds,setDeletedExtraIds]=useState([]);
 const [cancelledTitles,setCancelledTitles]=useState([]);
 const [adjournedTitles,setAdjournedTitles]=useState([]);
-const [formOrgType,setFormOrgType]=useState("mission”);
-const [formOrgName,setFormOrgName]=useState(””);
-const [formTitle,setFormTitle]=useState(””);
-const [formRoom,setFormRoom]=useState("Trusteeship Council Chamber”);
-const [formTimeStart,setFormTimeStart]=useState("15:00”);
-const [formTimeEnd,setFormTimeEnd]=useState(””);
+const [formOrgType,setFormOrgType]=useState("mission");
+const [formOrgName,setFormOrgName]=useState("");
+const [formTitle,setFormTitle]=useState("");
+const [formRoom,setFormRoom]=useState("Trusteeship Council Chamber");
+const [formTimeStart,setFormTimeStart]=useState("15:00");
+const [formTimeEnd,setFormTimeEnd]=useState("");
 const [formClosed,setFormClosed]=useState(false);
-const [formNote,setFormNote]=useState(””);
+const [formNote,setFormNote]=useState("");
 const [formSaving,setFormSaving]=useState(false);
-const [formErr,setFormErr]=useState(””);
+const [formErr,setFormErr]=useState("");
 
 const todayObservance=getTodayObservance();
 const weekendObservances=getWeekendObservances();
-const loadingMessages=["Fetching UN Journal”,"Parsing chamber schedules”,"Scanning all meetings”,"Almost ready”];
+const loadingMessages=["Fetching UN Journal","Parsing chamber schedules","Scanning all meetings","Almost ready"];
 
 useEffect(function(){
 setDateLabel(formatDate(new Date()));
@@ -254,80 +254,80 @@ useEffect(function(){
 if(!loading)return;
 let i=0;
 const msgI=setInterval(function(){i=(i+1)%loadingMessages.length;setLoadingMsg(loadingMessages[i]);},2000);
-const dotI=setInterval(function(){setDots(function(d){return d.length>=3?”.”:d+”.”;});},500);
+const dotI=setInterval(function(){setDots(function(d){return d.length>=3?".":d+".";});},500);
 return function(){clearInterval(msgI);clearInterval(dotI);};
 },[loading]);
 
-async function fetchExtraMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+”/rest/v1/extra_meetings?date=eq.”+todayNY()+”&order=time_start.asc”,{headers:{"apikey”:SB_KEY,"Authorization”:"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setExtraMeetings(rows||[]);}}catch(e){}}
-async function fetchCancelledMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+”/rest/v1/cancelled_meetings?date=eq.”+todayNY(),{headers:{"apikey”:SB_KEY,"Authorization”:"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setCancelledTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
-async function fetchAdjournedMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+”/rest/v1/adjourned_meetings?date=eq.”+todayNY(),{headers:{"apikey”:SB_KEY,"Authorization”:"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setAdjournedTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
+async function fetchExtraMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/extra_meetings?date=eq."+todayNY()+"&order=time_start.asc",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setExtraMeetings(rows||[]);}}catch(e){}}
+async function fetchCancelledMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setCancelledTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
+async function fetchAdjournedMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setAdjournedTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
 
 async function adjournMeeting(key){
 setAdjournedTitles(function(p){return […p,key];});
 if(!SB_URL||!SB_KEY)return;
-try{await fetch(SB_URL+”/rest/v1/adjourned_meetings”,{method:"POST”,headers:{"Content-Type”:"application/json”,"apikey”:SB_KEY,"Authorization”:"Bearer "+SB_KEY,"Prefer”:"return=minimal”},body:JSON.stringify({date:todayNY(),meeting_title:key})});}catch(e){}
+try{await fetch(SB_URL+"/rest/v1/adjourned_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify({date:todayNY(),meeting_title:key})});}catch(e){}
 }
 async function unadjournMeeting(key){
 setAdjournedTitles(function(p){return p.filter(function(t){return t!==key;});});
 if(!SB_URL||!SB_KEY)return;
-try{await fetch(SB_URL+”/rest/v1/adjourned_meetings?date=eq.”+todayNY()+”&meeting_title=eq.”+encodeURIComponent(key),{method:"DELETE”,headers:{"apikey”:SB_KEY,"Authorization”:"Bearer "+SB_KEY}});}catch(e){}
+try{await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY()+"&meeting_title=eq."+encodeURIComponent(key),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}catch(e){}
 }
 async function cancelMeeting(key){
 setCancelledTitles(function(p){return […p,key];});
 if(!SB_URL||!SB_KEY)return;
-try{await fetch(SB_URL+”/rest/v1/cancelled_meetings”,{method:"POST”,headers:{"Content-Type”:"application/json”,"apikey”:SB_KEY,"Authorization”:"Bearer "+SB_KEY,"Prefer”:"return=minimal”},body:JSON.stringify({date:todayNY(),meeting_title:key})});}
+try{await fetch(SB_URL+"/rest/v1/cancelled_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify({date:todayNY(),meeting_title:key})});}
 catch(e){setCancelledTitles(function(p){return p.filter(function(t){return t!==key;});});}
 }
 async function uncancelMeeting(key){
 setCancelledTitles(function(p){return p.filter(function(t){return t!==key;});});
 if(!SB_URL||!SB_KEY)return;
-try{await fetch(SB_URL+”/rest/v1/cancelled_meetings?date=eq.”+todayNY()+”&meeting_title=eq.”+encodeURIComponent(key),{method:"DELETE”,headers:{"apikey”:SB_KEY,"Authorization”:"Bearer "+SB_KEY}});}
+try{await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY()+"&meeting_title=eq."+encodeURIComponent(key),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}
 catch(e){setCancelledTitles(function(p){return […p,key];});}
 }
 async function deleteExtraMeeting(id){
 setDeletedExtraIds(function(p){return […p,id];});
 if(!SB_URL||!SB_KEY)return;
-try{await fetch(SB_URL+”/rest/v1/extra_meetings?id=eq.”+id,{method:"DELETE”,headers:{"apikey”:SB_KEY,"Authorization”:"Bearer "+SB_KEY}});}catch(e){}
+try{await fetch(SB_URL+"/rest/v1/extra_meetings?id=eq."+id,{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}catch(e){}
 }
 async function saveExtraMeeting(){
-if(!SB_URL||!SB_KEY){setFormErr("Supabase not configured”);return;}
-if(!formOrgName.trim()||!formTitle.trim()){setFormErr("Please fill required fields”);return;}
-setFormSaving(true);setFormErr(””);
+if(!SB_URL||!SB_KEY){setFormErr("Supabase not configured");return;}
+if(!formOrgName.trim()||!formTitle.trim()){setFormErr("Please fill required fields");return;}
+setFormSaving(true);setFormErr("");
 try{
-const res=await fetch(SB_URL+”/rest/v1/extra_meetings”,{method:"POST”,headers:{"Content-Type”:"application/json”,"apikey”:SB_KEY,"Authorization”:"Bearer "+SB_KEY,"Prefer”:"return=representation”},body:JSON.stringify({date:todayNY(),organizer_type:formOrgType,organizer_name:formOrgName.trim(),title:formTitle.trim(),room:formRoom,time_start:formTimeStart||null,time_end:formTimeEnd||null,is_closed:formClosed,note:formNote.trim()||null})});
+const res=await fetch(SB_URL+"/rest/v1/extra_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=representation"},body:JSON.stringify({date:todayNY(),organizer_type:formOrgType,organizer_name:formOrgName.trim(),title:formTitle.trim(),room:formRoom,time_start:formTimeStart||null,time_end:formTimeEnd||null,is_closed:formClosed,note:formNote.trim()||null})});
 if(!res.ok){const t=await res.text();throw new Error(t);}
 const rows=await res.json();
 if(rows&&rows[0])setExtraMeetings(function(p){return […p,rows[0]];});
-setShowAddForm(false);setFormOrgName(””);setFormTitle(””);setFormTimeStart("15:00”);setFormTimeEnd(””);setFormClosed(false);setFormNote(””);
+setShowAddForm(false);setFormOrgName("");setFormTitle("");setFormTimeStart("15:00");setFormTimeEnd("");setFormClosed(false);setFormNote("");
 }catch(e){setFormErr("Error: "+e.message);}
 setFormSaving(false);
 }
 
-function stripHtml(s){return (s||””).replace(/<[^>]+>/g,””).replace(/&/g,”&”).replace(/ /g,” ").replace(/\s+/g,” ").trim();}
-function getText(f){if(!f)return "”;if(typeof f==="string”)return stripHtml(f);return stripHtml((f.en||f.En||Object.values(f)[0]||””).toString());}
-function fmtTime(t){if(!t)return "TBD”;const m=t.toString().match(/(\d{1,2}):(\d{2})/);if(!m)return t.toString().trim();let h=parseInt(m[1]);const min=m[2];const p=h>=12?"PM”:"AM”;if(h>12)h-=12;if(h===0)h=12;return h+”:”+min+” "+p;}
-function getRoom(item){if(Array.isArray(item.rooms)&&item.rooms[0])return item.rooms[0].value||””;return getText(item.room)||getText(item.location)||””;}
+function stripHtml(s){return (s||"").replace(/<[^>]+>/g,"").replace(/&/g,"&").replace(/ /g," ").replace(/\s+/g," ").trim();}
+function getText(f){if(!f)return "";if(typeof f==="string")return stripHtml(f);return stripHtml((f.en||f.En||Object.values(f)[0]||"").toString());}
+function fmtTime(t){if(!t)return "TBD";const m=t.toString().match(/(\d{1,2}):(\d{2})/);if(!m)return t.toString().trim();let h=parseInt(m[1]);const min=m[2];const p=h>=12?"PM":"AM";if(h>12)h-=12;if(h===0)h=12;return h+":"+min+" "+p;}
+function getRoom(item){if(Array.isArray(item.rooms)&&item.rooms[0])return item.rooms[0].value||"";return getText(item.room)||getText(item.location)||"";}
 
 function parseJournalData(jdata){
 const allMeetings=[],chamberMap={};
 function add(ch,e){if(!chamberMap[ch])chamberMap[ch]=[];chamberMap[ch].push(e);}
-function chamberRoom(raw){const l=(raw||””).toLowerCase();for(const [k,v] of Object.entries(ROOM_TO_CHAMBER)){if(l.includes(k))return v;}return null;}
-function chamberOrgan(name){const l=(name||””).toLowerCase();for(const [k,v] of Object.entries(ORGAN_TO_CHAMBER)){if(l.includes(k))return v;}return null;}
+function chamberRoom(raw){const l=(raw||"").toLowerCase();for(const [k,v] of Object.entries(ROOM_TO_CHAMBER)){if(l.includes(k))return v;}return null;}
+function chamberOrgan(name){const l=(name||"").toLowerCase();for(const [k,v] of Object.entries(ORGAN_TO_CHAMBER)){if(l.includes(k))return v;}return null;}
 function processSubsidiary(groups){
 if(!Array.isArray(groups))return;
 groups.forEach(function(group){
-const organName=stripHtml(group.groupNameTitle||getText(group.name)||””);
+const organName=stripHtml(group.groupNameTitle||getText(group.name)||"");
 (group.sessions||[]).forEach(function(session){
 const sName=stripHtml(session.name||getText(session.title)||organName);
-const sNum=stripHtml(session.session||””);
-const bodyLabel=sNum?sName+”, "+sNum:sName;
-const sTime=session.startTime||session.time||””;
+const sNum=stripHtml(session.session||"");
+const bodyLabel=sNum?sName+", "+sNum:sName;
+const sTime=session.startTime||session.time||"";
 (session.meetings||[]).forEach(function(m){
 if(m.cancelled||m.isCancelled)return;
 const rawTitle=getText(m.meetingNumber)||getText(m.title)||getText(m.name)||getText(m.subject);
 if(!rawTitle)return;
-const fullTitle=bodyLabel?bodyLabel+” – "+rawTitle:rawTitle;
-const time=fmtTime((m.timeFrom||m.startTime||sTime||””).toString());
+const fullTitle=bodyLabel?bodyLabel+" – "+rawTitle:rawTitle;
+const time=fmtTime((m.timeFrom||m.startTime||sTime||"").toString());
 const rawRoom=getRoom(m);
 const chamber=chamberRoom(rawRoom);
 allMeetings.push({title:fullTitle,time,room:rawRoom||null});
@@ -339,18 +339,18 @@ if(chamber)add(chamber,{time,title:fullTitle,agenda:[],id:m.id||null});
 function processOrgans(specialGroups){
 if(!Array.isArray(specialGroups))return;
 specialGroups.forEach(function(group){
-const organName=stripHtml(group.groupNameTitle||getText(group.name)||””);
+const organName=stripHtml(group.groupNameTitle||getText(group.name)||"");
 const chamber=chamberOrgan(organName);
 (group.sessions||[]).forEach(function(session){
-const sTime=session.startTime||session.time||””;
+const sTime=session.startTime||session.time||"";
 (session.meetings||[]).forEach(function(m){
 if(m.cancelled||m.isCancelled)return;
 const rawTitle=getText(m.meetingNumber)||getText(m.title)||getText(m.name)||getText(m.subject);
 if(!rawTitle)return;
 const isClosed=!!(m.isClosed||m.closed||m.isPrivate);
-const shortTitle=rawTitle+(isClosed?” [Closed]”:””);
-const time=fmtTime((m.timeFrom||m.startTime||sTime||””).toString());
-allMeetings.push({title:(organName?organName+” – ":””)+shortTitle,time,room:getRoom(m)||null});
+const shortTitle=rawTitle+(isClosed?" [Closed]":"");
+const time=fmtTime((m.timeFrom||m.startTime||sTime||"").toString());
+allMeetings.push({title:(organName?organName+" – ":"")+shortTitle,time,room:getRoom(m)||null});
 if(chamber)add(chamber,{time,title:shortTitle,agenda:[],id:m.id||null});
 });
 });
@@ -360,18 +360,18 @@ function processOther(section){
 if(!section)return;
 const groups=Array.isArray(section)?section:(section.groups||[]);
 groups.forEach(function(group){
-const organName=stripHtml(group.groupNameTitle||getText(group.name)||””);
+const organName=stripHtml(group.groupNameTitle||getText(group.name)||"");
 (group.sessions||[]).forEach(function(session){
 const sName=stripHtml(session.name||getText(session.title)||organName);
-const sNum=stripHtml(session.session||””);
-const bodyLabel=sNum?sName+”, "+sNum:sName;
-const sTime=session.startTime||session.time||””;
+const sNum=stripHtml(session.session||"");
+const bodyLabel=sNum?sName+", "+sNum:sName;
+const sTime=session.startTime||session.time||"";
 (session.meetings||[]).forEach(function(m){
 if(m.cancelled||m.isCancelled)return;
 const rawTitle=getText(m.meetingNumber)||getText(m.title)||getText(m.name)||getText(m.subject);
 if(!rawTitle)return;
-const time=fmtTime((m.timeFrom||m.startTime||sTime||””).toString());
-allMeetings.push({title:(bodyLabel?bodyLabel+” – ":””)+rawTitle,time,room:getRoom(m)||null});
+const time=fmtTime((m.timeFrom||m.startTime||sTime||"").toString());
+allMeetings.push({title:(bodyLabel?bodyLabel+" – ":"")+rawTitle,time,room:getRoom(m)||null});
 });
 });
 });
@@ -381,7 +381,7 @@ processSubsidiary(om.groups||[]);
 processOrgans(om.specialGroups||[]);
 processOther(jdata.informalMeetings||jdata.informalConsultations);
 processOther(jdata.otherMeetings);
-const chambers=["General Assembly Hall”,"Security Council”,"Trusteeship Council”,"Economic and Social Council”]
+const chambers=["General Assembly Hall","Security Council","Trusteeship Council","Economic and Social Council"]
 .map(function(name){return {room:name,meetings:(chamberMap[name]||[])};});
 const seen={},titles=[];
 allMeetings.forEach(function(m){if(m.title&&m.title.length>3&&!seen[m.title]){seen[m.title]=true;titles.push(m.title);}});
@@ -391,11 +391,11 @@ return {chambers,meetings:titles.slice(0,30)};
 async function fetchLiveJournal(){
 // Fetch directly from GitHub raw content - always latest committed version
 // bypasses Vite build so no redeploy needed after fetch workflow runs
-const RAW="https://raw.githubusercontent.com/cedricsx-web/un-daily-briefing/main/public/journal.json”;
-const res=await fetch(RAW+”?t=”+Date.now());
-if(!res.ok)throw new Error("journal.json not found (”+res.status+”)”);
+const RAW="https://raw.githubusercontent.com/cedricsx-web/un-daily-briefing/main/public/journal.json";
+const res=await fetch(RAW+"?t="+Date.now());
+if(!res.ok)throw new Error("journal.json not found ("+res.status+")");
 const json=await res.json();
-if(!json.meetings||json.meetings.length===0)throw new Error("journal.json has 0 meetings”);
+if(!json.meetings||json.meetings.length===0)throw new Error("journal.json has 0 meetings");
 return {chambers:json.chambers||[],meetings:json.meetings||[],date:json.date||null,fetched_at:json.fetched_at||null};
 }
 
@@ -404,24 +404,24 @@ if(fetchedRef.current)return;
 fetchedRef.current=true;
 setLoading(true);setError(null);
 const EMPTY=[
-{room:"General Assembly Hall”,meetings:[]},{room:"Security Council”,meetings:[]},
-{room:"Trusteeship Council”,meetings:[]},{room:"Economic and Social Council”,meetings:[]},
+{room:"General Assembly Hall",meetings:[]},{room:"Security Council",meetings:[]},
+{room:"Trusteeship Council",meetings:[]},{room:"Economic and Social Council",meetings:[]},
 ];
 try{
-const liveData=await fetchLiveJournal().catch(function(e){console.warn("journal.json:”,e.message);return null;});
+const liveData=await fetchLiveJournal().catch(function(e){console.warn("journal.json:",e.message);return null;});
 setData({chambers:liveData?liveData.chambers:EMPTY,meetings:liveData?liveData.meetings:[],date:liveData?liveData.date:null,fetched_at:liveData?liveData.fetched_at:null});
-setJournalSource(liveData?"live”:"offline”);
+setJournalSource(liveData?"live":"offline");
 }catch(err){setError(err.message);fetchedRef.current=false;}
 finally{setLoading(false);}
 }
 
 function extraLabel(e){
-const org=e.organizer_type==="un_body”?e.organizer_name:e.organizer_type==="mission”?"Mission of "+e.organizer_name:e.organizer_name;
-return org+” – "+e.title+(e.is_closed?” [Closed]”:””);
+const org=e.organizer_type==="un_body"?e.organizer_name:e.organizer_type==="mission"?"Mission of "+e.organizer_name:e.organizer_name;
+return org+" – "+e.title+(e.is_closed?" [Closed]":"");
 }
 
 return (
-<div style={{minHeight:"100dvh”,background:"linear-gradient(160deg,#0a1628 0%,#0d2044 50%,#0a1a38 100%)”,fontFamily:”‘DM Sans’,‘Segoe UI’,sans-serif”,color:”#fff”,paddingBottom:"env(safe-area-inset-bottom,40px)”}}>
+<div style={{minHeight:"100dvh",background:"linear-gradient(160deg,#0a1628 0%,#0d2044 50%,#0a1a38 100%)",fontFamily:"‘DM Sans’,‘Segoe UI’,sans-serif",color:"#fff",paddingBottom:"env(safe-area-inset-bottom,40px)"}}>
 <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap'); @keyframes fadeSlideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}} @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}} @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}} *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;} body{margin:0;overscroll-behavior-y:none;} input,select{outline:none;} input::placeholder{color:rgba(255,255,255,0.3);} option{background:#0d2044;}`}</style>
 
 ```
