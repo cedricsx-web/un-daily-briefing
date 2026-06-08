@@ -1,6 +1,6 @@
 {
   "date": "2026-06-08",
-  "fetched_at": "2026-06-08T15:35:49.996Z",
+  "fetched_at": "2026-06-08T17:06:20.172Z",
   "ny_date": "2026-06-08",
   "source": "journal-api.un.org",
   "note": "Live from journal-api.un.org -- 13 meetings",
@@ -47,7 +47,14 @@
     },
     {
       "room": "Trusteeship Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "Division for Special Activities, Department of Operational Support -- Secretary-General’s Annual Memorial Service to honour the United Nations personnel (civilian, military, and police) who lost their lives in the line of duty from 1 January to 31 December 2025, including fallen colleagues from the Funds and Programmes (organized by the Division for Special Activities of the Department of Operational Support)",
+          "agenda": [],
+          "id": "1bf54fe0-46ea-4ce3-8c08-883f7be6cc8d"
+        }
+      ]
     },
     {
       "room": "Economic and Social Council",
