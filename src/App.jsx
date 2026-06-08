@@ -125,9 +125,17 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
           </span>
           {adjourned&&<span style={{marginLeft:"5px",fontSize:"8px",color:"rgba(255,200,0,0.7)",fontWeight:"700",verticalAlign:"middle"}}>ADJOURNED</span>}
           {hasAgenda&&!adjourned&&<span style={{marginLeft:"5px",fontSize:"9px",color:"rgba(0,160,220,0.45)",verticalAlign:"middle"}}>{agendaOpen?"&#9650;":"&#9660;"}</span>}
-          {meetingNotes&&meetingNotes[m.title]&&!adjourned&&(
-            <div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {meetingNotes[m.title]}</div>
-          )}
+          {(function(){
+            if(!meetingNotes||adjourned)return null;
+            // Match by exact key or partial (chamber title is shorter than list title)
+            const note=meetingNotes[m.title]||Object.entries(meetingNotes).reduce(function(found,entry){
+              if(found)return found;
+              const key=entry[0],val=entry[1];
+              if(key.includes(m.title)||m.title.includes(key))return val;
+              return null;
+            },null);
+            return note?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {note}</div>:null;
+          })()}
         </div>
         {!adjourned?(
           <button onClick={function(e){e.stopPropagation();setShowActions(function(s){return !s;});}} style={{flexShrink:0,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.3)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"12px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8942;</button>
