@@ -1,24 +1,49 @@
 {
-  "date": "2026-06-05",
-  "fetched_at": "2026-06-05T17:10:08.572Z",
-  "ny_date": "2026-06-05",
+  "date": "2026-06-08",
+  "fetched_at": "2026-06-08T14:09:29.322Z",
+  "ny_date": "2026-06-08",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 15 meetings",
+  "note": "Live from journal-api.un.org -- 13 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
       "meetings": [
         {
-          "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- 89th plenary meeting",
+          "time": "11:00 AM",
+          "title": "High-level debate on the theme “Preventing and combating illicit trafficking in wildlife and other crimes that affect the environment”",
           "agenda": [],
-          "id": "96555291-d216-46b8-a4b0-c5bfe607b1c2"
+          "id": "2c9e0868-8d28-4a70-b65a-722b813fc222"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "High-level debate on the theme “Preventing and combating illicit trafficking in wildlife and other crimes that affect the environment”",
+          "agenda": [],
+          "id": "f9344012-e786-402e-8144-1481e51ec8d8"
         }
       ]
     },
     {
       "room": "Security Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "10165th meeting",
+          "agenda": [],
+          "id": "fa627f0e-e7a6-438a-b840-91db5cfdd4b8"
+        },
+        {
+          "time": "Followed By",
+          "title": "Consultations of the whole [Closed]",
+          "agenda": [],
+          "id": "6135f4cf-20cd-4a01-b68e-bb920d6c1d0e"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "10166th meeting",
+          "agenda": [],
+          "id": "d0591815-2433-407c-ba06-8ba4a156b3fc"
+        }
+      ]
     },
     {
       "room": "Trusteeship Council",
@@ -26,31 +51,22 @@
     },
     {
       "room": "Economic and Social Council",
-      "meetings": [
-        {
-          "time": "3:00 PM",
-          "title": "Committee on Non-Governmental Organizations, 2026 resumed session -- 26th plenary meeting",
-          "agenda": [],
-          "id": "5359f4d2-1a31-49db-abed-12e4b7150ed4"
-        }
-      ]
+      "meetings": []
     }
   ],
   "meetings": [
-    "General Assembly, Eightieth session -- 89th plenary meeting",
-    "General Assembly, Eightieth session -- Informal consultations on the ninth biennial review of the United Nations Global Counter-Terrorism Strategy",
-    "General Assembly, Eightieth session -- Informal consultations on the political declaration to renew commitment and accelerate the implementation of the New Urban Agenda",
-    "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
-    "General Assembly, Eightieth session -- Informal consultations on the Human Rights Council review",
+    "General Assembly, Eightieth session -- Informal consultations on the modalities and political declaration of the high-level meeting of the General Assembly to commemorate the twentieth anniversary of the adoption of the Durban Declaration and Programme of Action",
     "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
-    "Biennial Meeting of States to Consider the Implementation of the Programme of Action to Prevent, Combat and Eradicate the Illicit Trade in Small Arms and Light Weapons in All Its Aspects, Ninth Biennial Meeting -- 4th plenary meeting",
-    "Open-ended Technical Expert Group on developments in the manufacturing, technology and design of small arms and light weapons under the United Nations Programme of Action and the International Tracing Instrument, Ninth Biennial Meeting -- 3rd meeting of the OETEG",
-    "Working Group on Discrimination Against Women and Girls, Forty-fourth session -- Meeting",
-    "Security Council Committee established pursuant to resolution 1533 (2004) concerning the Democratic Republic of the Congo -- Informal consultations",
-    "Security Council Committee pursuant to resolution 2745 (2024) -- Informal consultations",
-    "Committee on Non-Governmental Organizations, 2026 resumed session -- 26th plenary meeting",
-    "Joint Meeting of the Executive Boards of United Nations Development Programme, United Nations Population Fund, United Nations Office for Project Services, United Nations Children’s Fund, UN-Women and World Food Programme -- Joint meeting of the Executive Boards of UNDP/UNFPA/UNOPS, UNICEF, UN-Women and WFP (also with virtual participation)",
-    "United Nations Environment Programme (UNEP) -- Commemoration of World Environment Day 2026 (organized by the United Nations Environment Programme (UNEP))"
+    "Committee on Contributions, Eighty-sixth session -- Meeting",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 18th meeting",
+    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 1st plenary meeting",
+    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 2nd plenary meeting",
+    "General Assembly -- High-level debate on the theme “Preventing and combating illicit trafficking in wildlife and other crimes that affect the environment”",
+    "Security Council -- 10165th meeting",
+    "Security Council -- Consultations of the whole [Closed]",
+    "Security Council -- 10166th meeting",
+    "Division for Special Activities, Department of Operational Support -- Secretary-General’s Annual Memorial Service to honour the United Nations personnel (civilian, military, and police) who lost their lives in the line of duty from 1 January to 31 December 2025, including fallen colleagues from the Funds and Programmes (organized by the Division for Special Activities of the Department of Operational Support)",
+    "Arab Group -- Meeting (at the ministerial level)",
+    "Permanent Mission of Brazil,Permanent Mission of Ecuador,Permanent Mission of Gabon,Permanent Mission of Germany,Permanent Mission of Kenya,Permanent Mission of Peru,United Nations Office on Drugs and Crime (UNODC) -- Event entitled “Protecting People and the Planet: Innovative Approaches in Addressing Crimes that Affect the Environment”, held on the margins of the high-level debate on the theme “Preventing and combating illicit trafficking in wildlife and other crimes that affect the environment” (co-organized by the Permanent Missions of Brazil, Ecuador, Gabon, Germany, Kenya and Peru, in collaboration with the United Nations Office on Drugs and Crime (UNODC))"
   ]
 }
