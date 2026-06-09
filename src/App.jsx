@@ -379,6 +379,18 @@ export default function App() {
     return function(){clearInterval(msgI);clearInterval(dotI);};
   },[loading]);
 
+  // Poll shared state every 30s so all guides stay in sync
+  useEffect(function(){
+    const interval=setInterval(function(){
+      fetchChamberStatuses();
+      fetchCancelledMeetings();
+      fetchAdjournedMeetings();
+      fetchMeetingNotes();
+      fetchExtraMeetings();
+    },30000);
+    return function(){clearInterval(interval);};
+  },[]);
+
   async function fetchExtraMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/extra_meetings?date=eq."+todayNY()+"&order=time_start.asc",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setExtraMeetings(rows||[]);}}catch(e){}}
   async function fetchCancelledMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setCancelledTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
   async function fetchAdjournedMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setAdjournedTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
