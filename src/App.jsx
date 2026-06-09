@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
-const BASE   = import.meta.env.BASE_URL || "/";
+const BASE     = import.meta.env.BASE_URL || "/";
+const GH_TOKEN = import.meta.env.VITE_GITHUB_TOKEN || "";
 const SB_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SB_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
@@ -331,6 +332,8 @@ export default function App() {
   const [adjournedTitles,setAdjournedTitles]=useState([]);
   const [chamberOverrides,setChamberOverrides]=useState({});
   const [editingMeeting,setEditingMeeting]=useState(null);
+  const [triggering,setTriggering]=useState(false);
+  const [triggerMsg,setTriggerMsg]=useState("");
   const [meetingNotes,setMeetingNotes]=useState({});
   const [editingNote,setEditingNote]=useState(null);
   const [formOrgType,setFormOrgType]=useState("mission");
@@ -397,6 +400,26 @@ export default function App() {
         body:JSON.stringify({date:todayNY(),chamber:chamber,status:next})
       });
     }catch(e){}
+  }
+  async function triggerFetchWorkflow(){
+    if(!GH_TOKEN){setTriggerMsg("No GitHub token configured");setTimeout(function(){setTriggerMsg("");},3000);return;}
+    setTriggering(true);
+    setTriggerMsg("Triggering fetch...");
+    try{
+      const res=await fetch("https://api.github.com/repos/cedricsx-web/un-daily-briefing/actions/workflows/fetch-journal.yml/dispatches",{
+        method:"POST",
+        headers:{"Accept":"application/vnd.github+json","Authorization":"Bearer "+GH_TOKEN,"X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"},
+        body:JSON.stringify({ref:"main"}),
+      });
+      if(res.status===204){
+        setTriggerMsg("Fetch started. Refresh in ~2 minutes.");
+      } else {
+        const err=await res.json().catch(function(){return {};});
+        setTriggerMsg("Error: "+(err.message||res.status));
+      }
+    }catch(e){setTriggerMsg("Error: "+e.message);}
+    setTriggering(false);
+    setTimeout(function(){setTriggerMsg("");},8000);
   }
   async function fetchMeetingNotes(){
     if(!SB_URL||!SB_KEY)return;
@@ -656,6 +679,16 @@ export default function App() {
                 <p style={{margin:0,fontSize:"12px",color:"rgba(255,255,255,0.4)",fontWeight:"500"}}>&#128197; {dateLabel}</p>
                 {data&&<span style={{fontSize:"9px",fontWeight:"700",padding:"2px 7px",borderRadius:"10px",background:journalSource==="live"?"rgba(76,159,56,0.2)":"rgba(255,255,255,0.08)",color:journalSource==="live"?"#56C02B":"rgba(255,255,255,0.3)",letterSpacing:"0.5px",textTransform:"uppercase"}}>{journalSource==="live"?"Live Journal":"Offline"}</span>}
               </div>
+              {GH_TOKEN&&(
+                <div style={{marginTop:"6px",display:"flex",alignItems:"center",gap:"8px"}}>
+                  <button
+                    onClick={triggerFetchWorkflow}
+                    disabled={triggering}
+                    style={{background:"rgba(0,150,214,0.15)",border:"1px solid rgba(0,150,214,0.3)",color:"#00A0DC",borderRadius:"20px",padding:"4px 12px",fontSize:"11px",fontWeight:"600",cursor:triggering?"not-allowed":"pointer",fontFamily:"inherit",opacity:triggering?0.6:1}}
+                  >{triggering?"Fetching...":"&#8635; Refresh Journal"}</button>
+                  {triggerMsg&&<span style={{fontSize:"11px",color:"rgba(255,255,255,0.5)"}}>{triggerMsg}</span>}
+                </div>
+              )}
               {data&&data.date&&(
                 <p style={{margin:"3px 0 0",fontSize:"11px",color:data.date===todayNY()?"rgba(255,255,255,0.3)":"rgba(255,180,0,0.7)",fontWeight:data.date===todayNY()?"400":"600"}}>
                   {data.date===todayNY()
