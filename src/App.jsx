@@ -105,7 +105,7 @@ const ORGAN_TO_CHAMBER={"general assembly":"General Assembly Hall","security cou
 const ROOM_DISPLAY={"General Assembly Hall":"General Assembly Hall","Security Council Chamber":"Security Council","Trusteeship Council Chamber":"Trusteeship Council","Economic and Social Council Chamber":"Economic and Social Council"};
 
 // -- Meeting Row --
-function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,meetingNotes}) {
+function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,meetingNotes,chamberName}) {
   const [agendaOpen,setAgendaOpen]=useState(false);
   const [showActions,setShowActions]=useState(false);
   const [titleExpanded,setTitleExpanded]=useState(false);
@@ -149,7 +149,7 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
         {!adjourned?(
           <button onClick={function(e){e.stopPropagation();setShowActions(function(s){return !s;});}} style={{flexShrink:0,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.3)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"12px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8942;</button>
         ):(
-          <button onClick={function(){onUnadjourn&&onUnadjourn(cancelKey);}} title="Restore" style={{flexShrink:0,background:"rgba(255,200,0,0.1)",border:"1px solid rgba(255,200,0,0.3)",color:"rgba(255,200,0,0.7)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8617;</button>
+          <button onClick={function(){onUnadjourn&&onUnadjourn(cancelKey,chamberName);}} title="Restore" style={{flexShrink:0,background:"rgba(255,200,0,0.1)",border:"1px solid rgba(255,200,0,0.3)",color:"rgba(255,200,0,0.7)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8617;</button>
         )}
       </div>
       {hasAgenda&&agendaOpen&&(
@@ -159,7 +159,7 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
       )}
       {showActions&&!adjourned&&(
         <div style={{marginTop:"6px",marginLeft:"46px",display:"flex",gap:"6px",flexWrap:"wrap",animation:"fadeSlideIn 0.15s ease"}}>
-          {!m.isExtra&&<button onClick={function(){onAdjourn&&onAdjourn(cancelKey);setShowActions(false);}} style={{background:"rgba(252,195,11,0.12)",border:"1px solid rgba(252,195,11,0.3)",color:"#FCC30B",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>&#10003; Adjourned</button>}
+          {!m.isExtra&&<button onClick={function(){onAdjourn&&onAdjourn(cancelKey,chamberName);setShowActions(false);}} style={{background:"rgba(252,195,11,0.12)",border:"1px solid rgba(252,195,11,0.3)",color:"#FCC30B",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>&#10003; Adjourned</button>}
           {m.isExtra?(
             <button onClick={function(){onDelete&&onDelete(m.extraId);setShowActions(false);}} style={{background:"rgba(220,50,50,0.12)",border:"1px solid rgba(220,50,50,0.3)",color:"#ff8080",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>&#x2715; Remove</button>
           ):(
@@ -187,7 +187,7 @@ function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjo
         )}
         {(function(){
           const st=chamberStatus?chamberStatus(chamber,override,adjournedTitlesForStatus):"OPEN";
-          const stColors={"OPEN":["rgba(76,159,56,0.15)","#56C02B"],"CLOSED":["rgba(220,50,50,0.15)","#ff6b6b"],"WT":["rgba(252,195,11,0.15)","#FCC30B"]};
+          const stColors={"OPEN":["rgba(76,159,56,0.15)","#56C02B"],"CLOSED":["rgba(220,50,50,0.15)","#ff6b6b"],"WT":["rgba(252,195,11,0.15)","#FCC30B"],"WT 4th":["rgba(252,195,11,0.15)","#FCC30B"],"WT 3rd":["rgba(252,120,0,0.15)","#FF8C00"]};
           const [bg,color]=stColors[st]||stColors["OPEN"];
           return (
             <span
@@ -200,7 +200,7 @@ function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjo
       </div>
       {hasSession?(
         <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
-          {(chamber.meetings||[]).map(function(m,i){return <MeetingRow key={i} m={m} onCancel={onCancel} onAdjourn={onAdjourn} onUnadjourn={onUnadjourn} onDelete={onDelete} adjournedTitles={adjournedTitles} meetingNotes={meetingNotes}/>;} )}
+          {(chamber.meetings||[]).map(function(m,i){return <MeetingRow key={i} m={m} onCancel={onCancel} onAdjourn={onAdjourn} onUnadjourn={onUnadjourn} onDelete={onDelete} adjournedTitles={adjournedTitles} meetingNotes={meetingNotes} chamberName={chamber.room}/>;} )}
         </div>
       ):(
         <p style={{margin:0,fontSize:"11px",color:"rgba(255,255,255,0.25)",fontStyle:"italic"}}>No session today</p>
@@ -407,23 +407,37 @@ export default function App() {
       }
     }catch(e){}
   }
+  async function saveChamberStatus(chamber,statusVal){
+    if(!SB_URL||!SB_KEY)return;
+    try{
+      await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY()+"&chamber=eq."+encodeURIComponent(chamber),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+      if(statusVal){
+        await fetch(SB_URL+"/rest/v1/chamber_status",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify({date:todayNY(),chamber:chamber,status:statusVal})});
+      }
+    }catch(e){}
+  }
   async function cycleChamberStatus(chamber,currentStatus){
-    // Cycle: OPEN -> CLOSED -> WT -> back to auto (delete row)
-    if(currentStatus==="WT"){
-      // Remove override entirely -> auto-compute from meeting times
-      setChamberOverrides(function(prev){const next=Object.assign({},prev);delete next[chamber];return next;});
-      if(!SB_URL||!SB_KEY)return;
-      try{await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY()+"&chamber=eq."+encodeURIComponent(chamber),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}catch(e){}
+    const isGA=chamber==="General Assembly Hall";
+    let next=null;
+    if(isGA){
+      // GA cycle: OPEN -> CLOSED -> WT 4th -> WT 3rd -> auto
+      if(currentStatus==="OPEN")next="closed";
+      else if(currentStatus==="CLOSED")next="wt_4th";
+      else if(currentStatus==="WT 4th")next="wt_3rd";
+      else next=null; // WT 3rd -> remove override
     } else {
-      const next=currentStatus==="OPEN"?"closed":"wt";
-      setChamberOverrides(function(prev){return Object.assign({},prev,{[chamber]:next});});
-      if(!SB_URL||!SB_KEY)return;
-      try{
-        // Delete existing then insert to avoid upsert issues
-        await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY()+"&chamber=eq."+encodeURIComponent(chamber),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
-        await fetch(SB_URL+"/rest/v1/chamber_status",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify({date:todayNY(),chamber:chamber,status:next})});
-      }catch(e){}
+      // Other chambers: OPEN -> CLOSED -> WT -> auto
+      if(currentStatus==="OPEN")next="closed";
+      else if(currentStatus==="CLOSED")next="wt";
+      else next=null; // WT -> remove override
     }
+    // Update local state
+    setChamberOverrides(function(prev){
+      const upd=Object.assign({},prev);
+      if(next)upd[chamber]=next; else delete upd[chamber];
+      return upd;
+    });
+    await saveChamberStatus(chamber,next);
   }
   async function triggerFetchWorkflow(){
     if(!GH_TOKEN){setTriggerMsg("No GitHub token configured");setTimeout(function(){setTriggerMsg("");},3000);return;}
@@ -502,12 +516,19 @@ export default function App() {
     }catch(e){}
     setEditingMeeting(null);
   }
-  async function adjournMeeting(key){
+  async function adjournMeeting(key,chamber){
     setAdjournedTitles(function(p){return [...p,key];});
+    // Also set chamber to OPEN so it persists across reloads
+    if(chamber){
+      setChamberOverrides(function(prev){return Object.assign({},prev,{[chamber]:"open"});});
+    }
     if(!SB_URL||!SB_KEY)return;
-    try{await fetch(SB_URL+"/rest/v1/adjourned_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify({date:todayNY(),meeting_title:key})});}catch(e){}
+    try{
+      await fetch(SB_URL+"/rest/v1/adjourned_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify({date:todayNY(),meeting_title:key})});
+      if(chamber){await saveChamberStatus(chamber,"open");}
+    }catch(e){}
   }
-  async function unadjournMeeting(key){
+  async function unadjournMeeting(key,chamber){
     setAdjournedTitles(function(p){return p.filter(function(t){return t!==key;});});
     if(!SB_URL||!SB_KEY)return;
     try{await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY()+"&meeting_title=eq."+encodeURIComponent(key),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}catch(e){}
@@ -671,17 +692,16 @@ export default function App() {
     return h*60+min;
   }
   function chamberStatus(chamber,override,adjTitles){
-    // Manual override takes precedence
     if(override==="wt")return "WT";
+    if(override==="wt_4th")return "WT 4th";
+    if(override==="wt_3rd")return "WT 3rd";
     if(override==="open")return "OPEN";
     if(override==="closed")return "CLOSED";
-    // Auto-compute from meeting times
     const now=currentNYTime();
     const meetings=chamber.meetings||[];
     const adj=adjTitles||[];
     const hasActive=meetings.some(function(m){
       if(m.cancelled)return false;
-      // If meeting is adjourned, treat it as finished -> not active
       const isAdjourned=adj.some(function(at){return at===m.title||m.title.includes(at)||at.includes(m.title);});
       if(isAdjourned)return false;
       const start=parseMeetingTime(m.time);
