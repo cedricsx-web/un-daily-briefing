@@ -382,11 +382,11 @@ export default function App() {
   // Poll shared state every 30s so all guides stay in sync
   useEffect(function(){
     const interval=setInterval(function(){
-      fetchChamberStatuses();
       fetchCancelledMeetings();
       fetchAdjournedMeetings();
       fetchMeetingNotes();
       fetchExtraMeetings();
+      fetchChamberStatuses(); // chamber statuses last so local changes have time to save
     },30000);
     return function(){clearInterval(interval);};
   },[]);
@@ -401,20 +401,32 @@ export default function App() {
       const res=await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
       if(res.ok){
         const rows=await res.json();
-        const map={};
-        (rows||[]).forEach(function(r){map[r.chamber]=r.status;});
-        setChamberOverrides(map);
+        // Build map from DB - only update what DB knows about
+        // If DB is empty for a chamber, remove local override (it was intentionally cleared)
+        const fromDB={};
+        (rows||[]).forEach(function(r){fromDB[r.chamber]=r.status;});
+        setChamberOverrides(fromDB); // DB is source of truth
       }
-    }catch(e){}
+    }catch(e){
+      // On fetch error, keep existing local state - don't clear it
+      console.warn("fetchChamberStatuses failed, keeping local state");
+    }
   }
   async function saveChamberStatus(chamber,statusVal){
     if(!SB_URL||!SB_KEY)return;
     try{
-      await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY()+"&chamber=eq."+encodeURIComponent(chamber),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
-      if(statusVal){
-        await fetch(SB_URL+"/rest/v1/chamber_status",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify({date:todayNY(),chamber:chamber,status:statusVal})});
+      if(!statusVal){
+        // Delete override - go back to auto
+        await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY()+"&chamber=eq."+encodeURIComponent(chamber),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+      } else {
+        // Upsert: insert or update existing row
+        await fetch(SB_URL+"/rest/v1/chamber_status?on_conflict=date,chamber",{
+          method:"POST",
+          headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"resolution=merge-duplicates,return=minimal"},
+          body:JSON.stringify({date:todayNY(),chamber:chamber,status:statusVal})
+        });
       }
-    }catch(e){}
+    }catch(e){console.warn("saveChamberStatus failed:",e.message);}
   }
   async function cycleChamberStatus(chamber,currentStatus){
     const isGA=chamber==="General Assembly Hall";
