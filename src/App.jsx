@@ -714,7 +714,7 @@ export default function App() {
                     onClick={triggerFetchWorkflow}
                     disabled={triggering}
                     style={{background:"rgba(0,150,214,0.15)",border:"1px solid rgba(0,150,214,0.3)",color:"#00A0DC",borderRadius:"20px",padding:"4px 12px",fontSize:"11px",fontWeight:"600",cursor:triggering?"not-allowed":"pointer",fontFamily:"inherit",opacity:triggering?0.6:1}}
-                  >{triggering?"Fetching...":"&#8635; Refresh Journal"}</button>
+                  >{triggering?"Fetching...":"Refresh Journal"}</button>
                   {triggerMsg&&<span style={{fontSize:"11px",color:"rgba(255,255,255,0.5)"}}>{triggerMsg}</span>}
                 </div>
               )}
