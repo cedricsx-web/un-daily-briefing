@@ -408,18 +408,22 @@ export default function App() {
     }catch(e){}
   }
   async function cycleChamberStatus(chamber,currentStatus){
-    // Cycle: OPEN -> CLOSED -> WT -> OPEN (removes override -> auto)
-    const next=currentStatus==="OPEN"?"closed":currentStatus==="CLOSED"?"wt":"open";
-    // Update local state
-    setChamberOverrides(function(prev){return Object.assign({},prev,{[chamber]:next});});
-    if(!SB_URL||!SB_KEY)return;
-    try{
-      await fetch(SB_URL+"/rest/v1/chamber_status",{
-        method:"POST",
-        headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"resolution=merge-duplicates"},
-        body:JSON.stringify({date:todayNY(),chamber:chamber,status:next})
-      });
-    }catch(e){}
+    // Cycle: OPEN -> CLOSED -> WT -> back to auto (delete row)
+    if(currentStatus==="WT"){
+      // Remove override entirely -> auto-compute from meeting times
+      setChamberOverrides(function(prev){const next=Object.assign({},prev);delete next[chamber];return next;});
+      if(!SB_URL||!SB_KEY)return;
+      try{await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY()+"&chamber=eq."+encodeURIComponent(chamber),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}catch(e){}
+    } else {
+      const next=currentStatus==="OPEN"?"closed":"wt";
+      setChamberOverrides(function(prev){return Object.assign({},prev,{[chamber]:next});});
+      if(!SB_URL||!SB_KEY)return;
+      try{
+        // Delete existing then insert to avoid upsert issues
+        await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY()+"&chamber=eq."+encodeURIComponent(chamber),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+        await fetch(SB_URL+"/rest/v1/chamber_status",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify({date:todayNY(),chamber:chamber,status:next})});
+      }catch(e){}
+    }
   }
   async function triggerFetchWorkflow(){
     if(!GH_TOKEN){setTriggerMsg("No GitHub token configured");setTimeout(function(){setTriggerMsg("");},3000);return;}
