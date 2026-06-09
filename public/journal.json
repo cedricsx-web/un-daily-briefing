@@ -1,24 +1,24 @@
 {
-  "date": "2026-06-08",
-  "fetched_at": "2026-06-08T19:12:22.176Z",
-  "ny_date": "2026-06-08",
+  "date": "2026-06-09",
+  "fetched_at": "2026-06-09T13:34:30.478Z",
+  "ny_date": "2026-06-09",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 13 meetings",
+  "note": "Live from journal-api.un.org -- 12 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
       "meetings": [
         {
-          "time": "11:00 AM",
-          "title": "High-level debate on the theme “Preventing and combating illicit trafficking in wildlife and other crimes that affect the environment”",
+          "time": "10:00 AM",
+          "title": "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 1st meeting",
           "agenda": [],
-          "id": "2c9e0868-8d28-4a70-b65a-722b813fc222"
+          "id": "cb904857-7e35-4079-b485-ab6eeb0f108d"
         },
         {
           "time": "3:00 PM",
-          "title": "High-level debate on the theme “Preventing and combating illicit trafficking in wildlife and other crimes that affect the environment”",
+          "title": "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 2nd meeting",
           "agenda": [],
-          "id": "f9344012-e786-402e-8144-1481e51ec8d8"
+          "id": "998177ac-340f-4964-b92a-4d78da64cdb6"
         }
       ]
     },
@@ -27,21 +27,21 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "10165th meeting",
+          "title": "Security Council -- 10167th meeting",
           "agenda": [],
-          "id": "fa627f0e-e7a6-438a-b840-91db5cfdd4b8"
+          "id": "316dc756-4c08-443f-b87c-dffa83529da8"
         },
         {
           "time": "Followed By",
-          "title": "Consultations of the whole [Closed]",
+          "title": "Security Council -- Consultations of the whole",
           "agenda": [],
-          "id": "6135f4cf-20cd-4a01-b68e-bb920d6c1d0e"
+          "id": "78ea62a8-f1a8-4efb-97f6-1d5c4fd8f4a4"
         },
         {
           "time": "3:00 PM",
-          "title": "10166th meeting",
+          "title": "Security Council -- 10168th meeting",
           "agenda": [],
-          "id": "d0591815-2433-407c-ba06-8ba4a156b3fc"
+          "id": "0f271f63-6bde-445e-a8fc-5a764b2a2895"
         }
       ]
     },
@@ -50,30 +50,48 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Division for Special Activities, Department of Operational Support -- Secretary-General’s Annual Memorial Service to honour the United Nations personnel (civilian, military, and police) who lost their lives in the line of duty from 1 January to 31 December 2025, including fallen colleagues from the Funds and Programmes (organized by the Division for Special Activities of the Department of Operational Support)",
+          "title": "Office of the President of the General Assembly,World Health Organization (WHO) -- Event entitled “Interactive multi-stakeholder hearing as part of the preparatory process for the high-level meeting on pandemic prevention, preparedness and response“ (co-organized by the Office of the President of the General Assembly and the World Health Organization (WHO))",
           "agenda": [],
-          "id": "1bf54fe0-46ea-4ce3-8c08-883f7be6cc8d"
+          "id": "75b94735-b270-4e6b-90b9-d186914faefc"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "Office of the President of the General Assembly,World Health Organization (WHO) -- Event entitled “Interactive multi-stakeholder hearing as part of the preparatory process for the high-level meeting on pandemic prevention, preparedness and response“ (co-organized by the Office of the President of the General Assembly and the World Health Organization (WHO))",
+          "agenda": [],
+          "id": "2aa4b5fc-2d7a-4fcb-87b6-e2fa942644bf"
         }
       ]
     },
     {
       "room": "Economic and Social Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
+          "agenda": [],
+          "id": "383de6e0-595a-4386-875a-24f179c30d75"
+        },
+        {
+          "time": "3:00 PM",
+          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
+          "agenda": [],
+          "id": "0924d327-0e8a-4061-8c71-8f1a3781ffdf"
+        }
+      ]
     }
   ],
   "meetings": [
-    "General Assembly, Eightieth session -- Informal consultations on the modalities and political declaration of the high-level meeting of the General Assembly to commemorate the twentieth anniversary of the adoption of the Durban Declaration and Programme of Action",
+    "Security Council -- 10167th meeting",
+    "Security Council -- Consultations of the whole",
+    "Security Council -- 10168th meeting",
+    "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
+    "General Assembly, Eightieth session -- Informal informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
     "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
     "Committee on Contributions, Eighty-sixth session -- Meeting",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 18th meeting",
-    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 1st plenary meeting",
-    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 2nd plenary meeting",
-    "General Assembly -- High-level debate on the theme “Preventing and combating illicit trafficking in wildlife and other crimes that affect the environment”",
-    "Security Council -- 10165th meeting",
-    "Security Council -- Consultations of the whole [Closed]",
-    "Security Council -- 10166th meeting",
-    "Division for Special Activities, Department of Operational Support -- Secretary-General’s Annual Memorial Service to honour the United Nations personnel (civilian, military, and police) who lost their lives in the line of duty from 1 January to 31 December 2025, including fallen colleagues from the Funds and Programmes (organized by the Division for Special Activities of the Department of Operational Support)",
-    "Arab Group -- Meeting (at the ministerial level)",
-    "Permanent Mission of Brazil,Permanent Mission of Ecuador,Permanent Mission of Gabon,Permanent Mission of Germany,Permanent Mission of Kenya,Permanent Mission of Peru,United Nations Office on Drugs and Crime (UNODC) -- Event entitled “Protecting People and the Planet: Innovative Approaches in Addressing Crimes that Affect the Environment”, held on the margins of the high-level debate on the theme “Preventing and combating illicit trafficking in wildlife and other crimes that affect the environment” (co-organized by the Permanent Missions of Brazil, Ecuador, Gabon, Germany, Kenya and Peru, in collaboration with the United Nations Office on Drugs and Crime (UNODC))"
+    "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 1st meeting",
+    "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 2nd meeting",
+    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 3rd plenary meeting",
+    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 4th plenary meeting",
+    "Office of the President of the General Assembly,World Health Organization (WHO) -- Event entitled “Interactive multi-stakeholder hearing as part of the preparatory process for the high-level meeting on pandemic prevention, preparedness and response“ (co-organized by the Office of the President of the General Assembly and the World Health Organization (WHO))"
   ]
 }
