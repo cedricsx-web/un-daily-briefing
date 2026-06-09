@@ -413,20 +413,21 @@ export default function App() {
     }
   }
   async function saveChamberStatus(chamber,statusVal){
-    if(!SB_URL||!SB_KEY)return;
+    if(!SB_URL||!SB_KEY){console.warn("Supabase not configured");return;}
     try{
       if(!statusVal){
-        // Delete override - go back to auto
-        await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY()+"&chamber=eq."+encodeURIComponent(chamber),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+        const r=await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY()+"&chamber=eq."+encodeURIComponent(chamber),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+        if(!r.ok){const t=await r.text();console.warn("DELETE chamber_status failed:",r.status,t);}
       } else {
-        // Upsert: insert or update existing row
-        await fetch(SB_URL+"/rest/v1/chamber_status?on_conflict=date,chamber",{
+        const r=await fetch(SB_URL+"/rest/v1/chamber_status?on_conflict=date,chamber",{
           method:"POST",
           headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"resolution=merge-duplicates,return=minimal"},
           body:JSON.stringify({date:todayNY(),chamber:chamber,status:statusVal})
         });
+        if(!r.ok){const t=await r.text();console.warn("UPSERT chamber_status failed:",r.status,t,{chamber,statusVal});}
+        else{console.log("Chamber status saved:",chamber,"->",statusVal);}
       }
-    }catch(e){console.warn("saveChamberStatus failed:",e.message);}
+    }catch(e){console.warn("saveChamberStatus error:",e.message);}
   }
   async function cycleChamberStatus(chamber,currentStatus){
     const isGA=chamber==="General Assembly Hall";
@@ -536,9 +537,11 @@ export default function App() {
     }
     if(!SB_URL||!SB_KEY)return;
     try{
-      await fetch(SB_URL+"/rest/v1/adjourned_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify({date:todayNY(),meeting_title:key})});
+      const r=await fetch(SB_URL+"/rest/v1/adjourned_meetings?on_conflict=date,meeting_title",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"resolution=merge-duplicates,return=minimal"},body:JSON.stringify({date:todayNY(),meeting_title:key})});
+      if(!r.ok){const t=await r.text();console.warn("adjourn insert failed:",r.status,t);}
+      else{console.log("Meeting adjourned:",key);}
       if(chamber){await saveChamberStatus(chamber,"open");}
-    }catch(e){}
+    }catch(e){console.warn("adjournMeeting error:",e.message);}
   }
   async function unadjournMeeting(key,chamber){
     setAdjournedTitles(function(p){return p.filter(function(t){return t!==key;});});
