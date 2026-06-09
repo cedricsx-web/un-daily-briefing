@@ -108,6 +108,7 @@ const ROOM_DISPLAY={"General Assembly Hall":"General Assembly Hall","Security Co
 function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,meetingNotes}) {
   const [agendaOpen,setAgendaOpen]=useState(false);
   const [showActions,setShowActions]=useState(false);
+  const [titleExpanded,setTitleExpanded]=useState(false);
   const adjourned=(adjournedTitles||[]).some(function(at){return at===m.title||m.title.includes(at)||at.includes(m.title);});
   const hasAgenda=m.agenda&&m.agenda.length>0;
   const cancelKey=m.title;
@@ -119,13 +120,20 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
           onClick={hasAgenda?function(){setAgendaOpen(function(o){return !o;});}:undefined}
           style={{flex:1,cursor:hasAgenda?"pointer":"default",padding:"1px 0"}}
         >
-          <span style={{fontSize:"12px",lineHeight:"1.35",fontWeight:"600",
+          <span style={{
+            fontSize:"12px",lineHeight:"1.35",fontWeight:"600",
             color:adjourned?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.9)",
-            textDecoration:adjourned?"line-through":"none"}}>
-            {m.title}
-          </span>
-          {adjourned&&<span style={{marginLeft:"5px",fontSize:"8px",color:"rgba(255,200,0,0.7)",fontWeight:"700",verticalAlign:"middle"}}>ADJOURNED</span>}
-          {hasAgenda&&!adjourned&&<span style={{marginLeft:"5px",fontSize:"9px",color:"rgba(0,160,220,0.45)",verticalAlign:"middle"}}>{agendaOpen?"&#9650;":"&#9660;"}</span>}
+            textDecoration:adjourned?"line-through":"none",
+            display:"-webkit-box",WebkitLineClamp:titleExpanded?100:3,
+            WebkitBoxOrient:"vertical",overflow:"hidden",
+          }}>{m.title}</span>
+          {m.title.length>80&&(
+            <button onClick={function(e){e.stopPropagation();setTitleExpanded(function(x){return !x;});}} style={{background:"none",border:"none",color:"rgba(0,160,220,0.5)",fontSize:"10px",cursor:"pointer",padding:"1px 0",fontFamily:"inherit",display:"block"}}>
+              {titleExpanded?"Show less":"...more"}
+            </button>
+          )}
+          {adjourned&&<span style={{fontSize:"8px",color:"rgba(255,200,0,0.7)",fontWeight:"700"}}>ADJOURNED</span>}
+          {hasAgenda&&!adjourned&&!titleExpanded&&<span style={{marginLeft:"5px",fontSize:"9px",color:"rgba(0,160,220,0.45)"}}>{agendaOpen?"&#9650;":"&#9660;"}</span>}
           {(function(){
             if(!meetingNotes||adjourned)return null;
             // Match by exact key or partial (chamber title is shorter than list title)
@@ -412,14 +420,35 @@ export default function App() {
         body:JSON.stringify({ref:"main"}),
       });
       if(res.status===204){
-        setTriggerMsg("Fetch started. Refresh in ~2 minutes.");
+        setTriggerMsg("Fetching... checking for updates");
+        // Poll for fresh data every 30s for up to 4 minutes
+        let attempts=0;
+        const poll=setInterval(async function(){
+          attempts++;
+          setTriggerMsg("Checking for updates... ("+(attempts*30)+"s)");
+          try{
+            const RAW="https://raw.githubusercontent.com/cedricsx-web/un-daily-briefing/main/public/journal.json";
+            const jr=await fetch(RAW+"?t="+Date.now());
+            if(jr.ok){
+              const jd=await jr.json();
+              if(jd.date===todayNY()&&jd.meetings&&jd.meetings.length>0){
+                clearInterval(poll);
+                setTriggerMsg("Updated! Reloading...");
+                setData({chambers:jd.chambers||[],meetings:jd.meetings||[],date:jd.date,fetched_at:jd.fetched_at});
+                setJournalSource("live");
+                setTimeout(function(){setTriggerMsg("");},3000);
+              }
+            }
+          }catch(e){}
+          if(attempts>=8){clearInterval(poll);setTriggerMsg("Done - tap Load if data not updated yet");setTimeout(function(){setTriggerMsg("");},5000);}
+        },30000);
       } else {
         const err=await res.json().catch(function(){return {};});
         setTriggerMsg("Error: "+(err.message||res.status));
+        setTimeout(function(){setTriggerMsg("");},5000);
       }
-    }catch(e){setTriggerMsg("Error: "+e.message);}
+    }catch(e){setTriggerMsg("Error: "+e.message);setTimeout(function(){setTriggerMsg("");},5000);}
     setTriggering(false);
-    setTimeout(function(){setTriggerMsg("");},8000);
   }
   async function fetchMeetingNotes(){
     if(!SB_URL||!SB_KEY)return;
