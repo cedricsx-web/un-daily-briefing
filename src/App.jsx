@@ -73,8 +73,15 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
           {adjourned&&<span style={{fontSize:"8px",color:"rgba(255,200,0,0.7)",fontWeight:"700"}}>ADJOURNED</span>}
           {hasAgenda&&!adjourned&&!titleExpanded&&<span style={{marginLeft:"5px",fontSize:"9px",color:"rgba(0,160,220,0.45)"}}>{agendaOpen?"&#9650;":"&#9660;"}</span>}
           {(function(){
-            if(!meetingNotes||adjourned)return null;
-            // Match by exact key or partial (chamber title is shorter than list title)
+            if(adjourned)return null;
+            // For extra meetings: use extra_notes field directly
+            if(m.isExtra){
+              return m.extra_notes
+                ?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {m.extra_notes}</div>
+                :null;
+            }
+            // For journal meetings: look up in meetingNotes by title (exact or partial)
+            if(!meetingNotes)return null;
             const note=meetingNotes[m.title]||Object.entries(meetingNotes).reduce(function(found,entry){
               if(found)return found;
               const key=entry[0],val=entry[1];
