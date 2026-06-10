@@ -1,97 +1,59 @@
 {
-  "date": "2026-06-09",
-  "fetched_at": "2026-06-09T14:33:22.004Z",
-  "ny_date": "2026-06-09",
+  "date": "2026-06-10",
+  "fetched_at": "2026-06-10T14:14:50.147Z",
+  "ny_date": "2026-06-10",
   "source": "journal-api.un.org",
   "note": "Live from journal-api.un.org -- 12 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 1st meeting",
-          "agenda": [],
-          "id": "cb904857-7e35-4079-b485-ab6eeb0f108d"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 2nd meeting",
-          "agenda": [],
-          "id": "998177ac-340f-4964-b92a-4d78da64cdb6"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Security Council",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Security Council -- 10167th meeting",
+          "title": "Security Council -- 10169th meeting",
           "agenda": [],
-          "id": "316dc756-4c08-443f-b87c-dffa83529da8"
-        },
-        {
-          "time": "Followed By",
-          "title": "Security Council -- Consultations of the whole",
-          "agenda": [],
-          "id": "78ea62a8-f1a8-4efb-97f6-1d5c4fd8f4a4"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Security Council -- 10168th meeting",
-          "agenda": [],
-          "id": "0f271f63-6bde-445e-a8fc-5a764b2a2895"
+          "id": "534044a7-79a5-4509-84a0-1e817affe1aa"
         }
       ]
     },
     {
       "room": "Trusteeship Council",
-      "meetings": [
-        {
-          "time": "10:00 AM",
-          "title": "Office of the President of the General Assembly,World Health Organization (WHO) -- Event entitled “Interactive multi-stakeholder hearing as part of the preparatory process for the high-level meeting on pandemic prevention, preparedness and response“ (co-organized by the Office of the President of the General Assembly and the World Health Organization (WHO))",
-          "agenda": [],
-          "id": "75b94735-b270-4e6b-90b9-d186914faefc"
-        },
-        {
-          "time": "3:00 PM",
-          "title": "Office of the President of the General Assembly,World Health Organization (WHO) -- Event entitled “Interactive multi-stakeholder hearing as part of the preparatory process for the high-level meeting on pandemic prevention, preparedness and response“ (co-organized by the Office of the President of the General Assembly and the World Health Organization (WHO))",
-          "agenda": [],
-          "id": "2aa4b5fc-2d7a-4fcb-87b6-e2fa942644bf"
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Economic and Social Council",
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
+          "title": "Economic and Social Council, 2026 session -- 23rd plenary meeting",
           "agenda": [],
-          "id": "383de6e0-595a-4386-875a-24f179c30d75"
+          "id": "d4576a6a-5736-45fd-bf86-25e51eaef6c5"
         },
         {
           "time": "3:00 PM",
-          "title": "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
+          "title": "Economic and Social Council, 2026 session -- 24th plenary meeting",
           "agenda": [],
-          "id": "0924d327-0e8a-4061-8c71-8f1a3781ffdf"
+          "id": "a4978c23-64a7-4691-9236-d80c024fa1d2"
         }
       ]
     }
   ],
   "meetings": [
-    "Security Council -- 10167th meeting",
-    "Security Council -- Consultations of the whole",
-    "Security Council -- 10168th meeting",
+    "Security Council -- 10169th meeting",
     "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
-    "General Assembly, Eightieth session -- Informal informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
+    "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
+    "General Assembly, Eightieth session -- Informal consultations on the political declaration to renew commitment and accelerate the implementation of the New Urban Agenda",
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
     "Committee on Contributions, Eighty-sixth session -- Meeting",
-    "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 1st meeting",
-    "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 2nd meeting",
-    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 3rd plenary meeting",
-    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 4th plenary meeting",
-    "Office of the President of the General Assembly,World Health Organization (WHO) -- Event entitled “Interactive multi-stakeholder hearing as part of the preparatory process for the high-level meeting on pandemic prevention, preparedness and response“ (co-organized by the Office of the President of the General Assembly and the World Health Organization (WHO))"
+    "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 3rd meeting",
+    "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 4th meeting",
+    "Economic and Social Council, 2026 session -- 23rd plenary meeting",
+    "Economic and Social Council, 2026 session -- 24th plenary meeting",
+    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 5th plenary meeting",
+    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 6th plenary meeting"
   ]
 }
