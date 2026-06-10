@@ -12,79 +12,17 @@ const SDG_COLORS = {
   16:"#00689D",17:"#19486A",
 };
 
-const UN_OBSERVANCES = [
-  {date:"01-04",name:"World Braille Day",url:"https://www.un.org/en/observances/braille-day"},
-  {date:"01-24",name:"International Day of Education",url:"https://www.un.org/en/observances/education-day"},
-  {date:"01-26",name:"International Day of Clean Energy",url:"https://www.un.org/en/observances/clean-energy-day"},
-  {date:"01-27",name:"International Holocaust Remembrance Day",url:"https://www.un.org/en/observances/holocaust-remembrance-day"},
-  {date:"02-02",name:"World Wetlands Day",url:"https://www.un.org/en/observances/wetlands-day"},
-  {date:"02-04",name:"World Cancer Day",url:"https://www.un.org/en/observances/cancer-day"},
-  {date:"02-13",name:"World Radio Day",url:"https://www.un.org/en/observances/radio-day"},
-  {date:"02-20",name:"World Day of Social Justice",url:"https://www.un.org/en/observances/social-justice-day"},
-  {date:"02-21",name:"International Mother Language Day",url:"https://www.un.org/en/observances/mother-language-day"},
-  {date:"03-03",name:"World Wildlife Day",url:"https://www.un.org/en/observances/world-wildlife-day"},
-  {date:"03-08",name:"International Women's Day",url:"https://www.un.org/en/observances/international-womens-day"},
-  {date:"03-20",name:"International Day of Happiness",url:"https://www.un.org/en/observances/happiness-day"},
-  {date:"03-21",name:"International Day for the Elimination of Racial Discrimination",url:"https://www.un.org/en/observances/end-racism-day"},
-  {date:"03-22",name:"World Water Day",url:"https://www.un.org/en/observances/water-day"},
-  {date:"03-24",name:"World Tuberculosis Day",url:"https://www.un.org/en/observances/tuberculosis-day"},
-  {date:"04-02",name:"World Autism Awareness Day",url:"https://www.un.org/en/observances/autism-day"},
-  {date:"04-05",name:"International Day of Conscience",url:"https://www.un.org/en/observances/conscience-day"},
-  {date:"04-06",name:"International Day of Sport for Development and Peace",url:"https://www.un.org/en/observances/sport-day"},
-  {date:"04-07",name:"World Health Day",url:"https://www.un.org/en/observances/world-health-day"},
-  {date:"04-22",name:"International Mother Earth Day",url:"https://www.un.org/en/observances/earth-day"},
-  {date:"04-23",name:"World Book and Copyright Day",url:"https://www.un.org/en/observances/book-and-copyright-day"},
-  {date:"04-25",name:"World Malaria Day",url:"https://www.un.org/en/observances/malaria-day"},
-  {date:"04-28",name:"World Day for Safety and Health at Work",url:"https://www.un.org/en/observances/work-safety-day"},
-  {date:"05-03",name:"World Press Freedom Day",url:"https://www.un.org/en/observances/press-freedom-day"},
-  {date:"05-15",name:"International Day of Families",url:"https://www.un.org/en/observances/international-day-of-families"},
-  {date:"05-17",name:"World Telecommunication and Information Society Day",url:"https://www.un.org/en/observances/telecommunication-day"},
-  {date:"05-22",name:"International Day for Biological Diversity",url:"https://www.un.org/en/observances/biological-diversity-day"},
-  {date:"05-29",name:"International Day of UN Peacekeepers",url:"https://www.un.org/en/observances/peacekeepers-day"},
-  {date:"05-31",name:"World No-Tobacco Day",url:"https://www.un.org/en/observances/no-tobacco-day"},
-  {date:"06-05",name:"World Environment Day",url:"https://www.un.org/en/observances/environment-day"},
-  {date:"06-08",name:"World Oceans Day",url:"https://www.un.org/en/observances/oceans-day"},
-  {date:"06-12",name:"World Day Against Child Labour",url:"https://www.un.org/en/observances/world-day-against-child-labour"},
-  {date:"06-17",name:"World Day to Combat Desertification",url:"https://www.un.org/en/observances/desertification-day"},
-  {date:"06-20",name:"World Refugee Day",url:"https://www.un.org/en/observances/refugee-day"},
-  {date:"06-21",name:"International Day of Yoga",url:"https://www.un.org/en/observances/yoga-day"},
-  {date:"07-11",name:"World Population Day",url:"https://www.un.org/en/observances/world-population-day"},
-  {date:"07-18",name:"Nelson Mandela International Day",url:"https://www.un.org/en/observances/mandela-day"},
-  {date:"07-30",name:"World Day Against Trafficking in Persons",url:"https://www.un.org/en/observances/end-human-trafficking-day"},
-  {date:"08-12",name:"International Youth Day",url:"https://www.un.org/en/observances/youth-day"},
-  {date:"08-19",name:"World Humanitarian Day",url:"https://www.un.org/en/observances/humanitarian-day"},
-  {date:"09-05",name:"International Day of Charity",url:"https://www.un.org/en/observances/charity-day"},
-  {date:"09-08",name:"International Literacy Day",url:"https://www.un.org/en/observances/literacy-day"},
-  {date:"09-15",name:"International Day of Democracy",url:"https://www.un.org/en/observances/democracy-day"},
-  {date:"09-16",name:"International Day for the Preservation of the Ozone Layer",url:"https://www.un.org/en/observances/ozone-day"},
-  {date:"09-21",name:"International Day of Peace",url:"https://www.un.org/en/observances/international-day-of-peace"},
-  {date:"09-27",name:"World Tourism Day",url:"https://www.un.org/en/observances/world-tourism-day"},
-  {date:"10-01",name:"International Day of Older Persons",url:"https://www.un.org/en/observances/older-persons-day"},
-  {date:"10-02",name:"International Day of Non-Violence",url:"https://www.un.org/en/observances/non-violence-day"},
-  {date:"10-05",name:"World Teachers Day",url:"https://www.un.org/en/observances/world-teachers-day"},
-  {date:"10-10",name:"World Mental Health Day",url:"https://www.un.org/en/observances/world-mental-health-day"},
-  {date:"10-11",name:"International Day of the Girl Child",url:"https://www.un.org/en/observances/girl-child-day"},
-  {date:"10-13",name:"International Day for Disaster Risk Reduction",url:"https://www.un.org/en/observances/disaster-reduction-day"},
-  {date:"10-16",name:"World Food Day",url:"https://www.un.org/en/observances/food-day"},
-  {date:"10-17",name:"International Day for the Eradication of Poverty",url:"https://www.un.org/en/observances/day-for-eradicating-poverty"},
-  {date:"10-24",name:"United Nations Day",url:"https://www.un.org/en/observances/united-nations-day"},
-  {date:"11-06",name:"International Day for Preventing the Exploitation of the Environment in War",url:"https://www.un.org/en/observances/environment-in-war-day"},
-  {date:"11-16",name:"International Day for Tolerance",url:"https://www.un.org/en/observances/tolerance-day"},
-  {date:"11-19",name:"World Toilet Day",url:"https://www.un.org/en/observances/toilet-day"},
-  {date:"11-20",name:"World Children's Day",url:"https://www.un.org/en/observances/world-childrens-day"},
-  {date:"11-25",name:"International Day for the Elimination of Violence against Women",url:"https://www.un.org/en/observances/ending-violence-against-women-day"},
-  {date:"12-01",name:"World AIDS Day",url:"https://www.un.org/en/observances/world-aids-day"},
-  {date:"12-03",name:"International Day of Persons with Disabilities",url:"https://www.un.org/en/observances/day-of-persons-with-disabilities"},
-  {date:"12-05",name:"World Soil Day",url:"https://www.un.org/en/observances/world-soil-day"},
-  {date:"12-10",name:"Human Rights Day",url:"https://www.un.org/en/observances/human-rights-day"},
-  {date:"12-11",name:"International Mountain Day",url:"https://www.un.org/en/observances/mountain-day"},
-  {date:"12-18",name:"International Migrants Day",url:"https://www.un.org/en/observances/migrants-day"},
-];
+// Observances loaded from Supabase
+let UN_OBSERVANCES = [];
 
 function todayNY(){const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());const o={};p.forEach(function(x){o[x.type]=x.value;});return o.year+"-"+o.month+"-"+o.day;}
 function mmddNY(){const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",month:"2-digit",day:"2-digit"}).formatToParts(new Date());const o={};p.forEach(function(x){o[x.type]=x.value;});return o.month+"-"+o.day;}
-function getTodayObservance(){return UN_OBSERVANCES.find(function(o){return o.date===mmddNY();})||null;}
-function getWeekendObservances(){
+function getTodayObservance(list){
+  const arr=list||UN_OBSERVANCES;
+  return arr.find(function(o){return (o.month_day||o.date)===mmddNY();})||null;
+}
+function getWeekendObservances(list){
+  const arr=list||UN_OBSERVANCES;
   const now=new Date(new Date().toLocaleString("en-US",{timeZone:"America/New_York"}));
   const dow=now.getDay();const results=[];
   const offsets=dow===5?[1,2]:dow===1?[-2,-1]:[];
@@ -92,7 +30,7 @@ function getWeekendObservances(){
   offsets.forEach(function(d,i){
     const dt=new Date(now);dt.setDate(dt.getDate()+d);
     const m=String(dt.getMonth()+1).padStart(2,"0"),day=String(dt.getDate()).padStart(2,"0");
-    const obs=UN_OBSERVANCES.find(function(o){return o.date===m+"-"+day;});
+    const obs=arr.find(function(o){return (o.month_day||o.date)===m+"-"+day;});
     if(obs)results.push(Object.assign({},obs,{weekday:labels[i],past:dow===1}));
   });
   return results;
@@ -340,6 +278,7 @@ export default function App() {
   const [adjournedTitles,setAdjournedTitles]=useState([]);
   const [chamberOverrides,setChamberOverrides]=useState({});
   const [editingMeeting,setEditingMeeting]=useState(null);
+  const [observances,setObservances]=useState([]);
   const [triggering,setTriggering]=useState(false);
   const [triggerMsg,setTriggerMsg]=useState("");
   const [meetingNotes,setMeetingNotes]=useState({});
@@ -355,8 +294,8 @@ export default function App() {
   const [formSaving,setFormSaving]=useState(false);
   const [formErr,setFormErr]=useState("");
 
-  const todayObservance=getTodayObservance();
-  const weekendObservances=getWeekendObservances();
+  const todayObservance=getTodayObservance(observances);
+  const weekendObservances=getWeekendObservances(observances);
   const loadingMessages=["Fetching UN Journal","Parsing chamber schedules","Scanning all meetings","Almost ready"];
 
   useEffect(function(){
@@ -367,6 +306,7 @@ export default function App() {
     fetchExtraMeetings();
     fetchCancelledMeetings();
     fetchAdjournedMeetings();
+    fetchObservances();
     fetchChamberStatuses();
     fetchMeetingNotes();
   },[]);
@@ -492,6 +432,18 @@ export default function App() {
       }
     }catch(e){setTriggerMsg("Error: "+e.message);setTimeout(function(){setTriggerMsg("");},5000);}
     setTriggering(false);
+  }
+  async function fetchObservances(){
+    if(!SB_URL||!SB_KEY)return;
+    try{
+      const res=await fetch(SB_URL+"/rest/v1/observances?select=month_day,name,url&order=month_day.asc",{
+        headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}
+      });
+      if(res.ok){
+        const rows=await res.json();
+        if(rows&&rows.length>0)setObservances(rows);
+      }
+    }catch(e){console.warn("fetchObservances failed:",e.message);}
   }
   async function fetchMeetingNotes(){
     if(!SB_URL||!SB_KEY)return;
