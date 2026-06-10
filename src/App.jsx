@@ -74,10 +74,11 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
           {hasAgenda&&!adjourned&&!titleExpanded&&<span style={{marginLeft:"5px",fontSize:"9px",color:"rgba(0,160,220,0.45)"}}>{agendaOpen?"&#9650;":"&#9660;"}</span>}
           {(function(){
             if(adjourned)return null;
-            // For extra meetings: use extra_notes field directly
+            // For extra meetings: use extra_notes or note field
             if(m.isExtra){
-              return m.extra_notes
-                ?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {m.extra_notes}</div>
+              const enote=m.extra_notes||m.note||"";
+              return enote
+                ?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {enote}</div>
                 :null;
             }
             // For journal meetings: look up in meetingNotes by title (exact or partial)
@@ -542,7 +543,7 @@ export default function App() {
     if(!formOrgName.trim()||!formTitle.trim()){setFormErr("Please fill required fields");return;}
     setFormSaving(true);setFormErr("");
     try{
-      const res=await fetch(SB_URL+"/rest/v1/extra_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=representation"},body:JSON.stringify({date:todayNY(),organizer_type:formOrgType,organizer_name:formOrgName.trim(),title:formTitle.trim(),room:formRoom,time_start:formTimeStart||null,time_end:formTimeEnd||null,is_closed:formClosed,note:formNote.trim()||null})});
+      const res=await fetch(SB_URL+"/rest/v1/extra_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=representation"},body:JSON.stringify({date:todayNY(),organizer_type:formOrgType,organizer_name:formOrgName.trim(),title:formTitle.trim(),room:formRoom,time_start:formTimeStart||null,time_end:formTimeEnd||null,is_closed:formClosed,note:formNote.trim()||null,extra_notes:formNote.trim()||null})});
       if(!res.ok){const t=await res.text();throw new Error(t);}
       const rows=await res.json();
       if(rows&&rows[0])setExtraMeetings(function(p){return [...p,rows[0]];});
