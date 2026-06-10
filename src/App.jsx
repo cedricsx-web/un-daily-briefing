@@ -80,18 +80,18 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
         )}
       </div>
       {!adjourned&&(function(){
-        if(m.isExtra){
-          const enote=m.extra_notes||m.note||"";
-          return enote?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",paddingLeft:"28px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {enote}</div>:null;
-        }
-        if(!meetingNotes)return null;
-        const note=meetingNotes[m.title]||Object.entries(meetingNotes).reduce(function(found,entry){
-          if(found)return found;
-          const key=entry[0],val=entry[1];
-          if(key.includes(m.title)||m.title.includes(key))return val;
-          return null;
-        },null);
-        return note?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",paddingLeft:"28px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {note}</div>:null;
+        // Check all note sources: extra_notes field, note field, and meeting_notes table
+        const enote=m.extra_notes||m.note||"";
+        const tnote=meetingNotes
+          ?(meetingNotes[m.title]||Object.entries(meetingNotes).reduce(function(found,entry){
+              if(found)return found;
+              const key=entry[0],val=entry[1];
+              if(key.includes(m.title)||m.title.includes(key))return val;
+              return null;
+            },null))
+          :null;
+        const final=enote||tnote||"";
+        return final?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",paddingLeft:"28px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {final}</div>:null;
       })()}
       {hasAgenda&&agendaOpen&&(
         <div style={{marginTop:"6px",marginLeft:"46px",paddingLeft:"10px",borderLeft:"2px solid rgba(0,150,214,0.3)",display:"flex",flexDirection:"column",gap:"4px",animation:"fadeSlideIn 0.2s ease"}}>
