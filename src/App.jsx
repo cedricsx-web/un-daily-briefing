@@ -116,25 +116,29 @@ function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjo
   const hasSession=chamber.meetings&&chamber.meetings.some(function(m){return !m.cancelled;});
   const isSC=chamber.room==="Security Council";
   return (
-    <div style={{background:hasSession?"rgba(0,150,214,0.08)":"rgba(255,255,255,0.02)",border:hasSession?"1px solid rgba(0,150,214,0.25)":"1px solid rgba(255,255,255,0.06)",borderRadius:"10px",padding:"14px 16px",animation:"fadeSlideIn 0.4s ease both",animationDelay:(index*0.08)+"s"}}>
+    <div style={{background:hasSession?"rgba(0,150,214,0.08)":"rgba(255,255,255,0.02)",border:hasSession?"1px solid rgba(0,150,214,0.25)":"1px solid rgba(255,255,255,0.06)",borderRadius:"10px",overflow:"hidden",animation:"fadeSlideIn 0.4s ease both",animationDelay:(index*0.08)+"s"}}>
+      {/* Status bar - full width at top */}
+      {(function(){
+        const st=chamberStatus?chamberStatus(chamber,override,adjournedTitlesForStatus):"OPEN";
+        const stColors={"OPEN":["rgba(76,159,56,0.25)","#56C02B","rgba(76,159,56,0.08)"],"CLOSED":["rgba(220,50,50,0.3)","#ff6b6b","rgba(220,50,50,0.08)"],"WT":["rgba(252,195,11,0.3)","#FCC30B","rgba(252,195,11,0.06)"],"WT 4th":["rgba(252,195,11,0.3)","#FCC30B","rgba(252,195,11,0.06)"],"WT 3rd":["rgba(252,120,0,0.3)","#FF8C00","rgba(252,120,0,0.06)"]};
+        const [border,color,bg]=stColors[st]||stColors["OPEN"];
+        return (
+          <div
+            onClick={function(){onCycleStatus&&onCycleStatus(chamber.room,st);}}
+            style={{background:bg,borderBottom:"1px solid "+border,padding:"5px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",userSelect:"none"}}
+          >
+            <span style={{fontSize:"9px",fontWeight:"800",color:color,letterSpacing:"1px",textTransform:"uppercase"}}>{st}</span>
+            <span style={{fontSize:"9px",color:"rgba(255,255,255,0.25)"}}>tap to change</span>
+          </div>
+        );
+      })()}
+      <div style={{padding:"12px 14px"}}>
       <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:hasSession?"10px":"0"}}>
         <span style={{fontSize:"9px",fontWeight:"800",color:hasSession?"#00A0DC":"rgba(255,255,255,0.3)",background:hasSession?"rgba(0,150,214,0.15)":"rgba(255,255,255,0.06)",borderRadius:"5px",padding:"2px 5px",letterSpacing:"0.5px",flexShrink:0}}>{icon}</span>
         <span style={{flex:1,fontSize:"10px",fontWeight:"700",color:hasSession?"#00A0DC":"rgba(255,255,255,0.3)",textTransform:"uppercase",letterSpacing:"0.6px",lineHeight:"1.3"}}>{chamber.room}</span>
         {isSC&&hasSession&&(
           <a href="https://press.un.org/en/security-council" target="_blank" rel="noopener noreferrer" style={{background:"rgba(255,255,255,0.06)",border:"1px solid rgba(0,150,214,0.3)",color:"#00A0DC",borderRadius:"6px",padding:"2px 7px",fontSize:"9px",fontWeight:"700",letterSpacing:"0.5px",flexShrink:0,textDecoration:"none"}}>PRESS &#8599;</a>
         )}
-        {(function(){
-          const st=chamberStatus?chamberStatus(chamber,override,adjournedTitlesForStatus):"OPEN";
-          const stColors={"OPEN":["rgba(76,159,56,0.15)","#56C02B"],"CLOSED":["rgba(220,50,50,0.15)","#ff6b6b"],"WT":["rgba(252,195,11,0.15)","#FCC30B"],"WT 4th":["rgba(252,195,11,0.15)","#FCC30B"],"WT 3rd":["rgba(252,120,0,0.15)","#FF8C00"]};
-          const [bg,color]=stColors[st]||stColors["OPEN"];
-          return (
-            <span
-              onClick={function(){onCycleStatus&&onCycleStatus(chamber.room,st);}}
-              title="Tap to change status: OPEN -> CLOSED -> WT"
-              style={{fontSize:"8px",fontWeight:"800",background:bg,color:color,borderRadius:"4px",padding:"2px 6px",letterSpacing:"0.5px",flexShrink:0,cursor:"pointer",userSelect:"none"}}
-            >{st}</span>
-          );
-        })()}
       </div>
       {hasSession?(
         <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
@@ -143,6 +147,7 @@ function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjo
       ):(
         <p style={{margin:0,fontSize:"11px",color:"rgba(255,255,255,0.25)",fontStyle:"italic"}}>No session today</p>
       )}
+      </div>
     </div>
   );
 }
@@ -709,11 +714,17 @@ export default function App() {
 
       <div style={{background:"linear-gradient(180deg,rgba(0,80,160,0.45) 0%,transparent 100%)",padding:"calc(env(safe-area-inset-top,0px) + 28px) var(--pad) 22px",borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
         <div style={{maxWidth:"600px",margin:"0 auto"}}>
-          <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-            <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"rgba(0,160,220,0.2)",border:"2px solid rgba(0,160,220,0.5)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"18px"}}>&#127760;</div>
+          <div style={{display:"flex",alignItems:"center",gap:"12px",position:"relative"}}>
+            <div
+            onClick={GH_TOKEN&&!triggering?triggerFetchWorkflow:undefined}
+            title={GH_TOKEN?"Tap to refresh journal":undefined}
+            style={{width:"38px",height:"38px",borderRadius:"50%",background:triggering?"rgba(0,160,220,0.35)":"rgba(0,160,220,0.2)",border:"2px solid rgba(0,160,220,0.5)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"18px",cursor:GH_TOKEN&&!triggering?"pointer":"default",flexShrink:0,animation:triggering?"spin 1.5s linear infinite":undefined}}
+          >&#127760;</div>
+          {triggerMsg&&<span style={{position:"absolute",top:"8px",left:"50%",transform:"translateX(-50%)",fontSize:"10px",color:"rgba(0,160,220,0.8)",background:"rgba(10,22,40,0.9)",padding:"3px 8px",borderRadius:"10px",whiteSpace:"nowrap",pointerEvents:"none"}}>{triggerMsg}</span>}
             <div>
               <div style={{fontSize:"10px",letterSpacing:"2px",color:"rgba(255,255,255,0.5)",fontWeight:"600",textTransform:"uppercase"}}>United Nations</div>
               <div style={{fontSize:"clamp(17px,5vw,22px)",fontWeight:"800",fontFamily:"'Playfair Display',serif",lineHeight:1}}>Daily Briefing</div>
+
             </div>
           </div>
           {dateLabel&&(
@@ -722,16 +733,7 @@ export default function App() {
                 <p style={{margin:0,fontSize:"12px",color:"rgba(255,255,255,0.4)",fontWeight:"500"}}>&#128197; {dateLabel}</p>
                 {data&&<span style={{fontSize:"9px",fontWeight:"700",padding:"2px 7px",borderRadius:"10px",background:journalSource==="live"?"rgba(76,159,56,0.2)":"rgba(255,255,255,0.08)",color:journalSource==="live"?"#56C02B":"rgba(255,255,255,0.3)",letterSpacing:"0.5px",textTransform:"uppercase"}}>{journalSource==="live"?"Live Journal":"Offline"}</span>}
               </div>
-              {GH_TOKEN&&(
-                <div style={{marginTop:"6px",display:"flex",alignItems:"center",gap:"8px"}}>
-                  <button
-                    onClick={triggerFetchWorkflow}
-                    disabled={triggering}
-                    style={{background:"rgba(0,150,214,0.15)",border:"1px solid rgba(0,150,214,0.3)",color:"#00A0DC",borderRadius:"20px",padding:"4px 12px",fontSize:"11px",fontWeight:"600",cursor:triggering?"not-allowed":"pointer",fontFamily:"inherit",opacity:triggering?0.6:1}}
-                  >{triggering?"Fetching...":"Refresh Journal"}</button>
-                  {triggerMsg&&<span style={{fontSize:"11px",color:"rgba(255,255,255,0.5)"}}>{triggerMsg}</span>}
-                </div>
-              )}
+
               {data&&data.date&&(
                 <p style={{margin:"3px 0 0",fontSize:"11px",color:data.date===todayNY()?"rgba(255,255,255,0.3)":"rgba(255,180,0,0.7)",fontWeight:data.date===todayNY()?"400":"600"}}>
                   {data.date===todayNY()
@@ -792,7 +794,12 @@ export default function App() {
         )}
         {data&&!loading&&(function(){
           const visibleExtras=extraMeetings.filter(function(e){return !deletedExtraIds.includes(e.id);});
-          const mergedChambers=(data.chambers||[]).map(function(chamber){
+          // Reorder chambers: SC, TC, ECOSOC, GA Hall
+          const CHAMBER_ORDER=["Security Council","Trusteeship Council","Economic and Social Council","General Assembly Hall"];
+          const chambersOrdered=CHAMBER_ORDER.map(function(name){
+            return (data.chambers||[]).find(function(c){return c.room===name;})||{room:name,meetings:[]};
+          });
+          const mergedChambers=chambersOrdered.map(function(chamber){
             const extras=visibleExtras
               .filter(function(e){return (ROOM_DISPLAY[e.room]||e.room)===chamber.room;})
               .map(function(e){
@@ -814,7 +821,7 @@ export default function App() {
                   <span style={{fontSize:"11px",fontWeight:"700",color:"rgba(255,255,255,0.5)",textTransform:"uppercase",letterSpacing:"1.5px"}}>&#127963;&#65039; Council Chambers</span>
                   {journalSource==="live"&&<span style={{background:"rgba(76,159,56,0.15)",color:"#56C02B",fontSize:"9px",fontWeight:"700",padding:"2px 6px",borderRadius:"10px"}}>LIVE</span>}
                 </div>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:"10px"}}>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
                   {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles} override={chamberOverrides[c.room]||null} onCycleStatus={cycleChamberStatus} chamberStatus={chamberStatus} adjournedTitlesForStatus={adjournedTitles} meetingNotes={meetingNotes}/>;} )}
                 </div>
               </div>
