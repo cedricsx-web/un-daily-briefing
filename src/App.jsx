@@ -518,7 +518,15 @@ export default function App() {
     if(!trimmed){
       try{await fetch(SB_URL+"/rest/v1/meeting_notes?date=eq."+todayNY()+"&meeting_title=eq."+encodeURIComponent(title),{method:"DELETE",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});}catch(e){}
     } else {
-      try{await fetch(SB_URL+"/rest/v1/meeting_notes",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"resolution=merge-duplicates"},body:JSON.stringify({date:todayNY(),meeting_title:title,note:trimmed})});}catch(e){}
+      try{
+        const r=await fetch(SB_URL+"/rest/v1/meeting_notes?on_conflict=date,meeting_title",{
+          method:"POST",
+          headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"resolution=merge-duplicates,return=minimal"},
+          body:JSON.stringify({date:todayNY(),meeting_title:title,note:trimmed})
+        });
+        if(!r.ok){const t=await r.text();console.warn("saveMeetingNote failed:",r.status,t);}
+        else{console.log("Note saved for:",title);}
+      }catch(e){console.warn("saveMeetingNote error:",e.message);}
     }
   }
   async function updateExtraMeeting(id,updates){
