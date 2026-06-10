@@ -238,7 +238,7 @@ function MeetingsList({meetings,onCancel,onDelete,onUncancel,onEdit,editingId,on
                   {isExtra&&!cancelled&&<span style={{marginLeft:"6px",fontSize:"9px",color:"#FCC30B",fontWeight:"700",verticalAlign:"middle"}}>ADDED</span>}
                   {cancelled&&<span style={{marginLeft:"6px",fontSize:"9px",color:"#ff6b6b",fontWeight:"700",verticalAlign:"middle"}}>CANCELLED</span>}
                 </span>
-                {notes&&!cancelled&&<div style={{fontSize:"11px",color:"rgba(255,255,255,0.45)",marginTop:"2px",lineHeight:"1.4",fontStyle:"italic"}}>{notes}</div>}
+                {notes&&!cancelled&&<div style={{fontSize:"11px",color:"rgba(255,220,100,0.75)",marginTop:"2px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {notes}</div>}
                 {!isExtra&&!cancelled&&meetingNotes&&meetingNotes[cancelKey]&&(
                   <div style={{fontSize:"11px",color:"rgba(255,220,100,0.8)",marginTop:"3px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {meetingNotes[cancelKey]}</div>
                 )}
