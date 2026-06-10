@@ -73,29 +73,26 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
           {adjourned&&<span style={{fontSize:"8px",color:"rgba(255,200,0,0.7)",fontWeight:"700"}}>ADJOURNED</span>}
           {hasAgenda&&!adjourned&&!titleExpanded&&<span style={{marginLeft:"5px",fontSize:"9px",color:"rgba(0,160,220,0.45)"}}>{agendaOpen?"&#9650;":"&#9660;"}</span>}
         </div>
-        {!adjourned&&(function(){
-          // Note display - outside the line-clamp div to prevent clipping
-          if(m.isExtra){
-            const enote=m.extra_notes||m.note||"";
-            return enote
-              ?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {enote}</div>
-              :null;
-          }
-          if(!meetingNotes)return null;
-          const note=meetingNotes[m.title]||Object.entries(meetingNotes).reduce(function(found,entry){
-            if(found)return found;
-            const key=entry[0],val=entry[1];
-            if(key.includes(m.title)||m.title.includes(key))return val;
-            return null;
-          },null);
-          return note?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {note}</div>:null;
-        })()}
         {!adjourned?(
           <button onClick={function(e){e.stopPropagation();setShowActions(function(s){return !s;});}} style={{flexShrink:0,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.3)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"12px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8942;</button>
         ):(
           <button onClick={function(){onUnadjourn&&onUnadjourn(cancelKey,chamberName);}} title="Restore" style={{flexShrink:0,background:"rgba(255,200,0,0.1)",border:"1px solid rgba(255,200,0,0.3)",color:"rgba(255,200,0,0.7)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8617;</button>
         )}
       </div>
+      {!adjourned&&(function(){
+        if(m.isExtra){
+          const enote=m.extra_notes||m.note||"";
+          return enote?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",paddingLeft:"28px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {enote}</div>:null;
+        }
+        if(!meetingNotes)return null;
+        const note=meetingNotes[m.title]||Object.entries(meetingNotes).reduce(function(found,entry){
+          if(found)return found;
+          const key=entry[0],val=entry[1];
+          if(key.includes(m.title)||m.title.includes(key))return val;
+          return null;
+        },null);
+        return note?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",paddingLeft:"28px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {note}</div>:null;
+      })()}
       {hasAgenda&&agendaOpen&&(
         <div style={{marginTop:"6px",marginLeft:"46px",paddingLeft:"10px",borderLeft:"2px solid rgba(0,150,214,0.3)",display:"flex",flexDirection:"column",gap:"4px",animation:"fadeSlideIn 0.2s ease"}}>
           {m.agenda.map(function(item,j){return(<span key={j} style={{fontSize:"11px",color:"rgba(255,255,255,0.75)",lineHeight:"1.5"}}>{item}</span>);})}
@@ -342,7 +339,7 @@ export default function App() {
     return function(){clearInterval(interval);};
   },[]);
 
-  async function fetchExtraMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/extra_meetings?date=eq."+todayNY()+"&order=time_start.asc",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();console.log("EXTRA MEETINGS FETCHED:",JSON.stringify(rows));setExtraMeetings(rows||[]);}}catch(e){console.log("EXTRA FETCH ERROR:",e.message);}}
+  async function fetchExtraMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/extra_meetings?date=eq."+todayNY()+"&order=time_start.asc",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setExtraMeetings(rows||[]);}}catch(e){console.log("EXTRA FETCH ERROR:",e.message);}}
   async function fetchCancelledMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setCancelledTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
   async function fetchAdjournedMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setAdjournedTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
 
@@ -802,12 +799,10 @@ export default function App() {
           const visibleExtras=extraMeetings.filter(function(e){return !deletedExtraIds.includes(e.id);});
           // Reorder chambers: SC, TC, ECOSOC, GA Hall
           const CHAMBER_ORDER=["Security Council","Trusteeship Council","Economic and Social Council","General Assembly Hall"];
-          console.log("VISIBLE EXTRAS:",visibleExtras.map(function(e){return {title:e.title,room:e.room,note:e.note,extra_notes:e.extra_notes};}));
           const chambersOrdered=CHAMBER_ORDER.map(function(name){
             return (data.chambers||[]).find(function(c){return c.room===name;})||{room:name,meetings:[]};
           });
           const mergedChambers=chambersOrdered.map(function(chamber){
-            visibleExtras.forEach(function(e){console.log("FILTER CHECK:",JSON.stringify(e.room),"->",JSON.stringify(ROOM_DISPLAY[e.room]||e.room),"vs chamber:",JSON.stringify(chamber.room),"match:",(ROOM_DISPLAY[e.room]||e.room)===chamber.room);});
             const extras=visibleExtras
               .filter(function(e){return (ROOM_DISPLAY[e.room]||e.room)===chamber.room;})
               .map(function(e){
