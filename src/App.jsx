@@ -97,7 +97,7 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
       )}
       {showActions&&!adjourned&&(
         <div style={{marginTop:"6px",marginLeft:"46px",display:"flex",gap:"6px",flexWrap:"wrap",animation:"fadeSlideIn 0.15s ease"}}>
-          {!m.isExtra&&<button onClick={function(){onAdjourn&&onAdjourn(cancelKey,chamberName);setShowActions(false);}} style={{background:"rgba(252,195,11,0.12)",border:"1px solid rgba(252,195,11,0.3)",color:"#FCC30B",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>&#10003; Adjourned</button>}
+          <button onClick={function(){onAdjourn&&onAdjourn(cancelKey,chamberName);setShowActions(false);}} style={{background:"rgba(252,195,11,0.12)",border:"1px solid rgba(252,195,11,0.3)",color:"#FCC30B",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>&#10003; Adjourned</button>
           {m.isExtra?(
             <button onClick={function(){onDelete&&onDelete(m.extraId);setShowActions(false);}} style={{background:"rgba(220,50,50,0.12)",border:"1px solid rgba(220,50,50,0.3)",color:"#ff8080",borderRadius:"6px",padding:"4px 10px",fontSize:"10px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}}>&#x2715; Remove</button>
           ):(
