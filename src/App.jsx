@@ -691,26 +691,29 @@ export default function App() {
   }
 
   return (
-    <div style={{minHeight:"100dvh",background:"linear-gradient(160deg,#0a1628 0%,#0d2044 50%,#0a1a38 100%)",fontFamily:"'DM Sans','Segoe UI',sans-serif",color:"#fff",paddingBottom:"env(safe-area-inset-bottom,40px)"}}>
+    <div style={{minHeight:"100dvh",width:"100%",background:"linear-gradient(160deg,#0a1628 0%,#0d2044 50%,#0a1a38 100%)",fontFamily:"'DM Sans','Segoe UI',sans-serif",color:"#fff",paddingBottom:"env(safe-area-inset-bottom,40px)",overflowX:"hidden"}}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
         @keyframes fadeSlideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
         @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
         *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-        body{margin:0;overscroll-behavior-y:none;}
-        input,select{outline:none;}
-        input::placeholder{color:rgba(255,255,255,0.3);}
+        html,body{margin:0;padding:0;width:100%;overscroll-behavior-y:none;}
+        body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+        input,select,textarea,button{outline:none;-webkit-appearance:none;}
+        input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.3);}
         option{background:#0d2044;}
+        img{max-width:100%;}
+        :root{--pad:max(16px,env(safe-area-inset-left,16px));}
       `}</style>
 
-      <div style={{background:"linear-gradient(180deg,rgba(0,80,160,0.45) 0%,transparent 100%)",padding:"calc(env(safe-area-inset-top,0px) + 28px) 24px 22px",borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
-        <div style={{maxWidth:"520px",margin:"0 auto"}}>
+      <div style={{background:"linear-gradient(180deg,rgba(0,80,160,0.45) 0%,transparent 100%)",padding:"calc(env(safe-area-inset-top,0px) + 28px) var(--pad) 22px",borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
+        <div style={{maxWidth:"600px",margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
             <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"rgba(0,160,220,0.2)",border:"2px solid rgba(0,160,220,0.5)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"18px"}}>&#127760;</div>
             <div>
               <div style={{fontSize:"10px",letterSpacing:"2px",color:"rgba(255,255,255,0.5)",fontWeight:"600",textTransform:"uppercase"}}>United Nations</div>
-              <div style={{fontSize:"20px",fontWeight:"800",fontFamily:"'Playfair Display',serif",lineHeight:1}}>Daily Briefing</div>
+              <div style={{fontSize:"clamp(17px,5vw,22px)",fontWeight:"800",fontFamily:"'Playfair Display',serif",lineHeight:1}}>Daily Briefing</div>
             </div>
           </div>
           {dateLabel&&(
@@ -742,8 +745,8 @@ export default function App() {
       </div>
 
       {todayObservance&&(
-        <a href={todayObservance.url} target="_blank" rel="noopener noreferrer" style={{display:"block",background:"linear-gradient(90deg,rgba(0,96,214,0.35),rgba(0,150,220,0.18))",borderBottom:"1px solid rgba(0,160,220,0.25)",padding:"12px 24px",textDecoration:"none"}}>
-          <div style={{maxWidth:"520px",margin:"0 auto",display:"flex",alignItems:"center",gap:"10px"}}>
+        <a href={todayObservance.url} target="_blank" rel="noopener noreferrer" style={{display:"block",background:"linear-gradient(90deg,rgba(0,96,214,0.35),rgba(0,150,220,0.18))",borderBottom:"1px solid rgba(0,160,220,0.25)",padding:"12px var(--pad)",textDecoration:"none"}}>
+          <div style={{maxWidth:"600px",margin:"0 auto",display:"flex",alignItems:"center",gap:"10px"}}>
             <div style={{width:"36px",height:"36px",borderRadius:"50%",background:"rgba(0,160,220,0.25)",border:"1px solid rgba(0,160,220,0.5)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"18px",flexShrink:0}}>&#127981;</div>
             <div style={{flex:1}}>
               <div style={{fontSize:"9px",letterSpacing:"1.5px",color:"#00A0DC",fontWeight:"700",textTransform:"uppercase",marginBottom:"2px"}}>Today: International Day</div>
@@ -754,8 +757,8 @@ export default function App() {
         </a>
       )}
       {weekendObservances.map(function(obs,i){return(
-        <a key={i} href={obs.url} target="_blank" rel="noopener noreferrer" style={{display:"block",background:obs.past?"rgba(255,255,255,0.02)":"linear-gradient(90deg,rgba(0,96,214,0.2),rgba(0,150,220,0.08))",borderBottom:"1px solid rgba(255,255,255,0.06)",padding:"10px 24px",textDecoration:"none",opacity:obs.past?0.65:1}}>
-          <div style={{maxWidth:"520px",margin:"0 auto",display:"flex",alignItems:"center",gap:"10px"}}>
+        <a key={i} href={obs.url} target="_blank" rel="noopener noreferrer" style={{display:"block",background:obs.past?"rgba(255,255,255,0.02)":"linear-gradient(90deg,rgba(0,96,214,0.2),rgba(0,150,220,0.08))",borderBottom:"1px solid rgba(255,255,255,0.06)",padding:"10px var(--pad)",textDecoration:"none",opacity:obs.past?0.65:1}}>
+          <div style={{maxWidth:"600px",margin:"0 auto",display:"flex",alignItems:"center",gap:"10px"}}>
             <span style={{fontSize:"16px",flexShrink:0}}>&#127981;</span>
             <div style={{flex:1}}>
               <div style={{fontSize:"9px",letterSpacing:"1.5px",color:"rgba(255,255,255,0.4)",fontWeight:"700",textTransform:"uppercase"}}>{obs.weekday}</div>
@@ -766,7 +769,7 @@ export default function App() {
         </a>
       );})}
 
-      <div style={{maxWidth:"520px",margin:"0 auto",padding:"24px 18px 0"}}>
+      <div style={{maxWidth:"600px",margin:"0 auto",padding:"20px var(--pad) 0",width:"100%"}}>
         {!data&&!loading&&!error&&(
           <div style={{textAlign:"center",padding:"48px 24px",animation:"fadeSlideIn 0.5s ease"}}>
             <div style={{fontSize:"52px",marginBottom:"20px"}}>&#127482;&#127475;</div>
@@ -811,7 +814,7 @@ export default function App() {
                   <span style={{fontSize:"11px",fontWeight:"700",color:"rgba(255,255,255,0.5)",textTransform:"uppercase",letterSpacing:"1.5px"}}>&#127963;&#65039; Council Chambers</span>
                   {journalSource==="live"&&<span style={{background:"rgba(76,159,56,0.15)",color:"#56C02B",fontSize:"9px",fontWeight:"700",padding:"2px 6px",borderRadius:"10px"}}>LIVE</span>}
                 </div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:"10px"}}>
                   {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles} override={chamberOverrides[c.room]||null} onCycleStatus={cycleChamberStatus} chamberStatus={chamberStatus} adjournedTitlesForStatus={adjournedTitles} meetingNotes={meetingNotes}/>;} )}
                 </div>
               </div>
