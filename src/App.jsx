@@ -342,7 +342,7 @@ export default function App() {
     return function(){clearInterval(interval);};
   },[]);
 
-  async function fetchExtraMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/extra_meetings?date=eq."+todayNY()+"&order=time_start.asc",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setExtraMeetings(rows||[]);}}catch(e){}}
+  async function fetchExtraMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/extra_meetings?date=eq."+todayNY()+"&order=time_start.asc",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();console.log("EXTRA MEETINGS FETCHED:",JSON.stringify(rows));setExtraMeetings(rows||[]);}}catch(e){console.log("EXTRA FETCH ERROR:",e.message);}}
   async function fetchCancelledMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setCancelledTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
   async function fetchAdjournedMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setAdjournedTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
 
@@ -802,6 +802,7 @@ export default function App() {
           const visibleExtras=extraMeetings.filter(function(e){return !deletedExtraIds.includes(e.id);});
           // Reorder chambers: SC, TC, ECOSOC, GA Hall
           const CHAMBER_ORDER=["Security Council","Trusteeship Council","Economic and Social Council","General Assembly Hall"];
+          console.log("VISIBLE EXTRAS:",visibleExtras.map(function(e){return {title:e.title,room:e.room,note:e.note,extra_notes:e.extra_notes};}));
           const chambersOrdered=CHAMBER_ORDER.map(function(name){
             return (data.chambers||[]).find(function(c){return c.room===name;})||{room:name,meetings:[]};
           });
