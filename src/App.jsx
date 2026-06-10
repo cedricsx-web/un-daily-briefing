@@ -807,6 +807,7 @@ export default function App() {
             return (data.chambers||[]).find(function(c){return c.room===name;})||{room:name,meetings:[]};
           });
           const mergedChambers=chambersOrdered.map(function(chamber){
+            visibleExtras.forEach(function(e){console.log("FILTER CHECK:",JSON.stringify(e.room),"->",JSON.stringify(ROOM_DISPLAY[e.room]||e.room),"vs chamber:",JSON.stringify(chamber.room),"match:",(ROOM_DISPLAY[e.room]||e.room)===chamber.room);});
             const extras=visibleExtras
               .filter(function(e){return (ROOM_DISPLAY[e.room]||e.room)===chamber.room;})
               .map(function(e){
