@@ -72,18 +72,24 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
           )}
           {adjourned&&<span style={{fontSize:"8px",color:"rgba(255,200,0,0.7)",fontWeight:"700"}}>ADJOURNED</span>}
           {hasAgenda&&!adjourned&&!titleExpanded&&<span style={{marginLeft:"5px",fontSize:"9px",color:"rgba(0,160,220,0.45)"}}>{agendaOpen?"&#9650;":"&#9660;"}</span>}
-          {(function(){
-            if(!meetingNotes||adjourned)return null;
-            // Match by exact key or partial (chamber title is shorter than list title)
-            const note=meetingNotes[m.title]||Object.entries(meetingNotes).reduce(function(found,entry){
-              if(found)return found;
-              const key=entry[0],val=entry[1];
-              if(key.includes(m.title)||m.title.includes(key))return val;
-              return null;
-            },null);
-            return note?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {note}</div>:null;
-          })()}
         </div>
+        {!adjourned&&(function(){
+          // Note display - outside the line-clamp div to prevent clipping
+          if(m.isExtra){
+            const enote=m.extra_notes||m.note||"";
+            return enote
+              ?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {enote}</div>
+              :null;
+          }
+          if(!meetingNotes)return null;
+          const note=meetingNotes[m.title]||Object.entries(meetingNotes).reduce(function(found,entry){
+            if(found)return found;
+            const key=entry[0],val=entry[1];
+            if(key.includes(m.title)||m.title.includes(key))return val;
+            return null;
+          },null);
+          return note?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {note}</div>:null;
+        })()}
         {!adjourned?(
           <button onClick={function(e){e.stopPropagation();setShowActions(function(s){return !s;});}} style={{flexShrink:0,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.3)",borderRadius:"5px",width:"20px",height:"20px",fontSize:"12px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>&#8942;</button>
         ):(
@@ -535,7 +541,7 @@ export default function App() {
     if(!formOrgName.trim()||!formTitle.trim()){setFormErr("Please fill required fields");return;}
     setFormSaving(true);setFormErr("");
     try{
-      const res=await fetch(SB_URL+"/rest/v1/extra_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=representation"},body:JSON.stringify({date:todayNY(),organizer_type:formOrgType,organizer_name:formOrgName.trim(),title:formTitle.trim(),room:formRoom,time_start:formTimeStart||null,time_end:formTimeEnd||null,is_closed:formClosed,note:formNote.trim()||null})});
+      const res=await fetch(SB_URL+"/rest/v1/extra_meetings",{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=representation"},body:JSON.stringify({date:todayNY(),organizer_type:formOrgType,organizer_name:formOrgName.trim(),title:formTitle.trim(),room:formRoom,time_start:formTimeStart||null,time_end:formTimeEnd||null,is_closed:formClosed,note:formNote.trim()||null,extra_notes:formNote.trim()||null})});
       if(!res.ok){const t=await res.text();throw new Error(t);}
       const rows=await res.json();
       if(rows&&rows[0])setExtraMeetings(function(p){return [...p,rows[0]];});
