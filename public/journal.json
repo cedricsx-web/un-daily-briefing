@@ -1,9 +1,9 @@
 {
-  "date": "2026-06-10",
-  "fetched_at": "2026-06-10T19:35:36.053Z",
-  "ny_date": "2026-06-10",
+  "date": "2026-06-11",
+  "fetched_at": "2026-06-11T13:49:05.758Z",
+  "ny_date": "2026-06-11",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 12 meetings",
+  "note": "Live from journal-api.un.org -- 14 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -14,9 +14,9 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Security Council -- 10169th meeting",
+          "title": "Security Council -- 10169th meeting (resumed)",
           "agenda": [],
-          "id": "534044a7-79a5-4509-84a0-1e817affe1aa"
+          "id": "df8f48d2-f4bf-46b7-bc26-474eb3998d7b"
         }
       ]
     },
@@ -29,31 +29,33 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Economic and Social Council, 2026 session -- 23rd plenary meeting",
+          "title": "Economic and Social Council, 2026 session -- 25th plenary meeting",
           "agenda": [],
-          "id": "d4576a6a-5736-45fd-bf86-25e51eaef6c5"
+          "id": "bf08f1ca-cefe-48b0-80e5-2bfa53b59ffb"
         },
         {
           "time": "3:00 PM",
-          "title": "Economic and Social Council, 2026 session -- 24th plenary meeting",
+          "title": "Permanent Mission of Oman,United Nations Alliance of Civilizations (UNAOC) -- Event entitled “Launch of the Muscat Plan of Action for Traditional and Indigenous Leaders and Peoples in Countering and Addressing Hate Speech and Preventing Genocide and Atrocity Crimes and Their Incitement through Peace Mediation” (co-organized by the Permanent Mission of Oman and the United Nations Alliance of Civilizations (UNAOC))",
           "agenda": [],
-          "id": "a4978c23-64a7-4691-9236-d80c024fa1d2"
+          "id": "76850b49-13bd-4c0c-af1e-79445911720f"
         }
       ]
     }
   ],
   "meetings": [
-    "Security Council -- 10169th meeting",
-    "General Assembly, Eightieth session -- Informal consultations on the political declaration on sea level rise",
+    "Security Council -- 10169th meeting (resumed)",
+    "Informal Working Group on International Tribunals -- Informal working group meeting",
     "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
     "General Assembly, Eightieth session -- Informal consultations on the political declaration to renew commitment and accelerate the implementation of the New Urban Agenda",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
-    "Committee on Contributions, Eighty-sixth session -- Meeting",
-    "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 3rd meeting",
-    "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 4th meeting",
-    "Economic and Social Council, 2026 session -- 23rd plenary meeting",
-    "Economic and Social Council, 2026 session -- 24th plenary meeting",
-    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 5th plenary meeting",
-    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 6th plenary meeting"
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
+    "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 5th meeting",
+    "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 6th meeting",
+    "Economic and Social Council, 2026 session -- 25th plenary meeting",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal consultations",
+    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 7th plenary meeting",
+    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 8th plenary meeting",
+    "United Nations Children’s Fund,Permanent Mission of Bulgaria,Permanent Mission of El Salvador,Permanent Mission of Jamaica,Permanent Mission of Kenya,Permanent Mission of Luxembourg,Permanent Mission of Viet Nam,United Nations Educational, Scientific and Cultural Organization (UNESCO) -- Event to commemorate the International Day of Play (organized by the United Nations Children’s Fund in collaboration with the Permanent Missions of Bulgaria, El Salvador, Jamaica, Kenya, Luxembourg and Viet Nam and the United Nations Educational, Scientific and Cultural Organization (UNESCO))",
+    "International Criminal Court -- New York Working Group - Procedure for the nomination and election of judges - 2nd meeting",
+    "Permanent Mission of Oman,United Nations Alliance of Civilizations (UNAOC) -- Event entitled “Launch of the Muscat Plan of Action for Traditional and Indigenous Leaders and Peoples in Countering and Addressing Hate Speech and Preventing Genocide and Atrocity Crimes and Their Incitement through Peace Mediation” (co-organized by the Permanent Mission of Oman and the United Nations Alliance of Civilizations (UNAOC))"
   ]
 }
