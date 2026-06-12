@@ -498,8 +498,11 @@ export default function App() {
     if(!SB_URL||!SB_KEY)return;
     setExtraMeetings(function(p){return p.map(function(e){return e.id===id?Object.assign({},e,updates):e;});});
     try{
-      await fetch(SB_URL+"/rest/v1/extra_meetings?id=eq."+id,{method:"PATCH",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify(updates)});
-    }catch(e){}
+      console.log("PATCH extra_meetings id:",id,"updates:",JSON.stringify(updates));
+      const r=await fetch(SB_URL+"/rest/v1/extra_meetings?id=eq."+id,{method:"PATCH",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify(updates)});
+      if(r.ok){console.log("PATCH ok:",r.status);}
+      else{const t=await r.text();console.warn("PATCH FAILED:",r.status,t);}
+    }catch(e){console.warn("PATCH error:",e.message);}
     setEditingMeeting(null);
   }
   async function adjournMeeting(key,chamber){
