@@ -212,7 +212,7 @@ function EditMeetingForm({meeting,onSave,onClose}) {
         </label>
         <div style={{display:"flex",gap:"8px",marginTop:"4px"}}>
           <button
-            onClick={async function(){setSaving(true);await onSave(meeting.extraId||meeting.id,{title:title.trim(),extra_notes:notes.trim(),time_start:timeStart||null,time_end:timeEnd||null,is_closed:isClosed});setSaving(false);}}
+            onClick={async function(){setSaving(true);await onSave(meeting.extraId||meeting.id,{title:title.trim(),extra_notes:notes.trim(),note:notes.trim(),time_start:timeStart||null,time_end:timeEnd||null,is_closed:isClosed});setSaving(false);}}
             disabled={saving}
             style={{flex:1,background:"linear-gradient(135deg,#0096D6,#0050A0)",color:"#fff",border:"none",borderRadius:"7px",padding:"9px",fontSize:"13px",fontWeight:"700",cursor:saving?"not-allowed":"pointer",fontFamily:"inherit"}}
           >{saving?"Saving...":"Save"}</button>
@@ -838,7 +838,7 @@ export default function App() {
                   {journalSource==="live"&&<span style={{background:"rgba(76,159,56,0.15)",color:"#56C02B",fontSize:"9px",fontWeight:"700",padding:"2px 6px",borderRadius:"10px"}}>LIVE</span>}
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
-                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles} override={chamberOverrides[c.room]||null} onCycleStatus={cycleChamberStatus} chamberStatus={chamberStatus} adjournedTitlesForStatus={adjournedTitles} meetingNotes={meetingNotes} onClearNote={function(m){if(m.isExtra){updateExtraMeeting(m.extraId,{extra_notes:""});}else{saveMeetingNote(m.title,"");}}}/>;} )}
+                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles} override={chamberOverrides[c.room]||null} onCycleStatus={cycleChamberStatus} chamberStatus={chamberStatus} adjournedTitlesForStatus={adjournedTitles} meetingNotes={meetingNotes} onClearNote={function(m){if(m.isExtra){updateExtraMeeting(m.extraId,{extra_notes:"",note:""});}else{saveMeetingNote(m.title,"");}}}/>;} )}
                 </div>
               </div>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
