@@ -81,7 +81,6 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
       </div>
       {!adjourned&&(function(){
         // Check all note sources: extra_notes field, note field, and meeting_notes table
-        console.log("NOTE CHECK:",m.title.slice(0,30),"isExtra:",m.isExtra,"extra_notes:",m.extra_notes,"note:",m.note);
         const enote=m.extra_notes||m.note||"";
         const tnote=meetingNotes
           ?(meetingNotes[m.title]||Object.entries(meetingNotes).reduce(function(found,entry){
@@ -808,12 +807,11 @@ export default function App() {
               .filter(function(e){return (ROOM_DISPLAY[e.room]||e.room)===chamber.room;})
               .map(function(e){
                 const org=e.organizer_type==="un_body"?e.organizer_name:e.organizer_type==="mission"?"Mission of "+e.organizer_name:e.organizer_name;
-                return {time:e.time_start?fmtTime(e.time_start):"TBD",title:org+" -- "+e.title+(e.is_closed?" [Closed]":""),agenda:[],id:e.id||null,isExtra:true,extraId:e.id};
+                return {time:e.time_start?fmtTime(e.time_start):"TBD",title:org+" -- "+e.title+(e.is_closed?" [Closed]":""),agenda:[],id:e.id||null,isExtra:true,extraId:e.id,extra_notes:e.extra_notes||e.note||""};
               });
             const journalMeetings=(chamber.meetings||[])
               .filter(function(m){return !cancelledTitles.some(function(ct){return ct===m.title||ct.includes(m.title);});});
-            console.log("CHAMBER",chamber.room,"journal:",journalMeetings.length,"extras:",extras.length,extras.map(function(e){return e.title.slice(0,20)+"[isExtra:"+e.isExtra+"]";}));
-    return Object.assign({},chamber,{meetings:[...journalMeetings,...extras]});
+            return Object.assign({},chamber,{meetings:[...journalMeetings,...extras]});
           });
           const allMeetings=[
             ...(data.meetings||[]).map(function(title){return {title,isExtra:false,extraId:null,cancelKey:title,cancelled:cancelledTitles.includes(title)};}),
