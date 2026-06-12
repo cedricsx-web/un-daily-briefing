@@ -1,5 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 
+// Unregister service worker to prevent it from caching/blocking Supabase API calls
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    registrations.forEach(function(reg) { reg.unregister(); });
+  });
+}
+
 const BASE     = import.meta.env.BASE_URL || "/";
 const GH_TOKEN = import.meta.env.VITE_GITHUB_TOKEN || "";
 const SB_URL = import.meta.env.VITE_SUPABASE_URL || "";
