@@ -1,5 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 
+// Unregister service worker to prevent it from caching/blocking Supabase API calls
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    registrations.forEach(function(reg) { reg.unregister(); });
+  });
+}
+
 const BASE     = import.meta.env.BASE_URL || "/";
 const GH_TOKEN = import.meta.env.VITE_GITHUB_TOKEN || "";
 const SB_URL = import.meta.env.VITE_SUPABASE_URL || "";
@@ -43,7 +50,7 @@ const ORGAN_TO_CHAMBER={"general assembly":"General Assembly Hall","security cou
 const ROOM_DISPLAY={"General Assembly Hall":"General Assembly Hall","Security Council Chamber":"Security Council","Trusteeship Council Chamber":"Trusteeship Council","Economic and Social Council Chamber":"Economic and Social Council"};
 
 // -- Meeting Row --
-function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,meetingNotes,chamberName}) {
+function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,meetingNotes,chamberName,onClearNote}) {
   const [agendaOpen,setAgendaOpen]=useState(false);
   const [showActions,setShowActions]=useState(false);
   const [titleExpanded,setTitleExpanded]=useState(false);
@@ -91,7 +98,12 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
             },null))
           :null;
         const final=enote||tnote||"";
-        return final?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",paddingLeft:"28px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {final}</div>:null;
+        return final?(
+          <div style={{display:"flex",alignItems:"flex-start",gap:"4px",marginTop:"3px",paddingLeft:"28px"}}>
+            <div style={{flex:1,fontSize:"10px",color:"rgba(255,220,100,0.75)",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {final}</div>
+            <button onClick={function(e){e.stopPropagation();onClearNote&&onClearNote(m);}} style={{flexShrink:0,background:"none",border:"none",color:"rgba(255,220,100,0.4)",fontSize:"10px",cursor:"pointer",padding:"0 2px",lineHeight:1}}>&#x2715;</button>
+          </div>
+        ):null;
       })()}
       {hasAgenda&&agendaOpen&&(
         <div style={{marginTop:"6px",marginLeft:"46px",paddingLeft:"10px",borderLeft:"2px solid rgba(0,150,214,0.3)",display:"flex",flexDirection:"column",gap:"4px",animation:"fadeSlideIn 0.2s ease"}}>
@@ -114,7 +126,7 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
 }
 
 // -- Chamber Card --
-function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,cancelledTitles,override,onCycleStatus,chamberStatus,adjournedTitlesForStatus,meetingNotes}) {
+function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,cancelledTitles,override,onCycleStatus,chamberStatus,adjournedTitlesForStatus,meetingNotes,onClearNote}) {
   const icon=CHAMBER_ICONS[chamber.room]||"UN";
   const hasSession=chamber.meetings&&chamber.meetings.some(function(m){return !m.cancelled;});
   const isSC=chamber.room==="Security Council";
@@ -145,7 +157,7 @@ function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjo
       </div>
       {hasSession?(
         <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
-          {(chamber.meetings||[]).map(function(m,i){return <MeetingRow key={i} m={m} onCancel={onCancel} onAdjourn={onAdjourn} onUnadjourn={onUnadjourn} onDelete={onDelete} adjournedTitles={adjournedTitles} meetingNotes={meetingNotes} chamberName={chamber.room}/>;} )}
+          {(chamber.meetings||[]).map(function(m,i){return <MeetingRow key={i} m={m} onCancel={onCancel} onAdjourn={onAdjourn} onUnadjourn={onUnadjourn} onDelete={onDelete} adjournedTitles={adjournedTitles} meetingNotes={meetingNotes} chamberName={chamber.room} onClearNote={onClearNote}/>;} )}
         </div>
       ):(
         <p style={{margin:0,fontSize:"11px",color:"rgba(255,255,255,0.25)",fontStyle:"italic"}}>No session today</p>
@@ -238,7 +250,7 @@ function MeetingsList({meetings,onCancel,onDelete,onUncancel,onEdit,editingId,on
                   {isExtra&&!cancelled&&<span style={{marginLeft:"6px",fontSize:"9px",color:"#FCC30B",fontWeight:"700",verticalAlign:"middle"}}>ADDED</span>}
                   {cancelled&&<span style={{marginLeft:"6px",fontSize:"9px",color:"#ff6b6b",fontWeight:"700",verticalAlign:"middle"}}>CANCELLED</span>}
                 </span>
-                {notes&&!cancelled&&<div style={{fontSize:"11px",color:"rgba(255,255,255,0.45)",marginTop:"2px",lineHeight:"1.4",fontStyle:"italic"}}>{notes}</div>}
+                {notes&&!cancelled&&<div style={{fontSize:"11px",color:"rgba(255,220,100,0.75)",marginTop:"2px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {notes}</div>}
                 {!isExtra&&!cancelled&&meetingNotes&&meetingNotes[cancelKey]&&(
                   <div style={{fontSize:"11px",color:"rgba(255,220,100,0.8)",marginTop:"3px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {meetingNotes[cancelKey]}</div>
                 )}
@@ -339,14 +351,14 @@ export default function App() {
     return function(){clearInterval(interval);};
   },[]);
 
-  async function fetchExtraMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/extra_meetings?date=eq."+todayNY()+"&order=time_start.asc",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setExtraMeetings(rows||[]);}}catch(e){console.log("EXTRA FETCH ERROR:",e.message);}}
-  async function fetchCancelledMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setCancelledTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
-  async function fetchAdjournedMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setAdjournedTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
+  async function fetchExtraMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/extra_meetings?date=eq."+todayNY()+"&order=time_start.asc",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},cache:"no-store"});if(res.ok){const rows=await res.json();setExtraMeetings(rows||[]);}}catch(e){console.log("EXTRA FETCH ERROR:",e.message);}}
+  async function fetchCancelledMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},cache:"no-store"});if(res.ok){const rows=await res.json();setCancelledTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
+  async function fetchAdjournedMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},cache:"no-store"});if(res.ok){const rows=await res.json();setAdjournedTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
 
   async function fetchChamberStatuses(){
     if(!SB_URL||!SB_KEY)return;
     try{
-      const res=await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+      const res=await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},cache:"no-store"});
       if(res.ok){
         const rows=await res.json();
         // Build map from DB - only update what DB knows about
@@ -456,7 +468,7 @@ export default function App() {
   async function fetchMeetingNotes(){
     if(!SB_URL||!SB_KEY)return;
     try{
-      const res=await fetch(SB_URL+"/rest/v1/meeting_notes?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+      const res=await fetch(SB_URL+"/rest/v1/meeting_notes?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},cache:"no-store"});
       if(res.ok){
         const rows=await res.json();
         const map={};
@@ -493,8 +505,9 @@ export default function App() {
     if(!SB_URL||!SB_KEY)return;
     setExtraMeetings(function(p){return p.map(function(e){return e.id===id?Object.assign({},e,updates):e;});});
     try{
-      await fetch(SB_URL+"/rest/v1/extra_meetings?id=eq."+id,{method:"PATCH",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify(updates)});
-    }catch(e){}
+      const r=await fetch(SB_URL+"/rest/v1/extra_meetings?id=eq."+id,{method:"PATCH",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify(updates)});
+      if(!r.ok){const t=await r.text();console.warn("PATCH failed:",r.status,t);}
+    }catch(e){console.warn("PATCH error:",e.message);}
     setEditingMeeting(null);
   }
   async function adjournMeeting(key,chamber){
@@ -807,7 +820,7 @@ export default function App() {
               .filter(function(e){return (ROOM_DISPLAY[e.room]||e.room)===chamber.room;})
               .map(function(e){
                 const org=e.organizer_type==="un_body"?e.organizer_name:e.organizer_type==="mission"?"Mission of "+e.organizer_name:e.organizer_name;
-                return {time:e.time_start?fmtTime(e.time_start):"TBD",title:org+" -- "+e.title+(e.is_closed?" [Closed]":""),agenda:[],id:e.id||null,isExtra:true,extraId:e.id};
+                return {time:e.time_start?fmtTime(e.time_start):"TBD",title:org+" -- "+e.title+(e.is_closed?" [Closed]":""),agenda:[],id:e.id||null,isExtra:true,extraId:e.id,extra_notes:e.extra_notes||e.note||""};
               });
             const journalMeetings=(chamber.meetings||[])
               .filter(function(m){return !cancelledTitles.some(function(ct){return ct===m.title||ct.includes(m.title);});});
@@ -825,7 +838,7 @@ export default function App() {
                   {journalSource==="live"&&<span style={{background:"rgba(76,159,56,0.15)",color:"#56C02B",fontSize:"9px",fontWeight:"700",padding:"2px 6px",borderRadius:"10px"}}>LIVE</span>}
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
-                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles} override={chamberOverrides[c.room]||null} onCycleStatus={cycleChamberStatus} chamberStatus={chamberStatus} adjournedTitlesForStatus={adjournedTitles} meetingNotes={meetingNotes}/>;} )}
+                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles} override={chamberOverrides[c.room]||null} onCycleStatus={cycleChamberStatus} chamberStatus={chamberStatus} adjournedTitlesForStatus={adjournedTitles} meetingNotes={meetingNotes} onClearNote={function(m){if(m.isExtra){updateExtraMeeting(m.extraId,{extra_notes:""});}else{saveMeetingNote(m.title,"");}}}/>;} )}
                 </div>
               </div>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
