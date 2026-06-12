@@ -81,6 +81,7 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
       </div>
       {!adjourned&&(function(){
         // Check all note sources: extra_notes field, note field, and meeting_notes table
+        console.log("NOTE CHECK:",m.title.slice(0,30),"isExtra:",m.isExtra,"extra_notes:",m.extra_notes,"note:",m.note);
         const enote=m.extra_notes||m.note||"";
         const tnote=meetingNotes
           ?(meetingNotes[m.title]||Object.entries(meetingNotes).reduce(function(found,entry){
@@ -811,7 +812,8 @@ export default function App() {
               });
             const journalMeetings=(chamber.meetings||[])
               .filter(function(m){return !cancelledTitles.some(function(ct){return ct===m.title||ct.includes(m.title);});});
-            return Object.assign({},chamber,{meetings:[...journalMeetings,...extras]});
+            console.log("CHAMBER",chamber.room,"journal:",journalMeetings.length,"extras:",extras.length,extras.map(function(e){return e.title.slice(0,20)+"[isExtra:"+e.isExtra+"]";}));
+    return Object.assign({},chamber,{meetings:[...journalMeetings,...extras]});
           });
           const allMeetings=[
             ...(data.meetings||[]).map(function(title){return {title,isExtra:false,extraId:null,cancelKey:title,cancelled:cancelledTitles.includes(title)};}),
