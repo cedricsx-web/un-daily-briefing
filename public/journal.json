@@ -1,9 +1,9 @@
 {
   "date": "2026-06-12",
-  "fetched_at": "2026-06-12T14:42:57.337Z",
+  "fetched_at": "2026-06-12T17:22:51.772Z",
   "ny_date": "2026-06-12",
   "source": "journal-api.un.org",
-  "note": "No allnew data captured",
+  "note": "Live from journal-api.un.org -- 9 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -11,7 +11,14 @@
     },
     {
       "room": "Security Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "Security Council -- 10170th meeting",
+          "agenda": [],
+          "id": "3e595784-a33c-497c-a1c7-d23ce6eae2d4"
+        }
+      ]
     },
     {
       "room": "Trusteeship Council",
@@ -19,8 +26,25 @@
     },
     {
       "room": "Economic and Social Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "3:00 PM",
+          "title": "Permanent Mission of the Republic of Korea,United Nations Office on Drugs and Crime (UNODC) -- Event entitled “Launch of the Group of Friends for Combating Technology-facilitated Trafficking in Persons” (co-organized by the Permanent Mission of the Republic of Korea and the United Nations Office on Drugs and Crime (UNODC))",
+          "agenda": [],
+          "id": "5c09220e-5166-4b60-9502-f444a7edf310"
+        }
+      ]
     }
   ],
-  "meetings": []
+  "meetings": [
+    "Security Council -- 10170th meeting",
+    "General Assembly, Eightieth session -- Informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
+    "General Assembly, Eightieth session -- Informal consultations on the the political declaration of the high-level meeting on HIV/AIDS",
+    "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
+    "Peacebuilding Commission -- Ambassadorial-level meeting on Sao Tome and Principe",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 19th meeting",
+    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 9th plenary meeting",
+    "Permanent Mission of the Republic of Korea,United Nations Office on Drugs and Crime (UNODC) -- Event entitled “Launch of the Group of Friends for Combating Technology-facilitated Trafficking in Persons” (co-organized by the Permanent Mission of the Republic of Korea and the United Nations Office on Drugs and Crime (UNODC))"
+  ]
 }
