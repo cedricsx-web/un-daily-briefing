@@ -344,14 +344,14 @@ export default function App() {
     return function(){clearInterval(interval);};
   },[]);
 
-  async function fetchExtraMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/extra_meetings?date=eq."+todayNY()+"&order=time_start.asc",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setExtraMeetings(rows||[]);}}catch(e){console.log("EXTRA FETCH ERROR:",e.message);}}
-  async function fetchCancelledMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setCancelledTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
-  async function fetchAdjournedMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});if(res.ok){const rows=await res.json();setAdjournedTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
+  async function fetchExtraMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/extra_meetings?date=eq."+todayNY()+"&order=time_start.asc",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},cache:"no-store"});if(res.ok){const rows=await res.json();setExtraMeetings(rows||[]);}}catch(e){console.log("EXTRA FETCH ERROR:",e.message);}}
+  async function fetchCancelledMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/cancelled_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},cache:"no-store"});if(res.ok){const rows=await res.json();setCancelledTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
+  async function fetchAdjournedMeetings(){if(!SB_URL||!SB_KEY)return;try{const res=await fetch(SB_URL+"/rest/v1/adjourned_meetings?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},cache:"no-store"});if(res.ok){const rows=await res.json();setAdjournedTitles((rows||[]).map(function(r){return r.meeting_title;}));}}catch(e){}}
 
   async function fetchChamberStatuses(){
     if(!SB_URL||!SB_KEY)return;
     try{
-      const res=await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+      const res=await fetch(SB_URL+"/rest/v1/chamber_status?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},cache:"no-store"});
       if(res.ok){
         const rows=await res.json();
         // Build map from DB - only update what DB knows about
@@ -461,7 +461,7 @@ export default function App() {
   async function fetchMeetingNotes(){
     if(!SB_URL||!SB_KEY)return;
     try{
-      const res=await fetch(SB_URL+"/rest/v1/meeting_notes?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+      const res=await fetch(SB_URL+"/rest/v1/meeting_notes?date=eq."+todayNY(),{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},cache:"no-store"});
       if(res.ok){
         const rows=await res.json();
         const map={};
@@ -498,10 +498,8 @@ export default function App() {
     if(!SB_URL||!SB_KEY)return;
     setExtraMeetings(function(p){return p.map(function(e){return e.id===id?Object.assign({},e,updates):e;});});
     try{
-      console.log("PATCH extra_meetings id:",id,"updates:",JSON.stringify(updates));
       const r=await fetch(SB_URL+"/rest/v1/extra_meetings?id=eq."+id,{method:"PATCH",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},body:JSON.stringify(updates)});
-      if(r.ok){console.log("PATCH ok:",r.status);}
-      else{const t=await r.text();console.warn("PATCH FAILED:",r.status,t);}
+      if(!r.ok){const t=await r.text();console.warn("PATCH failed:",r.status,t);}
     }catch(e){console.warn("PATCH error:",e.message);}
     setEditingMeeting(null);
   }
