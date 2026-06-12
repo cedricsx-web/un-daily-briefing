@@ -13,6 +13,20 @@
     <meta name="description" content="Live UN chamber schedule and daily meeting briefing for UN Headquarters guides">
     <link rel="icon" type="image/svg+xml" href="/un-daily-briefing/favicon.svg">
     <link rel="apple-touch-icon" href="/un-daily-briefing/favicon.svg">
+    <script>
+      // Unregister all service workers to prevent caching issues with Supabase API calls
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          regs.forEach(function(r) { r.unregister(); });
+        });
+        // Clear all caches
+        if ('caches' in window) {
+          caches.keys().then(function(keys) {
+            keys.forEach(function(k) { caches.delete(k); });
+          });
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
