@@ -1,9 +1,9 @@
 {
-  "date": "2026-06-11",
-  "fetched_at": "2026-06-11T15:41:48.813Z",
-  "ny_date": "2026-06-11",
+  "date": "2026-06-12",
+  "fetched_at": "2026-06-12T13:59:38.057Z",
+  "ny_date": "2026-06-12",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 14 meetings",
+  "note": "Live from journal-api.un.org -- 9 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -14,9 +14,9 @@
       "meetings": [
         {
           "time": "10:00 AM",
-          "title": "Security Council -- 10169th meeting (resumed)",
+          "title": "Security Council -- 10170th meeting",
           "agenda": [],
-          "id": "df8f48d2-f4bf-46b7-bc26-474eb3998d7b"
+          "id": "3e595784-a33c-497c-a1c7-d23ce6eae2d4"
         }
       ]
     },
@@ -28,34 +28,23 @@
       "room": "Economic and Social Council",
       "meetings": [
         {
-          "time": "10:00 AM",
-          "title": "Economic and Social Council, 2026 session -- 25th plenary meeting",
-          "agenda": [],
-          "id": "bf08f1ca-cefe-48b0-80e5-2bfa53b59ffb"
-        },
-        {
           "time": "3:00 PM",
-          "title": "Permanent Mission of Oman,United Nations Alliance of Civilizations (UNAOC) -- Event entitled “Launch of the Muscat Plan of Action for Traditional and Indigenous Leaders and Peoples in Countering and Addressing Hate Speech and Preventing Genocide and Atrocity Crimes and Their Incitement through Peace Mediation” (co-organized by the Permanent Mission of Oman and the United Nations Alliance of Civilizations (UNAOC))",
+          "title": "Permanent Mission of the Republic of Korea,United Nations Office on Drugs and Crime (UNODC) -- Event entitled “Launch of the Group of Friends for Combating Technology-facilitated Trafficking in Persons” (co-organized by the Permanent Mission of the Republic of Korea and the United Nations Office on Drugs and Crime (UNODC))",
           "agenda": [],
-          "id": "76850b49-13bd-4c0c-af1e-79445911720f"
+          "id": "5c09220e-5166-4b60-9502-f444a7edf310"
         }
       ]
     }
   ],
   "meetings": [
-    "Security Council -- 10169th meeting (resumed)",
-    "Informal Working Group on International Tribunals -- Informal working group meeting",
+    "Security Council -- 10170th meeting",
+    "General Assembly, Eightieth session -- Informal consultations on the review of the arrangements contained in General Assembly resolutions 75/290 A and 75/290 B and their annexes on the strengthening of the Economic and Social Council and on the high-level political forum on sustainable development and the follow-up and review of the 2030 Agenda for Sustainable Development at the global level",
+    "General Assembly, Eightieth session -- Informal consultations on the the political declaration of the high-level meeting on HIV/AIDS",
     "General Assembly, Eightieth session -- Informal consultations on the political declaration of the high-level meeting on HIV/AIDS",
-    "General Assembly, Eightieth session -- Informal consultations on the political declaration to renew commitment and accelerate the implementation of the New Urban Agenda",
-    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (also with virtual participation)",
-    "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 5th meeting",
-    "Conference of States Parties to the Convention on the Rights of Persons with Disabilities, Nineteenth session -- 6th meeting",
-    "Economic and Social Council, 2026 session -- 25th plenary meeting",
-    "Committee for Programme and Coordination, Sixty-sixth substantive session -- Informal consultations",
-    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 7th plenary meeting",
-    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 8th plenary meeting",
-    "United Nations Children’s Fund,Permanent Mission of Bulgaria,Permanent Mission of El Salvador,Permanent Mission of Jamaica,Permanent Mission of Kenya,Permanent Mission of Luxembourg,Permanent Mission of Viet Nam,United Nations Educational, Scientific and Cultural Organization (UNESCO) -- Event to commemorate the International Day of Play (organized by the United Nations Children’s Fund in collaboration with the Permanent Missions of Bulgaria, El Salvador, Jamaica, Kenya, Luxembourg and Viet Nam and the United Nations Educational, Scientific and Cultural Organization (UNESCO))",
-    "International Criminal Court -- New York Working Group - Procedure for the nomination and election of judges - 2nd meeting",
-    "Permanent Mission of Oman,United Nations Alliance of Civilizations (UNAOC) -- Event entitled “Launch of the Muscat Plan of Action for Traditional and Indigenous Leaders and Peoples in Countering and Addressing Hate Speech and Preventing Genocide and Atrocity Crimes and Their Incitement through Peace Mediation” (co-organized by the Permanent Mission of Oman and the United Nations Alliance of Civilizations (UNAOC))"
+    "Advisory Committee on Administrative and Budgetary Questions -- Meeting (to be held via video-teleconference)",
+    "Peacebuilding Commission -- Ambassadorial-level meeting on Sao Tome and Principe",
+    "Committee for Programme and Coordination, Sixty-sixth substantive session -- 19th meeting",
+    "Executive Board of the United Nations Development Programme, the United Nations Population Fund and the United Nations Office for Project Services, Annual session 2026 -- 9th plenary meeting",
+    "Permanent Mission of the Republic of Korea,United Nations Office on Drugs and Crime (UNODC) -- Event entitled “Launch of the Group of Friends for Combating Technology-facilitated Trafficking in Persons” (co-organized by the Permanent Mission of the Republic of Korea and the United Nations Office on Drugs and Crime (UNODC))"
   ]
 }
