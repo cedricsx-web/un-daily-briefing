@@ -43,7 +43,7 @@ const ORGAN_TO_CHAMBER={"general assembly":"General Assembly Hall","security cou
 const ROOM_DISPLAY={"General Assembly Hall":"General Assembly Hall","Security Council Chamber":"Security Council","Trusteeship Council Chamber":"Trusteeship Council","Economic and Social Council Chamber":"Economic and Social Council"};
 
 // -- Meeting Row --
-function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,meetingNotes,chamberName}) {
+function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,meetingNotes,chamberName,onClearNote}) {
   const [agendaOpen,setAgendaOpen]=useState(false);
   const [showActions,setShowActions]=useState(false);
   const [titleExpanded,setTitleExpanded]=useState(false);
@@ -91,7 +91,12 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
             },null))
           :null;
         const final=enote||tnote||"";
-        return final?<div style={{fontSize:"10px",color:"rgba(255,220,100,0.75)",marginTop:"3px",paddingLeft:"28px",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {final}</div>:null;
+        return final?(
+          <div style={{display:"flex",alignItems:"flex-start",gap:"4px",marginTop:"3px",paddingLeft:"28px"}}>
+            <div style={{flex:1,fontSize:"10px",color:"rgba(255,220,100,0.75)",lineHeight:"1.4",fontStyle:"italic"}}>&#128203; {final}</div>
+            <button onClick={function(e){e.stopPropagation();onClearNote&&onClearNote(m);}} style={{flexShrink:0,background:"none",border:"none",color:"rgba(255,220,100,0.4)",fontSize:"10px",cursor:"pointer",padding:"0 2px",lineHeight:1}}>&#x2715;</button>
+          </div>
+        ):null;
       })()}
       {hasAgenda&&agendaOpen&&(
         <div style={{marginTop:"6px",marginLeft:"46px",paddingLeft:"10px",borderLeft:"2px solid rgba(0,150,214,0.3)",display:"flex",flexDirection:"column",gap:"4px",animation:"fadeSlideIn 0.2s ease"}}>
@@ -114,7 +119,7 @@ function MeetingRow({m,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,m
 }
 
 // -- Chamber Card --
-function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,cancelledTitles,override,onCycleStatus,chamberStatus,adjournedTitlesForStatus,meetingNotes}) {
+function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjournedTitles,cancelledTitles,override,onCycleStatus,chamberStatus,adjournedTitlesForStatus,meetingNotes,onClearNote}) {
   const icon=CHAMBER_ICONS[chamber.room]||"UN";
   const hasSession=chamber.meetings&&chamber.meetings.some(function(m){return !m.cancelled;});
   const isSC=chamber.room==="Security Council";
@@ -145,7 +150,7 @@ function ChamberCard({chamber,index,onCancel,onAdjourn,onUnadjourn,onDelete,adjo
       </div>
       {hasSession?(
         <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
-          {(chamber.meetings||[]).map(function(m,i){return <MeetingRow key={i} m={m} onCancel={onCancel} onAdjourn={onAdjourn} onUnadjourn={onUnadjourn} onDelete={onDelete} adjournedTitles={adjournedTitles} meetingNotes={meetingNotes} chamberName={chamber.room}/>;} )}
+          {(chamber.meetings||[]).map(function(m,i){return <MeetingRow key={i} m={m} onCancel={onCancel} onAdjourn={onAdjourn} onUnadjourn={onUnadjourn} onDelete={onDelete} adjournedTitles={adjournedTitles} meetingNotes={meetingNotes} chamberName={chamber.room} onClearNote={onClearNote}/>;} )}
         </div>
       ):(
         <p style={{margin:0,fontSize:"11px",color:"rgba(255,255,255,0.25)",fontStyle:"italic"}}>No session today</p>
@@ -825,7 +830,7 @@ export default function App() {
                   {journalSource==="live"&&<span style={{background:"rgba(76,159,56,0.15)",color:"#56C02B",fontSize:"9px",fontWeight:"700",padding:"2px 6px",borderRadius:"10px"}}>LIVE</span>}
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
-                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles} override={chamberOverrides[c.room]||null} onCycleStatus={cycleChamberStatus} chamberStatus={chamberStatus} adjournedTitlesForStatus={adjournedTitles} meetingNotes={meetingNotes}/>;} )}
+                  {mergedChambers.map(function(c,i){return <ChamberCard key={i} chamber={c} index={i} onCancel={cancelMeeting} onAdjourn={adjournMeeting} onUnadjourn={unadjournMeeting} onDelete={deleteExtraMeeting} adjournedTitles={adjournedTitles} cancelledTitles={cancelledTitles} override={chamberOverrides[c.room]||null} onCycleStatus={cycleChamberStatus} chamberStatus={chamberStatus} adjournedTitlesForStatus={adjournedTitles} meetingNotes={meetingNotes} onClearNote={function(m){if(m.isExtra){updateExtraMeeting(m.extraId,{extra_notes:""});}else{saveMeetingNote(m.title,"");}}}/>;} )}
                 </div>
               </div>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
