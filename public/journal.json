@@ -1,21 +1,13 @@
 {
-  "date": "2026-09-04",
-  "fetched_at": "2026-09-04T15:33:39.006Z",
-  "ny_date": "2026-09-04",
+  "date": "2026-09-07",
+  "fetched_at": "2026-09-07T16:59:36.057Z",
+  "ny_date": "2026-09-07",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 4 meetings",
+  "note": "0 meetings parsed",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": [
-        {
-          "time": "11:00 AM",
-          "title": "General Assembly, Eightieth session -- 114th plenary meeting",
-          "agenda": [],
-          "id": "1e5c455f-566e-4db9-9bbb-7a462dfff1e4",
-          "isConsultation": false
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Security Council",
@@ -30,10 +22,5 @@
       "meetings": []
     }
   ],
-  "meetings": [
-    "General Assembly, Eightieth session -- 114th plenary meeting",
-    "Committee on Relations with the Host Country -- 325th meeting",
-    "Preparatory Committee for the United Nations Conference of Plenipotentiaries on Protection of Persons in the Event of Disasters, 2026 session -- 9th meeting of the Working Group of the Whole",
-    "Preparatory Committee for the United Nations Conference of Plenipotentiaries on Protection of Persons in the Event of Disasters, 2026 session -- 4th plenary meeting"
-  ]
+  "meetings": []
 }
