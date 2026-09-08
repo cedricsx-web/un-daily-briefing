@@ -1,13 +1,28 @@
 {
-  "date": "2026-09-07",
-  "fetched_at": "2026-09-07T16:59:36.057Z",
-  "ny_date": "2026-09-07",
+  "date": "2026-09-08",
+  "fetched_at": "2026-09-08T12:53:53.601Z",
+  "ny_date": "2026-09-08",
   "source": "journal-api.un.org",
-  "note": "0 meetings parsed",
+  "note": "Live from journal-api.un.org -- 5 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "11:00 AM",
+          "title": "General Assembly, Eightieth session -- 116th plenary meeting",
+          "agenda": [],
+          "id": "912b9b90-92bf-4722-82fc-d3328de4c482",
+          "isConsultation": false
+        },
+        {
+          "time": "3:00 PM",
+          "title": "General Assembly, Eighty-first session -- 1st plenary meeting",
+          "agenda": [],
+          "id": "c23bed80-ca1f-4060-936f-a0dace8d78f4",
+          "isConsultation": false
+        }
+      ]
     },
     {
       "room": "Security Council",
@@ -22,5 +37,11 @@
       "meetings": []
     }
   ],
-  "meetings": []
+  "meetings": [
+    "General Assembly, Eightieth session -- 116th plenary meeting",
+    "General Assembly, Eighty-first session -- 1st plenary meeting",
+    "Committee on Conferences -- 574th meeting",
+    "Executive Board of the United Nations Entity for Gender Equality and the Empowerment of Women, Second regular session -- Informal consultations on draft decisions",
+    "New York Office of the United Nations Environment Programme,Permanent Mission of the Republic of Korea -- Commemoration of the International Day of Clean Air for Blue Skies (7 September) (organized by the United Nations Environment Programme (UNEP) New York Office in collaboration with the Permanent Mission of the Republic of Korea)All permanent missions, permanent observer missions and stakeholders are invited."
+  ]
 }
