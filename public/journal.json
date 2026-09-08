@@ -1,9 +1,9 @@
 {
   "date": "2026-09-08",
-  "fetched_at": "2026-09-08T12:53:53.601Z",
+  "fetched_at": "2026-09-08T15:46:58.126Z",
   "ny_date": "2026-09-08",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 5 meetings",
+  "note": "Live from journal-api.un.org -- 6 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
@@ -42,6 +42,7 @@
     "General Assembly, Eighty-first session -- 1st plenary meeting",
     "Committee on Conferences -- 574th meeting",
     "Executive Board of the United Nations Entity for Gender Equality and the Empowerment of Women, Second regular session -- Informal consultations on draft decisions",
+    "General Assembly -- Informal consultations on the draft resolution entitled “Extension of the preparatory period preceding the graduation of Bangladesh and Nepal from the least developed country category” (under agenda item 9) (convened by the Permanent Mission of Qatar)",
     "New York Office of the United Nations Environment Programme,Permanent Mission of the Republic of Korea -- Commemoration of the International Day of Clean Air for Blue Skies (7 September) (organized by the United Nations Environment Programme (UNEP) New York Office in collaboration with the Permanent Mission of the Republic of Korea)All permanent missions, permanent observer missions and stakeholders are invited."
   ]
 }
