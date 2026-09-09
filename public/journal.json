@@ -1,28 +1,13 @@
 {
-  "date": "2026-09-08",
-  "fetched_at": "2026-09-08T15:46:58.126Z",
-  "ny_date": "2026-09-08",
+  "date": "2026-09-09",
+  "fetched_at": "2026-09-09T13:55:07.142Z",
+  "ny_date": "2026-09-09",
   "source": "journal-api.un.org",
-  "note": "Live from journal-api.un.org -- 6 meetings",
+  "note": "Live from journal-api.un.org -- 4 meetings",
   "chambers": [
     {
       "room": "General Assembly Hall",
-      "meetings": [
-        {
-          "time": "11:00 AM",
-          "title": "General Assembly, Eightieth session -- 116th plenary meeting",
-          "agenda": [],
-          "id": "912b9b90-92bf-4722-82fc-d3328de4c482",
-          "isConsultation": false
-        },
-        {
-          "time": "3:00 PM",
-          "title": "General Assembly, Eighty-first session -- 1st plenary meeting",
-          "agenda": [],
-          "id": "c23bed80-ca1f-4060-936f-a0dace8d78f4",
-          "isConsultation": false
-        }
-      ]
+      "meetings": []
     },
     {
       "room": "Security Council",
@@ -30,7 +15,15 @@
     },
     {
       "room": "Trusteeship Council",
-      "meetings": []
+      "meetings": [
+        {
+          "time": "10:00 AM",
+          "title": "General Committee, Eighty-first session -- 1st meeting",
+          "agenda": [],
+          "id": "331d4f7f-7550-4b24-a9be-ae065e6f4296",
+          "isConsultation": false
+        }
+      ]
     },
     {
       "room": "Economic and Social Council",
@@ -38,11 +31,9 @@
     }
   ],
   "meetings": [
-    "General Assembly, Eightieth session -- 116th plenary meeting",
-    "General Assembly, Eighty-first session -- 1st plenary meeting",
-    "Committee on Conferences -- 574th meeting",
-    "Executive Board of the United Nations Entity for Gender Equality and the Empowerment of Women, Second regular session -- Informal consultations on draft decisions",
-    "General Assembly -- Informal consultations on the draft resolution entitled “Extension of the preparatory period preceding the graduation of Bangladesh and Nepal from the least developed country category” (under agenda item 9) (convened by the Permanent Mission of Qatar)",
-    "New York Office of the United Nations Environment Programme,Permanent Mission of the Republic of Korea -- Commemoration of the International Day of Clean Air for Blue Skies (7 September) (organized by the United Nations Environment Programme (UNEP) New York Office in collaboration with the Permanent Mission of the Republic of Korea)All permanent missions, permanent observer missions and stakeholders are invited."
+    "General Committee, Eighty-first session -- 1st meeting",
+    "Executive Board of the United Nations Entity for Gender Equality and the Empowerment of Women, Second regular session -- 1st plenary meeting",
+    "Executive Board of the United Nations Entity for Gender Equality and the Empowerment of Women, Second regular session -- Informal consultations on draft decisions (continued)",
+    "Executive Board of the United Nations Entity for Gender Equality and the Empowerment of Women, Second regular session -- 2nd plenary meeting"
   ]
 }
